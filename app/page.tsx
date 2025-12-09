@@ -1,4 +1,5 @@
 import { Hero } from "@/components/organisms/Hero/Hero"
+import {SplatViewer} from "@/components/spatial/SplatViewer/SplatViewer";
 
 export default function Home() {
   return (
@@ -99,6 +100,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
+          <SplatViewer url={`/models/example.spz`} />
         </section>
       </div>
     </main>
