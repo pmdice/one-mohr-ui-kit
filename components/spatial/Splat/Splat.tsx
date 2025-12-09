@@ -1,7 +1,7 @@
 "use client";
 
 import * as THREE from 'three';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { SplatMesh, SparkRenderer } from '@sparkjsdev/spark';
 
@@ -15,7 +15,7 @@ interface SplatProps {
 }
 
 export function Splat({ url, position, rotation, scale, onProgress, onLoad }: SplatProps) {
-    const { gl, scene, camera } = useThree();
+    const { gl, scene, camera, size, viewport } = useThree();
     const splatRef = useRef<SplatMesh | null>(null);
     const sparkRef = useRef<SparkRenderer | null>(null);
 
@@ -29,28 +29,53 @@ export function Splat({ url, position, rotation, scale, onProgress, onLoad }: Sp
         scene.add(spark);
         sparkRef.current = spark;
 
+        // Bind Spark's default viewpoint to the R3F camera and enable auto updates
+        try {
+            spark.defaultView.setAutoUpdate(true);
+            spark.defaultView.camera = camera;
+        } catch {}
+
+        // Ensure Spark knows the current render size (in pixels)
+        const setRenderSize = () => {
+            const canvas = gl.domElement as HTMLCanvasElement;
+            // Use the actual drawing buffer size to avoid CSS vs pixel ratio mismatch
+            const width = canvas.width;
+            const height = canvas.height;
+            if (spark.uniforms?.renderSize?.value) {
+                spark.uniforms.renderSize.value.set(width, height);
+            }
+        };
+        setRenderSize();
+
         // Load Splat data with progress reporting, then create SplatMesh
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer';
-        xhr.onprogress = (e) => {
-            if (e.lengthComputable && onProgress) {
-                onProgress((e.loaded / e.total) * 100);
+        xhr.onprogress = (e: ProgressEvent<EventTarget>) => {
+            // Some servers may not provide total; guard accordingly
+            const pe = e as ProgressEvent;
+            if (pe.lengthComputable && onProgress) {
+                const percent = pe.total ? (pe.loaded / pe.total) * 100 : 0;
+                onProgress(percent);
             }
         };
         xhr.onload = () => {
             try {
-                const bytes = new Uint8Array(xhr.response);
-                const splat = new SplatMesh({
+                const bytes = new Uint8Array(xhr.response as ArrayBuffer);
+                const fileName = url.split('/').pop();
+                const mesh = new SplatMesh({
                     fileBytes: bytes,
-                    fileName: url.split('/').pop(),
+                    fileName,
                     onLoad: () => {
                         if (onLoad) onLoad();
                     },
                 });
-                scene.add(splat);
-                splatRef.current = splat;
-                // Ensure progress hits 100 on completion
+                if (mesh && mesh instanceof THREE.Object3D) {
+                    scene.add(mesh);
+                    splatRef.current = mesh;
+                } else {
+                    console.error('SplatMesh did not produce a THREE.Object3D', mesh);
+                }
                 if (onProgress) onProgress(100);
             } catch (err) {
                 console.error('Failed to initialize SplatMesh', err);
@@ -73,14 +98,29 @@ export function Splat({ url, position, rotation, scale, onProgress, onLoad }: Sp
             scene.remove(spark);
             spark.defaultView.dispose();
         };
-    }, [url, gl, scene, onProgress, onLoad]);
+    }, [url, gl, scene, camera, onProgress, onLoad]);
 
-    // Update transforms if props change
-    useFrame(() => {
+    useLayoutEffect(() => {
         if (splatRef.current) {
+            // Apply transforms whenever position/rotation/scale props change
             if (position) splatRef.current.position.set(...position);
             if (rotation) splatRef.current.rotation.set(...rotation);
             if (scale) splatRef.current.scale.set(...scale);
+            splatRef.current.updateMatrixWorld(); // Ensure matrix updates immediately
+        }
+    }, [position, rotation, scale]);
+
+    // Keep Spark's render size in sync if the drawing buffer changed
+    useFrame(() => {
+        const spark = sparkRef.current;
+        if (spark) {
+            const canvas = (spark.renderer?.domElement ?? (gl?.domElement as HTMLCanvasElement)) as HTMLCanvasElement | undefined;
+            if (canvas && spark.uniforms?.renderSize?.value) {
+                const rs = spark.uniforms.renderSize.value;
+                if (rs.x !== canvas.width || rs.y !== canvas.height) {
+                    rs.set(canvas.width, canvas.height);
+                }
+            }
         }
     });
 

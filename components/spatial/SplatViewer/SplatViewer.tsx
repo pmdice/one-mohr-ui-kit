@@ -13,11 +13,19 @@ interface SplatViewerProps {
 
 export function SplatViewer({ url }: SplatViewerProps) {
     return (
-        <div className="relative w-full h-full min-h-[500px] bg-black rounded-xl overflow-hidden">
+        <div className="relative w-full h-[500px] bg-black rounded-xl overflow-hidden">
             {/* 1. The Declarative Scene */}
-            <Canvas camera={{ position: [0, 0, 3], fov: 60 }}>
+            <Canvas
+                camera={{ position: [0, 0, 3], fov: 60 }}
+                gl={{ antialias: false }}
+                dpr={1}
+            >
                 <Suspense fallback={null}>
-                    <Splat url={url} />
+                    {/* Add rotation prop here: Math.PI on the X axis */}
+                    <Splat 
+                        url={url} 
+                        rotation={[Math.PI, 0, 0]} 
+                    />
                 </Suspense>
                 <OrbitControls makeDefault />
             </Canvas>
@@ -30,8 +38,6 @@ export function SplatViewer({ url }: SplatViewerProps) {
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <ZoomIn size={14} /> <span>Zoom</span>
                 </div>
-                {/* We can't easily reset camera from outside Canvas without state,
-            but for a UI kit showcase, this structure is cleaner. */}
             </div>
 
             {/* R3F built-in Loader */}
