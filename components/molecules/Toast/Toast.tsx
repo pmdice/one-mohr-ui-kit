@@ -69,13 +69,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             exit={{ opacity: 0, x: 48, scale: 0.95 }}
                             transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
                             className={cn(
-                                "flex w-80 items-start gap-3 rounded-xl border bg-white p-4 shadow-lg dark:bg-slate-900",
-                                t.variant ? VARIANT_BORDER[t.variant] : "border-slate-200 dark:border-slate-800"
+                                "flex w-80 items-start gap-3 rounded-xl border bg-white p-4 shadow-lg dark:bg-neutral-900",
+                                t.variant ? VARIANT_BORDER[t.variant] : "border-neutral-200 dark:border-neutral-800"
                             )}
                         >
                             {t.variant && ICONS[t.variant]}
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-slate-900 dark:text-white">{t.title}</p>
+                                <p className="text-sm font-medium text-neutral-900 dark:text-white">{t.title}</p>
                                 {t.description && (
                                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{t.description}</p>
                                 )}
