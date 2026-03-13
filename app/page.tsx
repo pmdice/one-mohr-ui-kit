@@ -1,15 +1,22 @@
 "use client"
 
+import * as React from "react"
 import { Hero } from "@/components/organisms/Hero/Hero"
 import { Button } from "@/components/atoms/Button/Button"
 import { Badge } from "@/components/atoms/Badge/Badge"
 import { FadeIn } from "@/components/atoms/FadeIn/FadeIn"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/molecules/Card/Card"
+import { Tooltip } from "@/components/atoms/Tooltip/Tooltip"
+import { Input } from "@/components/atoms/Input/Input"
+import { Textarea } from "@/components/atoms/Textarea/Textarea"
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/molecules/Card/Card"
 import { Accordion } from "@/components/molecules/Accordion/Accordion"
 import { Tabs } from "@/components/molecules/Tabs/Tabs"
 import { useToast } from "@/components/molecules/Toast/Toast"
 import { SearchInput } from "@/components/molecules/SearchInput/SearchInput"
-import { ArrowRight, Layers, Zap, Accessibility, Package } from "lucide-react"
+import { Dialog, DialogFooter } from "@/components/molecules/Dialog/Dialog"
+import { Select } from "@/components/molecules/Select/Select"
+import { FormField } from "@/components/molecules/FormField/FormField"
+import { ArrowRight, Layers, Zap, Accessibility, Package, Info } from "lucide-react"
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
@@ -62,9 +69,9 @@ const TABS_ITEMS = [
                     { name: "SearchInput", status: "stable" as const },
                     { name: "FadeIn", status: "stable" as const },
                     { name: "Navbar", status: "stable" as const },
-                    { name: "Dialog", status: "planned" as const },
-                    { name: "Select", status: "planned" as const },
-                    { name: "Tooltip", status: "planned" as const },
+                    { name: "Dialog", status: "stable" as const },
+                    { name: "Select", status: "stable" as const },
+                    { name: "Tooltip", status: "stable" as const },
                 ].map(({ name, status }) => (
                     <div key={name} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 dark:border-slate-800">
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{name}</span>
@@ -103,10 +110,13 @@ const TABS_ITEMS = [
 
 export default function Home() {
     const { toast } = useToast()
+    const [dialogOpen, setDialogOpen] = React.useState(false)
+    const [selectValue, setSelectValue] = React.useState("")
+    const [formError, setFormError] = React.useState("")
 
     return (
-        <main className="min-h-screen bg-slate-50 px-4 py-6 dark:bg-slate-950 md:px-16 md:py-16">
-            <div className="mx-auto max-w-4xl rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-slate-700/50">
+        <main className="min-h-screen bg-neutral-100 px-4 py-6 dark:bg-[#0a0a0a] md:px-16 md:py-16">
+            <div className="mx-auto max-w-4xl rounded-2xl bg-white shadow-sm ring-1 ring-black/5 dark:bg-neutral-950 dark:ring-white/5">
                 <div className="p-6 md:p-12">
 
                     {/* Header tag */}
@@ -263,6 +273,114 @@ export default function Home() {
                     <FadeIn>
                         <SectionLabel>Accordion — animated expand / collapse</SectionLabel>
                         <Accordion items={ACCORDION_ITEMS} />
+                    </FadeIn>
+
+                    <Divider />
+
+                    {/* Select */}
+                    <FadeIn>
+                        <SectionLabel>Select — animated dropdown</SectionLabel>
+                        <div className="flex flex-wrap items-start gap-4">
+                            <Select
+                                options={[
+                                    { value: "next", label: "Next.js" },
+                                    { value: "remix", label: "Remix" },
+                                    { value: "astro", label: "Astro" },
+                                    { value: "vite", label: "Vite + React" },
+                                ]}
+                                value={selectValue}
+                                onChange={setSelectValue}
+                                placeholder="Choose a framework"
+                                className="w-56"
+                            />
+                            <Select
+                                options={[{ value: "x", label: "Option" }]}
+                                disabled
+                                placeholder="Disabled"
+                                className="w-40"
+                            />
+                        </div>
+                    </FadeIn>
+
+                    <Divider />
+
+                    {/* Tooltip */}
+                    <FadeIn>
+                        <SectionLabel>Tooltip — hover to reveal</SectionLabel>
+                        <div className="flex flex-wrap items-center gap-4">
+                            {(["top", "bottom", "left", "right"] as const).map(side => (
+                                <Tooltip key={side} content={`Tooltip · ${side}`} side={side}>
+                                    <Button variant="outline" size="sm">{side}</Button>
+                                </Tooltip>
+                            ))}
+                            <Tooltip content="More info about this field" side="right">
+                                <button className="text-slate-400 transition-colors hover:text-slate-600" aria-label="Info">
+                                    <Info className="h-4 w-4" />
+                                </button>
+                            </Tooltip>
+                        </div>
+                    </FadeIn>
+
+                    <Divider />
+
+                    {/* Dialog */}
+                    <FadeIn>
+                        <SectionLabel>Dialog — animated modal</SectionLabel>
+                        <div className="flex flex-wrap gap-3">
+                            <Button variant="outline" onClick={() => setDialogOpen(true)}>
+                                Open confirm dialog
+                            </Button>
+                        </div>
+                        <Dialog
+                            open={dialogOpen}
+                            onClose={() => setDialogOpen(false)}
+                            title="Delete this item?"
+                            description="This will permanently remove the item from your workspace. This action cannot be undone."
+                        >
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+                                <Button variant="destructive" onClick={() => { setDialogOpen(false); toast({ title: "Item deleted", variant: "error" }) }}>
+                                    Delete
+                                </Button>
+                            </DialogFooter>
+                        </Dialog>
+                    </FadeIn>
+
+                    <Divider />
+
+                    {/* Form */}
+                    <FadeIn>
+                        <SectionLabel>Form primitives — Input, Textarea, Label, FormField</SectionLabel>
+                        <div className="grid gap-6 sm:grid-cols-2">
+                            <div className="space-y-4">
+                                <FormField label="Email" htmlFor="demo-email" required hint="We'll never share your email.">
+                                    <Input id="demo-email" type="email" placeholder="you@example.com" />
+                                </FormField>
+                                <FormField label="Username" htmlFor="demo-user" error={formError || undefined}>
+                                    <Input
+                                        id="demo-user"
+                                        placeholder="e.g. patrickmohr"
+                                        onChange={e => setFormError(e.target.value.length > 0 && e.target.value.length < 3 ? "Username must be at least 3 characters." : "")}
+                                        error={!!formError}
+                                    />
+                                </FormField>
+                                <FormField label="Message" htmlFor="demo-msg" hint="Max 500 characters.">
+                                    <Textarea id="demo-msg" placeholder="Your message..." />
+                                </FormField>
+                                <Button className="w-full">Submit</Button>
+                            </div>
+                            <div className="space-y-4">
+                                <FormField label="Disabled input" htmlFor="demo-disabled">
+                                    <Input id="demo-disabled" placeholder="Cannot edit" disabled />
+                                </FormField>
+                                <FormField label="Error state" htmlFor="demo-error" error="This field is required.">
+                                    <Input id="demo-error" placeholder="Required field" error />
+                                </FormField>
+                                <FormField label="Error textarea" htmlFor="demo-ta-err" error="Description is too short.">
+                                    <Textarea id="demo-ta-err" placeholder="Enter description..." error defaultValue="too short" />
+                                </FormField>
+                            </div>
+                        </div>
                     </FadeIn>
 
                     {/* Footer */}
