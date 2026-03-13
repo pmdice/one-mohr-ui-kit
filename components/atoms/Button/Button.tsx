@@ -12,7 +12,7 @@ const buttonVariants = cva(
                 destructive: "bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg active:scale-[0.97] transition-all duration-150",
                 outline:     "border border-neutral-300 bg-transparent text-neutral-900 hover:bg-neutral-100 active:scale-[0.97] transition-all duration-150 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-800",
                 secondary:   "bg-neutral-200 text-neutral-900 hover:bg-neutral-300 active:scale-[0.97] transition-all duration-150 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700",
-                ghost:       "text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150 dark:text-neutral-100 dark:hover:bg-neutral-800",
+                ghost:       "text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-100",
                 link:        "text-blue-600 underline-offset-4 hover:underline dark:text-blue-400",
             },
             size: {
