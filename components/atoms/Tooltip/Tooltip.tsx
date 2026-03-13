@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 type TooltipSide = "top" | "bottom" | "left" | "right"
@@ -29,6 +29,7 @@ const SIDE_OFFSET: Record<TooltipSide, object> = {
 
 export function Tooltip({ content, side = "top", children, className }: TooltipProps) {
     const [visible, setVisible] = React.useState(false)
+    const shouldReduce = useReducedMotion()
 
     return (
         <span
@@ -43,10 +44,10 @@ export function Tooltip({ content, side = "top", children, className }: TooltipP
                 {visible && (
                     <motion.div
                         role="tooltip"
-                        initial={{ opacity: 0, ...SIDE_OFFSET[side] }}
+                        initial={shouldReduce ? { opacity: 0 } : { opacity: 0, ...SIDE_OFFSET[side] }}
                         animate={{ opacity: 1, x: 0, y: 0 }}
-                        exit={{ opacity: 0, ...SIDE_OFFSET[side] }}
-                        transition={{ duration: 0.15 }}
+                        exit={shouldReduce ? { opacity: 0 } : { opacity: 0, ...SIDE_OFFSET[side] }}
+                        transition={shouldReduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
                         className={cn(
                             "pointer-events-none absolute z-50 whitespace-nowrap rounded-lg bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-md dark:bg-neutral-700",
                             SIDE_CLASS[side],

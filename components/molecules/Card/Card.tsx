@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface CardProps {
@@ -15,6 +15,7 @@ interface CardProps {
 }
 
 export function Card({ className, interactive = false, children, style, onClick, id }: CardProps) {
+    const shouldReduce = useReducedMotion()
     const base = cn(
         "rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900",
         className
@@ -23,10 +24,10 @@ export function Card({ className, interactive = false, children, style, onClick,
     if (interactive) {
         return (
             <motion.div
-                whileHover={{ y: -4, boxShadow: "0 20px 40px -12px rgba(0,0,0,0.15)" }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={shouldReduce ? undefined : { y: -4 }}
+                whileTap={shouldReduce ? undefined : { scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className={base}
+                className={cn(base, "transition-shadow hover:shadow-lg")}
                 style={style}
                 onClick={onClick}
                 id={id}

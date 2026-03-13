@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -30,6 +30,7 @@ export function Select({
     const [open, setOpen] = React.useState(false)
     const ref = React.useRef<HTMLDivElement>(null)
     const selected = options.find(o => o.value === value)
+    const shouldReduce = useReducedMotion()
 
     React.useEffect(() => {
         const onOutside = (e: MouseEvent) => {
@@ -77,7 +78,7 @@ export function Select({
                 <span className={cn(!selected && "text-slate-400 dark:text-slate-500")}>
                     {selected ? selected.label : placeholder}
                 </span>
-                <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                <motion.div animate={{ rotate: open ? 180 : 0 }} transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: "easeInOut" }}>
                     <ChevronDown className="h-4 w-4 text-slate-500" />
                 </motion.div>
             </button>
@@ -86,20 +87,17 @@ export function Select({
                 {open && (
                     <motion.ul
                         role="listbox"
-                        initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                        initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.25 }}
+                        exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
+                        transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.2, duration: 0.25 }}
                         className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
                     >
-                        {options.map((option, i) => (
-                            <motion.li
+                        {options.map((option) => (
+                            <li
                                 key={option.value}
                                 role="option"
                                 aria-selected={value === option.value}
-                                initial={{ opacity: 0, x: -6 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.03 }}
                                 onClick={() => { onChange?.(option.value); setOpen(false) }}
                                 className={cn(
                                     "flex cursor-pointer items-center justify-between px-4 py-2 text-sm transition-colors",
@@ -110,7 +108,7 @@ export function Select({
                             >
                                 {option.label}
                                 {value === option.value && <Check className="h-3.5 w-3.5" />}
-                            </motion.li>
+                            </li>
                         ))}
                     </motion.ul>
                 )}

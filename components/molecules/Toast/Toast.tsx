@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -44,6 +44,7 @@ const AUTO_DISMISS_MS = 4000
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
     const [toasts, setToasts] = React.useState<ToastItem[]>([])
+    const shouldReduce = useReducedMotion()
 
     const dismiss = React.useCallback((id: string) => {
         setToasts(prev => prev.filter(t => t.id !== id))
@@ -64,10 +65,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         <motion.div
                             key={t.id}
                             layout
-                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, x: 48, scale: 0.95 }}
-                            transition={{ type: "spring", bounce: 0.3, duration: 0.4 }}
+                            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: 48, scale: 0.95 }}
+                            transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.35 }}
                             className={cn(
                                 "flex w-80 items-start gap-3 rounded-xl border bg-white p-4 shadow-lg dark:bg-neutral-900",
                                 t.variant ? VARIANT_BORDER[t.variant] : "border-neutral-200 dark:border-neutral-800"

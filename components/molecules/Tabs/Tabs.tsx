@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 export interface TabItem {
@@ -18,6 +18,7 @@ interface TabsProps {
 
 export function Tabs({ tabs, defaultTab, className }: TabsProps) {
     const [activeTab, setActiveTab] = React.useState(defaultTab ?? tabs[0]?.id)
+    const shouldReduce = useReducedMotion()
 
     return (
         <div className={cn("w-full", className)}>
@@ -39,7 +40,7 @@ export function Tabs({ tabs, defaultTab, className }: TabsProps) {
                             <motion.div
                                 layoutId="tab-indicator"
                                 className="absolute inset-0 rounded-lg bg-white shadow-sm dark:bg-neutral-900"
-                                transition={{ type: "spring", bounce: 0.2, duration: 0.35 }}
+                                transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.2, duration: 0.35 }}
                             />
                         )}
                         <span className="relative">{tab.label}</span>
@@ -53,9 +54,9 @@ export function Tabs({ tabs, defaultTab, className }: TabsProps) {
                     tab.id === activeTab ? (
                         <motion.div
                             key={tab.id}
-                            initial={{ opacity: 0, y: 6 }}
+                            initial={shouldReduce ? false : { opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
+                            transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
                         >
                             {tab.content}
                         </motion.div>

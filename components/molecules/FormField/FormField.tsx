@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/atoms/Label/Label"
 
@@ -18,6 +18,7 @@ interface FormFieldProps {
 }
 
 export function FormField({ label, required, error, hint, htmlFor, children, className }: FormFieldProps) {
+    const shouldReduce = useReducedMotion()
     return (
         <div className={cn("flex flex-col gap-1.5", className)}>
             {label && (
@@ -31,10 +32,10 @@ export function FormField({ label, required, error, hint, htmlFor, children, cla
                     <motion.p
                         key="error"
                         role="alert"
-                        initial={{ opacity: 0, y: -4 }}
+                        initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.15 }}
+                        exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
+                        transition={shouldReduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
                         className="text-xs text-red-500"
                     >
                         {error}
@@ -44,6 +45,7 @@ export function FormField({ label, required, error, hint, htmlFor, children, cla
                         key="hint"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        transition={shouldReduce ? { duration: 0 } : { duration: 0.15 }}
                         className="text-xs text-slate-400 dark:text-slate-500"
                     >
                         {hint}

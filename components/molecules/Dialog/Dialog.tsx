@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { createPortal } from "react-dom"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -16,6 +16,8 @@ interface DialogProps {
 }
 
 export function Dialog({ open, onClose, title, description, children, className }: DialogProps) {
+    const shouldReduce = useReducedMotion()
+
     // Close on Escape
     React.useEffect(() => {
         const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
@@ -42,7 +44,7 @@ export function Dialog({ open, onClose, title, description, children, className 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
                         className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
                         onClick={onClose}
                         aria-hidden
@@ -58,10 +60,10 @@ export function Dialog({ open, onClose, title, description, children, className 
                     >
                         <motion.div
                             key="panel"
-                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 16 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 8 }}
-                            transition={{ type: "spring", bounce: 0.25, duration: 0.35 }}
+                            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 8 }}
+                            transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.3 }}
                             className={cn(
                                 "relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5 dark:bg-neutral-900 dark:ring-white/10",
                                 className
