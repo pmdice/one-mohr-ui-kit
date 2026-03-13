@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn, userEvent, within, expect } from '@storybook/test';
+import { fn, userEvent, within, expect } from 'storybook/test';
 import { Button } from './Button';
 import { Search } from 'lucide-react';
 
