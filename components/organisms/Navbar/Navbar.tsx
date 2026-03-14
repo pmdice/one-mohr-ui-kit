@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Menu as MenuIcon, ArrowUpRight, type LucideIcon } from 'lucide-react'
 import { cn } from "@/lib/utils"
 
@@ -34,6 +34,7 @@ export function Navbar({
     const [isMenuOpen, setIsMenuOpen] = React.useState(false)
     const navRef = React.useRef<HTMLDivElement>(null)
     const pathname = usePathname()
+    const shouldReduce = useReducedMotion()
 
     // Handle click outside to close menu
     React.useEffect(() => {
@@ -52,14 +53,14 @@ export function Navbar({
             <motion.nav
                 ref={navRef}
                 layout
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                initial={shouldReduce ? false : { opacity: 0, y: -20, scale: 0.95 }}
                 animate={{
                     opacity: 1,
                     y: 0,
                     scale: 1,
                     width: isMenuOpen ? 420 : 360 // Responsive width animation
                 }}
-                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.25, duration: 0.5 }}
                 style={{ borderRadius: 24 }}
                 className="bg-background/70 backdrop-blur-xl border border-border/50 shadow-lg overflow-hidden"
             >
@@ -100,7 +101,7 @@ export function Navbar({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: "spring", bounce: 0.15, duration: 0.35 }}
+                            transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.35 }}
                             className="overflow-hidden"
                         >
                             <div className="px-6 pb-6 pt-2 space-y-2">
@@ -125,13 +126,13 @@ export function Navbar({
                                     return (
                                         <motion.div
                                             key={item.label}
-                                            initial={{ opacity: 0, y: -10, scale: 0.96 }}
+                                            initial={shouldReduce ? false : { opacity: 0, y: -10, scale: 0.96 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                                            transition={{
+                                            exit={shouldReduce ? {} : { opacity: 0, y: -6, scale: 0.98 }}
+                                            transition={shouldReduce ? { duration: 0 } : {
                                                 delay: index * 0.05,
                                                 type: "spring",
-                                                bounce: 0.3
+                                                bounce: 0.15
                                             }}
                                         >
                                             <Link

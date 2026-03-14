@@ -29,7 +29,7 @@ export function SearchInput({ className, onSearch, placeholder = "Search...", di
             <div className="relative w-full">
                 <input
                     type="text"
-                    className="flex h-10 w-full rounded-full border border-slate-300 bg-white pl-3 pr-10 py-2 text-sm text-slate-900 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-full border border-neutral-300 bg-white pl-3 pr-10 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:placeholder:text-neutral-500"
                     placeholder={placeholder}
                     value={term}
                     onChange={(e) => setTerm(e.target.value)}
