@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { Form, useEnterpriseForm, useFieldError } from './Form'
 import { FormField } from './FormField'
 import { Input } from '@/components/atoms/Input/Input'
+import { Select } from '@/components/molecules/Select/Select'
+import { Controller } from 'react-hook-form'
 
 const schema = z.object({
     name: z.string().min(1, 'Name fehlt'),
@@ -137,5 +139,69 @@ describe('Form submit (F-04, F-11, F-12)', () => {
         const dirty = new Event('beforeunload', { cancelable: true })
         window.dispatchEvent(dirty)
         expect(dirty.defaultPrevented).toBe(true)
+    })
+
+    it('rejected save shows an error and keeps the form dirty', async () => {
+        const user = userEvent.setup()
+        const onSubmit = vi.fn(() => Promise.reject(new Error('500')))
+        render(<Mini onSubmit={onSubmit} />)
+        await user.type(nameInput(), 'Kunde AG')
+        await user.type(qtyInput(), '5')
+        await user.click(screen.getByRole('button', { name: 'Speichern' }))
+        expect(await screen.findByRole('alert', { name: /Speichern fehlgeschlagen/ })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Speichern' })).not.toHaveAttribute('aria-busy')
+        const unload = new Event('beforeunload', { cancelable: true })
+        window.dispatchEvent(unload)
+        expect(unload.defaultPrevented).toBe(true)
+    })
+
+    it('edits made while saving stay unsaved', async () => {
+        const user = userEvent.setup()
+        let resolve!: () => void
+        render(<Mini onSubmit={() => new Promise<void>((r) => { resolve = r })} />)
+        await user.type(nameInput(), 'Kunde AG')
+        await user.type(qtyInput(), '5')
+        await user.click(screen.getByRole('button', { name: 'Speichern' }))
+        await user.type(nameInput(), ' Bern')
+        await act(async () => resolve())
+        const unload = new Event('beforeunload', { cancelable: true })
+        window.dispatchEvent(unload)
+        expect(unload.defaultPrevented).toBe(true)
+    })
+
+    it('warns before unload while saving', async () => {
+        const user = userEvent.setup()
+        render(<Mini onSubmit={() => new Promise<void>(() => {})} />)
+        await user.type(nameInput(), 'Kunde AG')
+        await user.type(qtyInput(), '5')
+        await user.click(screen.getByRole('button', { name: 'Speichern' }))
+        await waitFor(() => expect(screen.getByRole('button', { name: /Speicher/ })).toHaveAttribute('aria-busy', 'true'))
+        const unload = new Event('beforeunload', { cancelable: true })
+        window.dispatchEvent(unload)
+        expect(unload.defaultPrevented).toBe(true)
+    })
+})
+
+describe('Form with a select (F-11)', () => {
+    const selectSchema = z.object({ material: z.string().min(1, 'Material wählen') })
+    function WithSelect({ onSubmit }: { onSubmit: () => void }) {
+        const form = useEnterpriseForm(selectSchema, { defaultValues: { material: 'alu' } })
+        return (
+            <Form form={form} onSubmit={onSubmit}>
+                <Controller control={form.control} name="material" render={({ field }) => (
+                    <FormField label="Material"><Select options={[{ value: 'alu', label: 'Aluminium' }]} value={field.value} onChange={field.onChange} onBlur={field.onBlur} /></FormField>
+                )} />
+            </Form>
+        )
+    }
+
+    it('ctrl+enter on a select submits without opening it', async () => {
+        const user = userEvent.setup()
+        const onSubmit = vi.fn()
+        render(<WithSelect onSubmit={onSubmit} />)
+        screen.getByRole('combobox', { name: 'Material' }).focus()
+        await user.keyboard('{Control>}{Enter}{/Control}')
+        await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
     })
 })

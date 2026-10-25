@@ -51,8 +51,11 @@ function GroupBlockInner({
     const contentId = `${id}-content`
     const rootRef = React.useRef<HTMLDivElement>(null)
 
+    // Apply only commands issued after this block mounted — a block added or restored
+    // after "Alle einklappen" must still open (F-08).
+    const mountedSeq = React.useRef(command?.seq ?? 0)
     React.useEffect(() => {
-        if (command) setManual(command.type === "expand")
+        if (command && command.seq > mountedSeq.current) setManual(command.type === "expand")
     }, [command])
 
     // Failed save: open every block that needs attention (F-04)
@@ -79,7 +82,10 @@ function GroupBlockInner({
                 "rounded-panel border bg-surface",
                 hasError ? "border-danger/40" : "border-border"
             )}
-            onFocusCapture={() => { if (manual === null) setManual(expanded) }}
+            onFocusCapture={(event) => {
+                // Freeze only when the user starts working inside the block, not on header focus
+                if (manual === null && document.getElementById(contentId)?.contains(event.target)) setManual(expanded)
+            }}
         >
             <div className="flex items-center gap-1 pr-1">
                 <button

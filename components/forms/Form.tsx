@@ -86,10 +86,12 @@ export function Form<TIn extends FieldValues, TOut>({
     const submittingRef = React.useRef(false)
     const [busy, setBusy] = React.useState(false)
     const [showSummary, setShowSummary] = React.useState(false)
+    const [saveFailed, setSaveFailed] = React.useState(false)
     const [focusPending, setFocusPending] = React.useState(0)
     const { errors, isDirty } = useFormState({ control: form.control })
 
-    useUnsavedChanges(isDirty && !busy)
+    // Also while saving: if the request fails after the tab is gone, the data would be lost
+    useUnsavedChanges(isDirty || busy)
 
     // After a failed save: let collapsed parts open, then focus the first invalid control in DOM order
     React.useEffect(() => {
@@ -109,9 +111,15 @@ export function Form<TIn extends FieldValues, TOut>({
         void form.handleSubmit(
             async (values) => {
                 setShowSummary(false)
+                setSaveFailed(false)
+                // Baseline is what was submitted; edits made while saving stay dirty
+                const submitted = structuredClone(form.getValues())
                 try {
                     await onSubmit(values)
-                    form.reset(form.getValues())
+                    form.reset(submitted, { keepValues: true })
+                } catch {
+                    // Keep everything the user entered and say so — never fail silently
+                    setSaveFailed(true)
                 } finally {
                     submittingRef.current = false
                     setBusy(false)
@@ -153,6 +161,9 @@ export function Form<TIn extends FieldValues, TOut>({
                 onKeyDown={handleKeyDown}
                 onSubmit={(event) => { event.preventDefault(); submit() }}
             >
+                {saveFailed && (
+                    <FormErrorSummary title="Speichern fehlgeschlagen – Ihre Eingaben sind erhalten. Bitte erneut versuchen." items={[]} />
+                )}
                 {summary && summary.items.length > 0 && <FormErrorSummary title={summary.title} items={summary.items} />}
                 {children}
                 <div className="flex items-center justify-end gap-3 border-t border-border pt-4">

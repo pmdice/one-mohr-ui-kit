@@ -32,7 +32,7 @@ export function FormErrorSummary({ title, items }: FormErrorSummaryProps) {
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                 {title}
             </p>
-            <ul className="mt-1.5 flex flex-col gap-0.5 pl-6">
+            {items.length > 0 && <ul className="mt-1.5 flex flex-col gap-0.5 pl-6">
                 {items.map((item) => (
                     <li key={item.id}>
                         <a
@@ -44,7 +44,7 @@ export function FormErrorSummary({ title, items }: FormErrorSummaryProps) {
                         </a>
                     </li>
                 ))}
-            </ul>
+            </ul>}
         </div>
     )
 }

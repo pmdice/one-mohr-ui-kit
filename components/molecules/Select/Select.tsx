@@ -56,7 +56,8 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
         onKeyDown?.(e)
-        if (e.defaultPrevented || disabled) return
+        // Modifier shortcuts (⌘/Ctrl+Enter = save) belong to the form, not the list
+        if (e.defaultPrevented || disabled || e.metaKey || e.ctrlKey || e.altKey) return
         const last = options.length - 1
         switch (e.key) {
             case "ArrowDown":

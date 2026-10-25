@@ -40,20 +40,31 @@ export function RepeatableGroup<T extends { no: number }>({
     const [added, setAdded] = React.useState<Set<number>>(() => new Set())
     const [removed, setRemoved] = React.useState<Removed<T> | null>(null)
     const [command, setCommand] = React.useState<BlockCommand | null>(null)
-    const [focusTarget, setFocusTarget] = React.useState<{ kind: "block" | "header" | "undo"; no?: number } | null>(null)
+    const [focusTarget, setFocusTarget] = React.useState<{ kind: "block" | "header" | "undo" | "add"; no?: number } | null>(null)
     const undoRef = React.useRef<HTMLButtonElement>(null)
+    const addRef = React.useRef<HTMLButtonElement>(null)
 
     const blockId = (no: number) => `${name}-${no}`
 
+    // When the undo hint expires while it has focus, hand focus to the block that took
+    // its place (or the one before, or the add button) instead of dropping it on <body>.
     React.useEffect(() => {
         if (!removed) return
-        const timer = setTimeout(() => setRemoved(null), UNDO_MS)
+        const timer = setTimeout(() => {
+            if (undoRef.current?.contains(document.activeElement)) {
+                const values = (getValues(name) ?? []) as T[]
+                const neighbour = values[removed.index] ?? values[removed.index - 1]
+                setFocusTarget(neighbour ? { kind: "header", no: neighbour.no } : { kind: "add" })
+            }
+            setRemoved(null)
+        }, UNDO_MS)
         return () => clearTimeout(timer)
-    }, [removed])
+    }, [removed, getValues, name])
 
     React.useEffect(() => {
         if (!focusTarget) return
         if (focusTarget.kind === "undo") undoRef.current?.focus()
+        else if (focusTarget.kind === "add") addRef.current?.focus()
         else {
             const header = document.getElementById(blockId(focusTarget.no!))
             if (focusTarget.kind === "header") header?.focus()
@@ -117,7 +128,8 @@ export function RepeatableGroup<T extends { no: number }>({
         const no = (field as unknown as T).no
         return (
             <GroupBlock
-                key={field.id}
+                // Keyed by the stable number: survives form.reset(), which regenerates field ids
+                key={no}
                 id={blockId(no)}
                 no={no}
                 label={itemLabel}
@@ -149,7 +161,7 @@ export function RepeatableGroup<T extends { no: number }>({
             )}
             {blocks}
             <div>
-                <Button type="button" variant="outline" onClick={add}>
+                <Button ref={addRef} type="button" variant="outline" onClick={add}>
                     <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                     {addLabel}
                 </Button>

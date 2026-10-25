@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { z } from 'zod'
@@ -151,5 +151,54 @@ describe('RepeatableGroup blocks (F-08, F-09)', () => {
         await user.click(screen.getByRole('button', { name: 'Speichern' }))
         await waitFor(() => expect(header(2)).toHaveAttribute('aria-expanded', 'true'))
         expect(header(2)).toHaveTextContent(/offen|Fehler/)
+    })
+
+    it('collapse all does not collapse blocks added afterwards', async () => {
+        const user = userEvent.setup()
+        render(<Fixture positions={[full(1), full(2)]} />)
+        await user.click(screen.getByRole('button', { name: 'Alle einklappen' }))
+        await user.click(screen.getByRole('button', { name: 'Position hinzufügen' }))
+        expect(header(3)).toHaveAttribute('aria-expanded', 'true')
+        await waitFor(() => expect(screen.getAllByLabelText(/^Typ/)[2]).toHaveFocus())
+    })
+
+    it('undo after collapse all restores an incomplete block open', async () => {
+        const user = userEvent.setup()
+        render(<Fixture positions={[full(1), { no: 2, typ: '', material: '', qty: '' }]} />)
+        await user.click(screen.getByRole('button', { name: 'Alle einklappen' }))
+        await remove(user, 2)
+        await user.click(screen.getByRole('button', { name: 'Rückgängig' }))
+        await waitFor(() => expect(header(2)).toHaveAttribute('aria-expanded', 'true'))
+    })
+
+    it('blocks keep their state and focus after a successful save', async () => {
+        const user = userEvent.setup()
+        render(<Fixture positions={[full(1), full(2)]} />)
+        await user.click(header(1))
+        expect(header(1)).toHaveAttribute('aria-expanded', 'true')
+        const block1 = document.getElementById(header(1).getAttribute('aria-controls')!)!
+        const material = within(block1).getByLabelText(/^Material/)
+        await user.click(material)
+        await user.keyboard('{Control>}{Enter}{/Control}')
+        await waitFor(() => expect(screen.getByRole('button', { name: 'Speichern' })).not.toHaveAttribute('aria-busy'))
+        expect(header(1)).toHaveAttribute('aria-expanded', 'true')
+        expect(material).toBeInTheDocument()
+        expect(material).toHaveFocus()
+    })
+
+    it('keeps focus in the list when the undo bar times out', async () => {
+        vi.useFakeTimers({ shouldAdvanceTime: true })
+        try {
+            const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+            render(<Fixture positions={[full(1), full(2), full(3)]} />)
+            await remove(user, 2)
+            await waitFor(() => expect(screen.getByRole('button', { name: 'Rückgängig' })).toHaveFocus())
+            await act(async () => { vi.advanceTimersByTime(8000) })
+            expect(screen.queryByRole('button', { name: 'Rückgängig' })).not.toBeInTheDocument()
+            expect(document.activeElement).not.toBe(document.body)
+            expect(header(3)).toHaveFocus()
+        } finally {
+            vi.useRealTimers()
+        }
     })
 })
