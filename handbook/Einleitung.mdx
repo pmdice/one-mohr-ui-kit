@@ -1,0 +1,25 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Handbuch/Einleitung" />
+
+# Handbuch für Firmensoftware
+
+Firmensoftware ist am Ende eine grosse CRUD-Anwendung mit vielen Bedingungen. Ob sie benutzt wird, entscheidet sich an vielen kleinen Details: Erkennt man, was Pflicht ist? Weiss man, wo man ist? Findet man, was beim Speichern schiefging? Dieses Handbuch hält fest, wie wir diese Details entscheiden – damit nicht jeder Entwickler sie jedes Mal neu trifft.
+
+Die Regeln sind **unabhängig vom Framework** formuliert. Die React-Komponenten in diesem Storybook sind eine Referenz-Umsetzung; wer in Laravel/Nova, Vue oder anderswo baut, überträgt die Regel, nicht den Code.
+
+## Aufbau einer Regel
+
+1. **Regel** – ein Satz, als Anweisung.
+2. **Warum** – die Begründung. Ohne sie lässt sich eine Regel nicht auf neue Fälle übertragen.
+3. **Gut / Schlecht** – lebendige Beispiele nebeneinander.
+4. **Übertragen** – worauf man achten muss, wenn man die Regel in einem anderen Stack umsetzt.
+
+## Auf Regeln verweisen
+
+Jede Regel hat eine ID (`F-01` … `F-12` für Formulare). Verweise in Tickets und Code-Reviews darauf, z. B. „Verstösst gegen F-10: Feld ausgegraut statt ausgeblendet“.
+
+## Bereiche
+
+- **Formulare** – verfügbar
+- Navigation & App-Rahmen, Listen & Tabellen, Status & Lebenszyklus – geplant

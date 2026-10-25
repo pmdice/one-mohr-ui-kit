@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F09Bad, PositionsDemo } from './examples'
+
+<Meta title="Handbuch/Formulare/F-09 Fertige Blöcke einklappbar" />
+
+# F-09 · Fertige Blöcke einklappbar
+
+## Regel
+
+Lass vollständige Blöcke einklappen – einzeln und alle auf einmal – und lass unvollständige standardmässig offen.
+
+## Warum
+
+Eingeklappt bleibt nur die Kopfzeile mit Zusammenfassung; so passt auch ein Auftrag mit vielen Positionen auf den Bildschirm, und das Offene springt ins Auge.
+
+## Details
+
+- Ein Block klappt nie unter dem Cursor zu, während man noch darin arbeitet.
+- Eingeklappte Felder bleiben Teil des Formulars und werden mitvalidiert.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<PositionsDemo />}
+  bad={<F09Bad />}
+  goodCaption="Fertiges eingeklappt, Offenes offen"
+  badCaption="Alles offen, die Lücke geht unter"
+/>
+
+## Übertragen
+
+- Eingeklappten Inhalt nur verstecken (nicht entfernen), damit er mitgespeichert und validiert wird.
+- „Alle einklappen / aufklappen“ über der Liste anbieten.

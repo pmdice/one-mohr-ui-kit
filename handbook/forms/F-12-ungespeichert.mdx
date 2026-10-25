@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F12Bad, F12Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-12 Speichern und ungespeicherte Änderungen" />
+
+# F-12 · Speichern und ungespeicherte Änderungen
+
+## Regel
+
+Lass den Speichern-Button immer klickbar und warne, bevor ungespeicherte Änderungen verloren gehen.
+
+## Warum
+
+Ein grauer Button sagt nicht, was fehlt – der Klick darauf schon (er löst F-04 aus). Und eine verlorene halbe Stunde Erfassung vergisst niemand.
+
+## Details
+
+- Nie wegen fehlender Pflichtfelder deaktivieren; während des Speicherns zeigt der Button „Speichert…“.
+- Doppeltes Absenden wird ignoriert.
+- Beim Verlassen eines geänderten Formulars kommt eine Warnung.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F12Good />}
+  bad={<F12Bad />}
+  goodCaption="Klickbar, sagt was fehlt"
+  badCaption="Grau – aber warum?"
+/>
+
+## Übertragen
+
+- `beforeunload` registrieren, solange das Formular geändert ist; In-App-Navigation zusätzlich im Router abfangen.
+- Button während des Requests sperren gegen Doppelklick, aber nicht wegen Validierung.

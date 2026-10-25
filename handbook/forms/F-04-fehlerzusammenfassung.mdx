@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F04Bad, F04Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-04 Fehlerzusammenfassung beim Speichern" />
+
+# F-04 · Fehlerzusammenfassung beim Speichern
+
+## Regel
+
+Wenn das Speichern scheitert, setze den Fokus auf das erste fehlerhafte Feld und zeige oben eine Zusammenfassung mit Sprunglinks.
+
+## Warum
+
+In langen Formularen liegt der Fehler oft ausserhalb des sichtbaren Bereichs. Ohne Zusammenfassung sucht man, statt zu korrigieren.
+
+## Details
+
+- Zusammenfassung z. B. „2 Positionen unvollständig: #2, #4“, jeder Eintrag ein Link.
+- Eingeklappte Bereiche mit Fehlern klappen automatisch auf.
+- Die Zusammenfassung wird vorgelesen (`role="alert"`), der Fokus geht aber aufs Feld.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F04Good />}
+  bad={<F04Bad />}
+  goodCaption="Was fehlt, und wo"
+  badCaption="Man weiss nur, dass etwas nicht stimmt"
+/>
+
+## Übertragen
+
+- Nach fehlgeschlagener Validierung die Fehlerliste oben rendern und auf das erste Feld scrollen/fokussieren.
+- Positionen nach ihrer stabilen Nummer verlinken (siehe F-06).

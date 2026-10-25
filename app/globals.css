@@ -62,6 +62,10 @@
   padding-inline: var(--control-px);
 }
 
+@utility pl-control {
+  padding-left: var(--control-px);
+}
+
 @utility gap-stack {
   gap: var(--stack-gap);
 }

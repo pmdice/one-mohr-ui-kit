@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F07Bad, PositionsDemo } from './examples'
+
+<Meta title="Handbuch/Formulare/F-07 Unterzeilen gehören sichtbar zu ihrem Block" />
+
+# F-07 · Unterzeilen gehören sichtbar zu ihrem Block
+
+## Regel
+
+Rücke Unterzeilen ein, verbinde sie mit einer Führungslinie mit ihrem Block und setze den „+“-Knopf ans Ende der eigenen Liste.
+
+## Warum
+
+Wenn Zusatzleistungen wie gewöhnliche Zeilen aussehen, ist unklar, zu welcher Position sie gehören – und ein globaler „+“-Knopf hängt sie im Zweifel an die falsche.
+
+## Details
+
+- Unterzeilen können eigene Pflicht- und bedingte Felder haben; es gelten dieselben Regeln.
+- Ihre offenen Pflichtfelder zählen im Kopf des Elternblocks mit.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<PositionsDemo />}
+  bad={<F07Bad />}
+  goodCaption="Eingerückt, mit Linie, eigener „+“-Knopf"
+  badCaption="Zugehörigkeit nur erratbar, „+“ global"
+/>
+
+## Übertragen
+
+- Unterzeilen als verschachteltes Repeater-Feld im Block rendern, nicht als zweite flache Liste.
+- Einrückung und Führungslinie per CSS am Container, nicht pro Zeile.

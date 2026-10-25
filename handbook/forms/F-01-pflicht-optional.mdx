@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F01Bad, F01Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-01 Pflicht vs. optional kennzeichnen" />
+
+# F-01 · Pflicht vs. optional kennzeichnen
+
+## Regel
+
+Kennzeichne pro Abschnitt die Minderheit: Sind die meisten Felder Pflicht, markiere die optionalen mit „(optional)“, sonst die Pflichtfelder mit \*.
+
+## Warum
+
+Ein Sternchen an fast jedem Feld ist Rauschen – man übersieht genau das eine, das fehlt.
+
+## Details
+
+- Die Konvention legt der Entwickler pro Abschnitt fest; sie wird nicht zur Laufzeit berechnet. Sonst würde ein eingeblendetes bedingtes Feld alle Markierungen umschalten.
+- Wiederholbare Blöcke (Positionen) sind ein eigener Abschnitt.
+- Das Pflicht-Merkmal ist nie nur Farbe: Screenreader hören „(Pflicht)“, das Feld hat `aria-required`.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F01Good />}
+  bad={<F01Bad />}
+  goodCaption="Mehrheit Pflicht → nur „(optional)“ markiert"
+  badCaption="Sternchen überall, das optionale Feld fällt nicht auf"
+/>
+
+## Übertragen
+
+- Konvention pro Abschnitt als Konfiguration ablegen (z. B. ein Panel-Attribut), nicht pro Feld entscheiden.
+- Pflicht-Marker immer zusätzlich als Text für Screenreader ausgeben.
