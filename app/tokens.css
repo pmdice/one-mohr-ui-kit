@@ -1,0 +1,83 @@
+/*
+ * Design tokens — the single source of truth for color, radius and density.
+ * Plain CSS variables so the same values can be carried into any stack (Nova, Vue, Inertia).
+ * Components consume them through the Tailwind utilities mapped in globals.css.
+ */
+
+:root {
+  /* Surfaces */
+  --surface: #ffffff;
+  --surface-sunken: #f6f6f7;
+  --surface-raised: #ffffff;
+  --surface-hover: #f0f0f2;
+
+  /* Text */
+  --fg: #1b1b1f;
+  --fg-muted: #5f5f68;
+  --fg-subtle: #8b8b94;
+
+  /* Lines */
+  --line: #e4e4e7;
+  --line-strong: #cfcfd5;
+
+  /* Meaning — color is only ever used to carry meaning */
+  --accent: #3a5ccc;
+  --accent-hover: #314fb3;
+  --accent-fg: #ffffff;
+  --focus: #3a5ccc;
+  --danger: #c4322f;
+  --danger-hover: #a92a27;
+  --danger-subtle: #fdf0ef;
+  --danger-fg: #ffffff;
+  --warning: #b8650f;
+  --warning-subtle: #fdf4e8;
+  --success: #2e7d4f;
+  --success-subtle: #edf7f1;
+
+  /* Radii */
+  --r-control: 6px;
+  --r-panel: 8px;
+}
+
+.dark {
+  --surface: #121214;
+  --surface-sunken: #0c0c0e;
+  --surface-raised: #1a1a1d;
+  --surface-hover: #222226;
+
+  --fg: #ececef;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+
+  --line: #26262b;
+  --line-strong: #3a3a41;
+
+  --accent: #6d8cf0;
+  --accent-hover: #849ff3;
+  --accent-fg: #0c0c0e;
+  --focus: #6d8cf0;
+  --danger: #ef6b67;
+  --danger-hover: #f3837f;
+  --danger-subtle: #2a1513;
+  --danger-fg: #0c0c0e;
+  --warning: #e3a04e;
+  --warning-subtle: #2a1e0f;
+  --success: #5fbf86;
+  --success-subtle: #12261a;
+}
+
+/* Density: compact for desk work (default), comfortable for the shop floor. */
+:root,
+[data-density="compact"] {
+  --control-h: 2rem;
+  --control-px: 0.625rem;
+  --control-text: 0.8125rem;
+  --stack-gap: 0.75rem;
+}
+
+[data-density="comfortable"] {
+  --control-h: 2.75rem;
+  --control-px: 0.875rem;
+  --control-text: 0.9375rem;
+  --stack-gap: 1.25rem;
+}
