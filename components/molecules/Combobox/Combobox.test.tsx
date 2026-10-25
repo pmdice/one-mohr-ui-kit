@@ -84,4 +84,54 @@ describe('Combobox with async options', () => {
         expect(screen.getByText('Suche…')).toBeInTheDocument()
         expect(screen.getByRole('listbox')).toHaveAttribute('aria-busy', 'true')
     })
+
+    it('drops an in-flight response once the user keeps typing', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+        const signals: AbortSignal[] = []
+        const loadOptions = vi.fn((query: string, signal: AbortSignal) => {
+            signals.push(signal)
+            return new Promise<ComboboxOption[]>((resolve) =>
+                setTimeout(() => resolve([{ value: query, label: `Treffer ${query}` }]), 100)
+            )
+        })
+        render(<Combobox aria-label="Artikel" loadOptions={loadOptions} onChange={() => {}} />)
+        const input = screen.getByRole('combobox', { name: 'Artikel' })
+        await user.type(input, 'Al')
+        await act(async () => { vi.advanceTimersByTime(250) })
+        await user.type(input, 'Si')
+        // "Al" resolves while "AlSi" is still debouncing
+        await act(async () => { vi.advanceTimersByTime(120) })
+        expect(screen.queryByText('Treffer Al')).not.toBeInTheDocument()
+        expect(signals[0].aborted).toBe(true)
+    })
+
+    it('Enter does not commit results of an older search', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+        const onChange = vi.fn()
+        const loadOptions = vi.fn((query: string) =>
+            new Promise<ComboboxOption[]>((resolve) => setTimeout(() => resolve([{ value: `${query}-1`, label: `${query}-1` }]), 50))
+        )
+        render(<Combobox aria-label="Artikel" loadOptions={loadOptions} onChange={onChange} />)
+        const input = screen.getByRole('combobox', { name: 'Artikel' })
+        await user.type(input, 'Al')
+        await act(async () => { vi.advanceTimersByTime(400) })
+        expect(screen.getByText('Al-1')).toBeInTheDocument()
+        await user.type(input, 'Si{Enter}')
+        expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('keys do nothing while the list is hidden', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+        const onChange = vi.fn()
+        const loadOptions = vi.fn(() => Promise.resolve([{ value: 'A-1', label: 'A-1' }, { value: 'A-2', label: 'A-2' }]))
+        render(<Combobox aria-label="Artikel" loadOptions={loadOptions} onChange={onChange} />)
+        const input = screen.getByRole('combobox', { name: 'Artikel' })
+        await user.type(input, 'A')
+        await act(async () => { vi.advanceTimersByTime(300) })
+        await user.keyboard('{Enter}')
+        expect(onChange).toHaveBeenCalledTimes(1)
+        await user.click(input)
+        await user.keyboard('{ArrowDown}{Enter}')
+        expect(onChange).toHaveBeenCalledTimes(1)
+    })
 })

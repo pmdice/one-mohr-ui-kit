@@ -58,22 +58,20 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
         if (!editing) setQuery(labelFor(value))
     }, [value, editing, labelFor])
 
-    // Server search: debounce, abort the previous request, ignore anything but the latest
+    // Server search: debounce, and invalidate older results on every keystroke —
+    // results for an earlier term must never be shown or committed.
     React.useEffect(() => {
         if (!loadOptions || !editing) return
+        requestRef.current.controller?.abort()
+        const requestId = requestRef.current.id + 1
+        requestRef.current = { id: requestId, controller: null }
+        setRemote([])
         const term = query.trim()
-        if (!term) {
-            requestRef.current.controller?.abort()
-            setRemote([])
-            setLoading(false)
-            return
-        }
+        setLoading(Boolean(term))
+        if (!term) return
         const timer = setTimeout(() => {
-            requestRef.current.controller?.abort()
             const controller = new AbortController()
-            const requestId = requestRef.current.id + 1
             requestRef.current = { id: requestId, controller }
-            setLoading(true)
             loadOptions(term, controller.signal).then(
                 (result) => {
                     if (requestRef.current.id !== requestId) return
@@ -106,13 +104,17 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
         setEditing(false)
         setOpen(false)
         setQuery(option.label)
+        if (loadOptions) setRemote([])
     }
 
     const cancel = () => {
         setEditing(false)
         setOpen(false)
         setQuery(labelFor(value))
+        if (loadOptions) setRemote([])
     }
+
+    const showList = open && (editing || !loadOptions)
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         onKeyDown?.(e)
@@ -120,7 +122,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
         switch (e.key) {
             case "ArrowDown":
                 e.preventDefault()
-                if (!open) { setOpen(true); setHighlight(0) }
+                if (!showList) { setOpen(true); setHighlight(0) }
                 else setHighlight(h => Math.min(h + 1, visible.length - 1))
                 break
             case "ArrowUp":
@@ -128,9 +130,10 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                 setHighlight(h => Math.max(h - 1, 0))
                 break
             case "Enter":
-                if (open) {
+                if (showList) {
                     e.preventDefault()
-                    commit(visible[highlight])
+                    // Never commit while the shown results may belong to an older term
+                    if (!loading) commit(visible[highlight])
                 }
                 break
             case "Escape":
@@ -144,8 +147,6 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
         cancel()
         onBlur?.(e)
     }
-
-    const showList = open && (editing || !loadOptions)
 
     return (
         <div className={cn("relative w-full", className)}>
