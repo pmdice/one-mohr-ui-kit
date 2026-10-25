@@ -36,7 +36,7 @@ export function FormField({ label, required, error, hint, htmlFor, children, cla
                         animate={{ opacity: 1, y: 0 }}
                         exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
                         transition={shouldReduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
-                        className="text-xs text-red-500"
+                        className="text-xs text-danger"
                     >
                         {error}
                     </motion.p>
@@ -46,7 +46,7 @@ export function FormField({ label, required, error, hint, htmlFor, children, cla
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={shouldReduce ? { duration: 0 } : { duration: 0.15 }}
-                        className="text-xs text-slate-400 dark:text-slate-500"
+                        className="text-xs text-fg-subtle"
                     >
                         {hint}
                     </motion.p>

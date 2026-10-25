@@ -1,14 +1,10 @@
 # One Mohr UI Kit
 
-A rigorous, accessible, and atomic component library built to serve as a **reference architecture for scalable React applications**.
+**Ein Handbuch für Firmensoftware.** Keine Websites und keine Shops, sondern Arbeitssoftware: grosse CRUD-Anwendungen mit vielen Bedingungen, bei denen jedes kleine UI/UX-Detail darüber entscheidet, ob die Software gern benutzt wird.
 
-This repository demonstrates a **“System-First”** approach to frontend development, prioritizing:
+Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind (Pflichtfelder, Fehler, Positionen, bedingte Felder …). Jede Regel hat eine ID wie `F-01`, eine Begründung und ein Gut/Schlecht-Beispiel. Die React-Komponenten zeigen eine **Referenz-Umsetzung** der Regeln. Design-Tokens sind reine CSS-Variablen (`app/tokens.css`), damit man sie in jeden Stack mitnehmen kann.
 
-- strict type safety
-- accessibility (WCAG)
-- component composability
-
-over quick-fix solutions and ad-hoc UI code.
+Richtung und Begründung: [`docs/superpowers/specs/2026-10-25-enterprise-forms-design.md`](docs/superpowers/specs/2026-10-25-enterprise-forms-design.md). Die Regeln stehen in Storybook unter „Handbuch“.
 
 ---
 

@@ -66,20 +66,19 @@ export function Select({
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 className={cn(
-                    "flex h-10 w-full items-center justify-between rounded-full border bg-white px-4 text-sm transition-all",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+                    "flex h-control w-full items-center justify-between rounded-control border bg-surface px-control text-control text-fg transition-colors",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2",
                     "disabled:cursor-not-allowed disabled:opacity-50",
-                    "dark:bg-neutral-900 dark:text-white",
                     open
-                        ? "border-blue-500 ring-2 ring-blue-500 ring-offset-2"
-                        : "border-slate-300 dark:border-slate-700"
+                        ? "border-focus ring-2 ring-focus ring-offset-2"
+                        : "border-border-strong"
                 )}
             >
-                <span className={cn(!selected && "text-slate-400 dark:text-slate-500")}>
+                <span className={cn(!selected && "text-fg-subtle")}>
                     {selected ? selected.label : placeholder}
                 </span>
                 <motion.div animate={{ rotate: open ? 180 : 0 }} transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: "easeInOut" }}>
-                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                    <ChevronDown className="h-4 w-4 text-fg-muted" />
                 </motion.div>
             </button>
 
@@ -91,7 +90,7 @@ export function Select({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
                         transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.2, duration: 0.25 }}
-                        className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-neutral-200 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+                        className="absolute z-50 mt-2 w-full overflow-hidden rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
                     >
                         {options.map((option) => (
                             <li
@@ -102,8 +101,8 @@ export function Select({
                                 className={cn(
                                     "flex cursor-pointer items-center justify-between px-4 py-2 text-sm transition-colors",
                                     value === option.value
-                                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                                        : "text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                                        ? "bg-accent-subtle text-accent"
+                                        : "text-fg hover:bg-surface-sunken"
                                 )}
                             >
                                 {option.label}

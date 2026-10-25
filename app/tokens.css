@@ -24,6 +24,7 @@
   --accent: #3a5ccc;
   --accent-hover: #314fb3;
   --accent-fg: #ffffff;
+  --accent-subtle: #eef2fc;
   --focus: #3a5ccc;
   --danger: #c4322f;
   --danger-hover: #a92a27;
@@ -55,6 +56,7 @@
   --accent: #6d8cf0;
   --accent-hover: #849ff3;
   --accent-fg: #0c0c0e;
+  --accent-subtle: #1a2140;
   --focus: #6d8cf0;
   --danger: #ef6b67;
   --danger-hover: #f3837f;

@@ -18,12 +18,7 @@ function listComponents(dir: string): string[] {
     })
 }
 
-const GUARDED = [
-    'atoms/Input/Input.tsx',
-    'atoms/Textarea/Textarea.tsx',
-    'atoms/Label/Label.tsx',
-    'atoms/Button/Button.tsx',
-].map((p) => path.join(ROOT, p))
+const GUARDED = listComponents(ROOT)
 
 function violations(file: string): string[] {
     return readFileSync(file, 'utf8')
@@ -34,9 +29,8 @@ function violations(file: string): string[] {
 }
 
 describe('token guard', () => {
-    it('finds the guarded files', () => {
-        const all = listComponents(ROOT)
-        for (const file of GUARDED) expect(all).toContain(file)
+    it('finds component files', () => {
+        expect(GUARDED.length).toBeGreaterThan(10)
     })
 
     for (const file of GUARDED) {

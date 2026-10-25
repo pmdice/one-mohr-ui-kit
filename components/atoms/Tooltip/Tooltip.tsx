@@ -49,7 +49,7 @@ export function Tooltip({ content, side = "top", children, className }: TooltipP
                         exit={shouldReduce ? { opacity: 0 } : { opacity: 0, ...SIDE_OFFSET[side] }}
                         transition={shouldReduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
                         className={cn(
-                            "pointer-events-none absolute z-50 whitespace-nowrap rounded-lg bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-md dark:bg-neutral-700",
+                            "pointer-events-none absolute z-50 whitespace-nowrap rounded-lg bg-fg px-2.5 py-1.5 text-xs font-medium text-surface shadow-md",
                             SIDE_CLASS[side],
                             className
                         )}

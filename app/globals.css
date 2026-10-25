@@ -33,6 +33,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-fg: var(--accent-fg);
+  --color-accent-subtle: var(--accent-subtle);
   --color-focus: var(--focus);
   --color-danger: var(--danger);
   --color-danger-hover: var(--danger-hover);

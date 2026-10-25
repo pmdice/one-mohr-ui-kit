@@ -65,25 +65,25 @@ export function Dialog({ open, onClose, title, description, children, className 
                             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 8 }}
                             transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.3 }}
                             className={cn(
-                                "relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5 dark:bg-neutral-900 dark:ring-white/10",
+                                "relative w-full max-w-md rounded-panel bg-surface-raised p-6 shadow-xl ring-1 ring-black/5",
                                 className
                             )}
                         >
                             <button
                                 onClick={onClose}
                                 aria-label="Close dialog"
-                                className="absolute right-4 top-4 rounded-lg p-1 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200"
+                                className="absolute right-4 top-4 rounded-lg p-1 text-fg-subtle transition-colors hover:text-fg-muted"
                             >
                                 <X className="h-4 w-4" />
                             </button>
 
                             {title && (
-                                <h2 id="dialog-title" className="text-lg font-semibold text-neutral-900 dark:text-white pr-6">
+                                <h2 id="dialog-title" className="text-lg font-semibold text-fg pr-6">
                                     {title}
                                 </h2>
                             )}
                             {description && (
-                                <p id="dialog-description" className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                <p id="dialog-description" className="mt-1 text-sm text-fg-muted">
                                     {description}
                                 </p>
                             )}
