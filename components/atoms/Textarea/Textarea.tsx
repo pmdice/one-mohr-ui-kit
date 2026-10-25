@@ -17,7 +17,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 error
                     ? "border-danger focus-visible:ring-danger"
-                    : "border-border-strong focus-visible:ring-focus",
+                    : "border-border-strong focus-visible:ring-focus aria-invalid:border-danger aria-invalid:focus-visible:ring-danger",
                 className
             )}
             aria-invalid={error ? true : undefined}
