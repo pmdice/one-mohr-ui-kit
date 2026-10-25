@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/atoms/Label/Label"
 import { useMarkerConvention } from "./FormSection"
+import { useRegisterRequired } from "./RequiredRegistry"
 
 interface FormFieldProps {
     label: string
@@ -20,7 +21,8 @@ interface FormFieldProps {
     className?: string
 }
 
-export function FormField({ label, required = false, error, hint, children, className }: FormFieldProps) {
+export function FormField({ label, required = false, error, hint, name, children, className }: FormFieldProps) {
+    useRegisterRequired(name, required)
     const shouldReduce = useReducedMotion()
     const convention = useMarkerConvention()
     const generatedId = React.useId()
