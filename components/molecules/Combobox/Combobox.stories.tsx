@@ -18,18 +18,18 @@ const MATERIALS: ComboboxOption[] = [
     { value: 'gjs400', label: 'EN-GJS-400', description: 'Sphäroguss' },
 ]
 
-export const Static: Story = {
-    render: () => {
-        const [value, setValue] = useState<string | null>(null)
-        return (
-            <div className="w-72">
-                <FormField label="Material" required>
-                    <Combobox options={MATERIALS} value={value} onChange={setValue} />
-                </FormField>
-            </div>
-        )
-    },
+function StaticDemo() {
+    const [value, setValue] = useState<string | null>(null)
+    return (
+        <div className="w-72">
+            <FormField label="Material" required>
+                <Combobox options={MATERIALS} value={value} onChange={setValue} />
+            </FormField>
+        </div>
+    )
 }
+
+export const Static: Story = { render: () => <StaticDemo /> }
 
 const ARTICLES: ComboboxOption[] = Array.from({ length: 3000 }, (_, i) => ({
     value: `A-${10000 + i}`,
@@ -48,15 +48,15 @@ function searchArticles(query: string, signal: AbortSignal): Promise<ComboboxOpt
 }
 
 /** Server search with debounce and loading state; 3000 articles, 300–600 ms latency. */
-export const ServerSearch: Story = {
-    render: () => {
-        const [value, setValue] = useState<string | null>(null)
-        return (
-            <div className="w-72">
-                <FormField label="Bestehender Artikel" required hint="Nummer oder Bezeichnung">
-                    <Combobox loadOptions={searchArticles} value={value} onChange={setValue} valueLabel={value ?? undefined} />
-                </FormField>
-            </div>
-        )
-    },
+function ServerSearchDemo() {
+    const [value, setValue] = useState<string | null>(null)
+    return (
+        <div className="w-72">
+            <FormField label="Bestehender Artikel" required hint="Nummer oder Bezeichnung">
+                <Combobox loadOptions={searchArticles} value={value} onChange={setValue} valueLabel={value ?? undefined} />
+            </FormField>
+        </div>
+    )
 }
+
+export const ServerSearch: Story = { render: () => <ServerSearchDemo /> }

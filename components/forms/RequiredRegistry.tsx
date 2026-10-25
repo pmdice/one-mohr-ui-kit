@@ -44,7 +44,8 @@ export function RequiredRegistryProvider({ children }: { children: React.ReactNo
 export function useRegisterRequired(name: string | undefined, required: boolean) {
     const registry = React.useContext(RegistryContext)
     const register = registry?.register
-    React.useEffect(() => {
+    // Layout effect: register before paint so block counters never flash a wrong state
+    React.useLayoutEffect(() => {
         if (!register || !name || !required) return
         return register(name)
     }, [register, name, required])
