@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L01Bad, L01Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-01 Die Kennung ist der Anker der Zeile" />
+
+# L-01 · Die Kennung ist der Anker der Zeile
+
+## Regel
+
+Zeige die Kennung, die auf Papier und Etikett steht, vorn in der Zeile als Link – und lass die ganze Zeile per Klick öffnen.
+
+## Warum
+
+Die Nummer ist das, womit man das Papier in der Hand mit der Zeile auf dem Bildschirm abgleicht.
+
+## Details
+
+- Kennung in Monospace, als echter Link (⌘/Ctrl-Klick öffnet einen neuen Tab).
+- Davor steht höchstens eine schmale Spalte wie die Dringlichkeit (L-03).
+- Ein Klick irgendwo in der Zeile öffnet sie; Links, Knöpfe und Checkboxen in der Zeile behalten ihren eigenen Klick.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L01Good />}
+  bad={<L01Bad />}
+  goodCaption="Nummer vorn und verlinkt"
+  badCaption="Nummer irgendwo, Öffnen über ein Auge-Icon"
+/>
+
+## Übertragen
+
+- In Nova: die Kennung als erstes Feld im Index und als Link ausgeben (`->sortable()->asHtml()` oder ein Link-Feld).
+- Zeilenklick nur zusätzlich – der Link ist das, was Tastatur und ⌘-Klick brauchen.

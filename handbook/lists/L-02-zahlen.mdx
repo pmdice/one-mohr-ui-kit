@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L02Bad, L02Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-02 Zahlen rechts und Einheiten im Kopf" />
+
+# L-02 · Zahlen rechts und Einheiten im Kopf
+
+## Regel
+
+Richte Zahlen rechtsbündig mit gleich breiten Ziffern aus, schreib die Einheit in den Spaltenkopf und zeige leere Werte als „—“.
+
+## Warum
+
+Rechtsbündige Zahlen lassen sich untereinander vergleichen; ein leeres Feld und eine Null bedeuten Verschiedenes.
+
+## Details
+
+- `tabular-nums`, Tausender mit `’` („1’432“), ein Datumsformat für alles (`TT.MM.JJJJ`).
+- „Gewicht (g)“ im Kopf statt „g“ in jeder Zelle.
+- „—“ für nicht erfasst, „0“ nur für wirklich null.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L02Good />}
+  bad={<L02Bad />}
+  goodCaption="Rechts, einheitlich, — für leer"
+  badCaption="Links, gemischt, 0 für leer"
+/>
+
+## Übertragen
+
+- Formatierung zentral in einem Helfer, nicht pro Spalte.
+- In Nova: Number-Felder mit `->textAlign('right')` und `displayUsing` für Tausender und „—“.

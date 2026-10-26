@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L04Bad, L04Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-04 Kopf und Kennung bleiben stehen" />
+
+# L-04 · Kopf und Kennung bleiben stehen
+
+## Regel
+
+Lass den Spaltenkopf beim Scrollen stehen, bei breiten Tabellen auch die Kennung, und richte Zeilenhöhe und Schrift nach der Dichte.
+
+## Warum
+
+In Zeile 40 weiss niemand mehr, welche Spalte das Gewicht war.
+
+## Details
+
+- Zellen einzeilig, lange Texte mit Ellipse und vollem Text im Tooltip.
+- Spalten vor der Kennung (Dringlichkeit) bleiben mit ihr stehen.
+- Kompakt fürs Büro, komfortabel für die Werkstatt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L04Good />}
+  bad={<L04Bad />}
+  goodCaption="Scroll in der Tabelle"
+  badCaption="Kopf scrollt weg"
+/>
+
+## Übertragen
+
+- `position: sticky` auf `th` und auf der Kennungszelle; die Tabelle braucht dafür einen eigenen Scroll-Container.
+- In Nova: Index mit fester Höhe oder eigener Tabellenkomponente.

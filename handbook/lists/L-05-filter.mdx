@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L05Bad, L05Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-05 Aktive Filter sind immer sichtbar" />
+
+# L-05 · Aktive Filter sind immer sichtbar
+
+## Regel
+
+Zeig jeden aktiven Filter als entfernbaren Chip über der Tabelle, ab zwei mit „Alle zurücksetzen“, und halte Filter, Suche, Sortierung und Seite in der URL.
+
+## Warum
+
+Ein versteckter Filter ist der häufigste Grund für „der Zettel ist verschwunden“.
+
+## Details
+
+- „+ Filter“: Feld wählen, Wert wählen.
+- Mehrere Werte im selben Feld = oder, verschiedene Felder = und.
+- Die URL macht den Zustand teilbar und überlebt „Zurück“ (N-03).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L05Good />}
+  bad={<L05Bad />}
+  goodCaption="Chips mit ×"
+  badCaption="Trichter-Symbol ohne Hinweis"
+/>
+
+## Übertragen
+
+- In Nova: aktive Filter zusätzlich als Text über dem Index ausgeben; Filter stehen bereits in der URL.
+- „Zurücksetzen“ nie nur im Filter-Dropdown verstecken.

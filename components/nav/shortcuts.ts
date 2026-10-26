@@ -10,7 +10,7 @@ export function isEditableTarget(target: EventTarget | null): boolean {
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement
 }
 
-const WIDGETS = '[role="dialog"][aria-modal="true"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="grid"], [role="tree"]'
+const WIDGETS = '[role="dialog"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="grid"], [role="tree"]'
 
 /** True when keys belong to an open modal or to a widget that uses letters itself (menus, lists, grids). */
 function insideWidget(target: EventTarget | null): boolean {
@@ -26,9 +26,11 @@ function insideWidget(target: EventTarget | null): boolean {
 export function useShortcut(
     key: string,
     handler: (event: KeyboardEvent) => void,
-    options: { mod?: boolean; enabled?: boolean } = {}
+    options: { mod?: boolean; enabled?: boolean; ignore?: (event: KeyboardEvent) => boolean } = {}
 ) {
     const { mod = false, enabled = true } = options
+    const ignoreRef = React.useRef(options.ignore)
+    React.useEffect(() => { ignoreRef.current = options.ignore })
     const handlerRef = React.useRef(handler)
     React.useEffect(() => { handlerRef.current = handler })
 
@@ -44,6 +46,7 @@ export function useShortcut(
                 if (mod !== (event.metaKey || event.ctrlKey)) return
             }
             if (!mod && (isEditableTarget(event.target) || insideWidget(event.target))) return
+            if (ignoreRef.current?.(event)) return
             event.preventDefault()
             handlerRef.current(event)
         }
