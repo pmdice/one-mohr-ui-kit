@@ -22,6 +22,13 @@ describe('ScanBanner', () => {
         expect(screen.getByRole('alert')).toHaveTextContent('FEHLERCode nicht erkannt.Nummer unten eintippen oder Zettel ins Büro bringen.')
     })
 
+    it('a double read says so without a tone', () => {
+        const play = vi.fn()
+        render(<ScanBanner result={{ id: 1, kind: 'repeat', message: 'Schon erfasst: 26100013 – 1/4' }} play={play} />)
+        expect(screen.getByRole('status')).toHaveTextContent('SCHON ERFASSTSchon erfasst: 26100013 – 1/4')
+        expect(play).not.toHaveBeenCalled()
+    })
+
     it('stays silent when the sound is off', () => {
         const play = vi.fn()
         render(<ScanBanner result={{ id: 1, kind: 'in', message: 'x' }} play={play} sound={false} />)

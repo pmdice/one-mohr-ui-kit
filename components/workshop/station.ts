@@ -20,3 +20,16 @@ export function useStation(storage: Storage | null = typeof localStorage === "un
     }, [storage])
     return [station, setStation]
 }
+
+/** A Storage kept in memory, e.g. for examples that must not touch the real device storage. */
+export function memoryStorage(seed: Record<string, string> = {}): Storage {
+    const m = new Map(Object.entries(seed))
+    return {
+        getItem: (k) => m.get(k) ?? null,
+        setItem: (k, v) => { m.set(k, String(v)) },
+        removeItem: (k) => { m.delete(k) },
+        clear: () => m.clear(),
+        key: (i) => [...m.keys()][i] ?? null,
+        get length() { return m.size },
+    }
+}

@@ -9,16 +9,18 @@ import { playTone, type ToneKind } from "./tones"
 export type BannerResult = {
     /** New id = new scan; the same answer twice still sounds twice. */
     id: number
-    kind: ToneKind
+    /** "repeat": the same code read again within moments; nothing happened, no tone. */
+    kind: ToneKind | "repeat"
     message: string
     /** What to do now (W-06). */
     next?: string
 }
 
-const LOOK: Record<ToneKind, { word: string; icon: typeof ScanLine; className: string }> = {
+const LOOK: Record<BannerResult["kind"], { word: string; icon: typeof ScanLine; className: string }> = {
     in: { word: "EIN", icon: ArrowDownToLine, className: "border-success bg-success-subtle text-success" },
     out: { word: "AUS", icon: ArrowUpFromLine, className: "border-accent bg-accent-subtle text-accent" },
     error: { word: "FEHLER", icon: AlertCircle, className: "border-danger bg-danger-subtle text-danger" },
+    repeat: { word: "SCHON ERFASST", icon: ScanLine, className: "border-border-strong bg-surface-sunken text-fg-muted" },
 }
 
 /** The answer to a scan across the whole width, big word, sentence, next step, tone (W-04, W-06). */
@@ -33,7 +35,7 @@ export function ScanBanner({ result, sound = true, play = playTone, onUndo, clas
     React.useEffect(() => {
         if (!result || played.current === result.id) return
         played.current = result.id
-        if (sound) play(result.kind)
+        if (sound && result.kind !== "repeat") play(result.kind)
     }, [result, sound, play])
 
     if (!result) {
