@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N10Bad, N10Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-10 Das Menü ist nach Häufigkeit gegliedert" />
+
+# N-10 · Das Menü ist nach Häufigkeit gegliedert
+
+## Regel
+
+Ordne oben die tägliche Arbeit, darunter die Stammdaten, unten die eingeklappte Verwaltung – jede Gruppe nach einer Logik.
+
+## Warum
+
+Wer täglich dasselbe öffnet, soll es ohne Lesen finden. Selten Benutztes darf weiter weg sein, aber nicht dazwischen.
+
+## Details
+
+- Höchstens etwa sieben Einträge pro Gruppe.
+- Die Verwaltung ist standardmässig eingeklappt, ausser man befindet sich gerade darin.
+- Was jemand nicht darf, steht nicht im Menü (ausgeblendet, nicht ausgegraut).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N10Good />}
+  bad={<N10Bad />}
+  goodCaption="Arbeit · Stammdaten · Verwaltung"
+  badCaption="Fünf Gruppen, fünf Logiken"
+/>
+
+## Übertragen
+
+- Beispiel Casting Manager: Dashboard · Arbeit (Aufträge, Gusszettel) · Stammdaten (Kunden, Kontakte, Artikel, Legierungen, Materialien, Lieferanten) · Verwaltung (Benutzer, Rollen, Abteilungen, Typen, Extraleistungen, Rabattstaffel, Synchronisation, Verlauf).
+- In Nova: Menü-Sektionen mit `collapsable()` für die Verwaltung, Sichtbarkeit über `canSee`.

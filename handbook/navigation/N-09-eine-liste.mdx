@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N09Bad, N09Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-09 Eine Liste, ein Menüeintrag" />
+
+# N-09 · Eine Liste, ein Menüeintrag
+
+## Regel
+
+Setz jede Liste genau einmal ins Menü; gefilterte Ansichten gehören in die Liste oder eingerückt darunter.
+
+## Warum
+
+Zwei Menüeinträge für dieselben Objekte lassen offen, welche Liste die richtige ist – man weiss nie, ob man alle oder nur einen Teil sieht.
+
+## Details
+
+- „Von mir erstellt“, „Offen“ usw. sind Ansichten derselben Liste (Segment-Schalter, N-11).
+- Ist eine Ansicht so wichtig, dass sie ins Menü gehört, steht sie eingerückt unter ihrer Liste – nie in einer anderen Gruppe.
+- Eine Ansicht ist ein Filter auf dieselbe Abfrage, keine eigene Seite mit eigener Logik.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N09Good />}
+  bad={<N09Bad />}
+  goodCaption="Ansicht unter ihrer Liste"
+  badCaption="Dieselbe Liste zweimal"
+/>
+
+## Übertragen
+
+- Eigene „persönliche“ Seiten durch einen Filter-Parameter auf der einen Liste ersetzen.
+- In Nova: statt einer zweiten Ressource eine Lens oder einen Filter verwenden.

@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N05Bad, N05Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-05 Der Seitenkopf sagt, was das ist" />
+
+# N-05 · Der Seitenkopf sagt, was das ist
+
+## Regel
+
+Gib jeder Objektseite denselben Kopf: Kennung und Name, Status, höchstens eine Hauptaktion, darunter die Seiten-Tabs.
+
+## Warum
+
+Wer zwischen vielen Objekten springt, muss in einer Sekunde erkennen, wo er gelandet ist und was er hier tun kann.
+
+## Details
+
+- Titel = Kennung und Name, gleich wie das letzte Pfad-Glied.
+- Status und wichtige Merkmale als Badges neben dem Titel.
+- Rechts höchstens ein gefüllter Button; weitere Aktionen im Menü „…“.
+- Darunter die Seiten-Tabs (N-11).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N05Good />}
+  bad={<N05Bad />}
+  goodCaption="Ein Kopf, eine Hauptaktion"
+  badCaption="Titel sagt nichts, zwei Hauptaktionen"
+/>
+
+## Übertragen
+
+- Den Kopf als eine gemeinsame Komponente bauen, damit alle Detailseiten gleich aussehen.
+- In Nova: den Ressourcen-Titel mit Kennung und Name belegen, nicht mit dem Tab-Namen.
