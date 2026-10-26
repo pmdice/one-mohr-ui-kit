@@ -30,5 +30,5 @@ Am Tablet gibt es nichts anderes zu tun als zu scannen – und wenn die Kamera s
 
 ## Übertragen
 
-- `getUserMedia` braucht HTTPS. `BarcodeDetector` gibt es nicht überall (z. B. nicht in Safari) – dort eine Bibliothek wie ZXing einsetzen.
+- `getUserMedia` braucht HTTPS. `BarcodeDetector` gibt es in Chrome auf Android, ChromeOS und macOS – nicht in Safari, Firefox, Chrome auf Windows/Linux und auf keinem iPad (alle iPad-Browser nutzen WebKit). Für Werkstatt-Tablets heisst das meist: eine Bibliothek wie ZXing einsetzen oder Android-Tablets wählen.
 - In Nova als eigenes Tool mit eigenem Layout oder als eigene Seite ausserhalb von Nova – nicht als Formular-Feld.

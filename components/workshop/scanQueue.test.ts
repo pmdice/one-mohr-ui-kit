@@ -70,6 +70,48 @@ describe('scan queue', () => {
         expect(fn).toHaveBeenCalledTimes(2)
     })
 
+    it('does not send a scan removed while another is on its way, and refuses to remove the one on its way', async () => {
+        const sent: string[] = []
+        let release!: () => void
+        const q = createScanQueue({ storage: memoryStorage(), send: (s) => new Promise((resolve) => { sent.push(s.code); release = () => resolve({ ok: true }) }) })
+        const a = q.add({ code: 'A', station: 'guss', at: 1 })
+        const b = q.add({ code: 'B', station: 'guss', at: 2 })
+        const run = q.flush()
+        await Promise.resolve()
+        expect(q.remove(a.id)).toBe(false)
+        expect(q.remove(b.id)).toBe(true)
+        release()
+        await run
+        expect(sent).toEqual(['A'])
+        expect(q.items()).toEqual([])
+    })
+
+    it('sends a scan added during a running flush in the same run', async () => {
+        const sent: string[] = []
+        let release!: () => void
+        const q = createScanQueue({ storage: memoryStorage(), send: (s) => new Promise((resolve) => { sent.push(s.code); release = () => resolve({ ok: true }) }) })
+        q.add({ code: 'A', station: 'guss', at: 1 })
+        const run = q.flush()
+        await Promise.resolve()
+        q.add({ code: 'B', station: 'guss', at: 2 })
+        const joined = q.flush()
+        release()
+        await new Promise((r) => setTimeout(r))
+        release()
+        await Promise.all([run, joined])
+        expect(sent).toEqual(['A', 'B'])
+        expect(q.items()).toEqual([])
+    })
+
+    it('keeps the station of waiting scans', async () => {
+        const sent: QueuedScan[] = []
+        const q = createScanQueue({ storage: memoryStorage(), send: async (s) => { sent.push(s); return { ok: true } } })
+        q.add({ code: 'A', station: 'guss', at: 1 })
+        q.add({ code: 'B', station: 'polissage', at: 2 })
+        await q.flush()
+        expect(sent.map((s) => s.station)).toEqual(['guss', 'polissage'])
+    })
+
     it('works without storage when it throws', () => {
         const broken = { getItem: () => { throw new Error('denied') }, setItem: () => { throw new Error('denied') } } as unknown as Storage
         const q = createScanQueue({ storage: broken, send: ok })

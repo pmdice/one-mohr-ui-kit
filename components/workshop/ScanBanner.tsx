@@ -12,6 +12,8 @@ export type BannerResult = {
     /** "repeat": the same code read again within moments; nothing happened, no tone. */
     kind: ToneKind | "repeat"
     message: string
+    /** The code the answer is about, if any. */
+    code?: string
     /** What to do now (W-06). */
     next?: string
 }

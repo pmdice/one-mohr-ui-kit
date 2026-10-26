@@ -31,6 +31,29 @@ describe('CameraScanner', () => {
         expect(onCode).toHaveBeenCalledTimes(2)
     })
 
+    it('a slow detector does not report the same code twice', async () => {
+        vi.useFakeTimers()
+        const stop = vi.fn()
+        const stream = { getTracks: () => [{ stop }] } as unknown as MediaStream
+        const detector = { detect: vi.fn(() => new Promise<{ rawValue: string }[]>((r) => setTimeout(() => r([{ rawValue: 'A' }]), 600))) }
+        const onCode = vi.fn()
+        render(<CameraScanner onCode={onCode} getStream={async () => stream} createDetector={() => detector} fallback={fallback} />)
+        await act(async () => { await vi.advanceTimersByTimeAsync(3000) })
+        expect(onCode).toHaveBeenCalledTimes(1)
+    })
+
+    it('reports nothing after it left, even from a detection still running', async () => {
+        vi.useFakeTimers()
+        const stream = { getTracks: () => [{ stop: vi.fn() }] } as unknown as MediaStream
+        const detector = { detect: vi.fn(() => new Promise<{ rawValue: string }[]>((r) => setTimeout(() => r([{ rawValue: 'A' }]), 100))) }
+        const onCode = vi.fn()
+        const { unmount } = render(<CameraScanner onCode={onCode} getStream={async () => stream} createDetector={() => detector} fallback={fallback} />)
+        await act(async () => { await vi.advanceTimersByTimeAsync(260) })
+        unmount()
+        await act(async () => { await vi.advanceTimersByTimeAsync(200) })
+        expect(onCode).not.toHaveBeenCalled()
+    })
+
     it('stops the camera when it leaves', async () => {
         const f = fakes(() => [])
         const { unmount } = render(<CameraScanner onCode={vi.fn()} getStream={f.getStream} createDetector={f.createDetector} fallback={fallback} />)

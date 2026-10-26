@@ -76,6 +76,8 @@ export function CameraScanner({ onCode, getStream = defaultStream, createDetecto
                 if (!videoRef.current) return
                 let codes: string[] = []
                 try { codes = (await detector.detect(videoRef.current)).map((c) => c.rawValue) } catch { return }
+                // Left meanwhile (e.g. the station changed): a late result must not be booked
+                if (cancelled) return
                 const now = Date.now()
                 const seen = current !== null && codes.includes(current)
                 if (seen) { lastSeen = now; return }

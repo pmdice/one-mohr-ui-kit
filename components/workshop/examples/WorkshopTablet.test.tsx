@@ -75,6 +75,23 @@ describe('WorkshopTablet', () => {
         expect(screen.getByRole('heading', { name: 'Jetzt an Guss (1)' })).toBeInTheDocument()
     })
 
+    it('a double read keeps EIN and the way back', async () => {
+        render(<WorkshopTablet now={NOW} sound={false} />)
+        await hold('26100013 – 3/4')
+        await hold('26100013 – 3/4')
+        expect(screen.getByText('EIN')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Scan zurücknehmen' })).toBeInTheDocument()
+    })
+
+    it('taking back a sent scan restores the slip instead of booking a second visit', async () => {
+        setup()
+        await hold('26100013 – 3/4')
+        await new Promise((r) => setTimeout(r))
+        await userEvent.click(screen.getByRole('button', { name: 'Scan zurücknehmen' }))
+        await hold('26100013 – 3/4')
+        expect(screen.getByText('26100013 – 3/4 eingescannt in Guss')).toBeInTheDocument()
+    })
+
     it('changing the station needs a confirmation', async () => {
         setup()
         await userEvent.click(screen.getByRole('button', { name: 'Station wechseln' }))

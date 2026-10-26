@@ -1,4 +1,12 @@
-export type QueuedScan = { id: string; code: string; station: string; at: number; error?: string }
+export type QueuedScan = {
+    id: string
+    code: string
+    station: string
+    at: number
+    /** Id of an earlier, already sent scan this one takes back (W-06). */
+    revokes?: string
+    error?: string
+}
 export type SendResult = { ok: true } | { ok: false; reason: string }
 
 /**
@@ -13,6 +21,7 @@ export function createScanQueue({ storage = globalThis.localStorage ?? null, key
 }) {
     let items: QueuedScan[] = load()
     let running: Promise<void> | null = null
+    let inFlight: string | null = null
     const listeners = new Set<() => void>()
 
     function load(): QueuedScan[] {
@@ -30,14 +39,19 @@ export function createScanQueue({ storage = globalThis.localStorage ?? null, key
         listeners.forEach((fn) => fn())
     }
 
+    // Reads the list afresh for every scan: one added meanwhile is sent in this run, one removed is not
     async function run() {
-        for (const scan of [...items]) {
-            if (scan.error) continue
+        for (;;) {
+            const scan = items.find((s) => !s.error)
+            if (!scan) return
             let result: SendResult
+            inFlight = scan.id
             try {
                 result = await send(scan)
             } catch {
                 return
+            } finally {
+                inFlight = null
             }
             set(result.ok ? items.filter((s) => s.id !== scan.id) : items.map((s) => (s.id === scan.id ? { ...s, error: result.reason } : s)))
         }
@@ -46,12 +60,14 @@ export function createScanQueue({ storage = globalThis.localStorage ?? null, key
     return {
         items: () => items,
         add(scan: Omit<QueuedScan, "id" | "error">): QueuedScan {
+            // Unique per device, so the server can ignore a scan it already has (idempotent)
             const entry = { ...scan, id: `${scan.at}-${Math.random().toString(36).slice(2, 8)}` }
             set([...items, entry])
             return entry
         },
+        /** Takes a waiting scan out; false if it is unknown or already on its way. */
         remove(id: string): boolean {
-            if (!items.some((s) => s.id === id)) return false
+            if (id === inFlight || !items.some((s) => s.id === id)) return false
             set(items.filter((s) => s.id !== id))
             return true
         },

@@ -32,3 +32,5 @@ Ein verlorener Scan ist ein Zettel, der digital an der falschen Station steht �
 
 - Warteschlange in `localStorage` oder IndexedDB; jeder Scan hat eine ID vom Gerät, und das Backend ignoriert bereits gespeicherte IDs – so zählt ein doppelt gesendeter Scan nicht doppelt.
 - Die Zeit des Scans kommt vom Gerät, nicht vom Eingang beim Server.
+- Gesendet wird beim Laden der Seite, wenn der Browser das Netz zurückmeldet, und zusätzlich alle 30 Sekunden – `navigator.onLine` allein ist unzuverlässig.
+- Abgelehnte Scans stehen in einer eigenen Liste mit Grund, getrennt von den wartenden.

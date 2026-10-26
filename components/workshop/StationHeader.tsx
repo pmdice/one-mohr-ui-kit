@@ -24,9 +24,13 @@ export function StationPicker({ stations, onPick }: { stations: { id: string; la
  * The station, big, on every workshop page (W-01), with the scans still waiting for the network (W-07).
  * Changing the station is deliberate: far from the scan and confirmed.
  */
-export function StationHeader({ station, waiting, online, sound, onSoundChange, onChangeStation }: {
+export function StationHeader({ station, waiting, online, sound, onSoundChange, onChangeStation, rejected = [], onDismissRejected }: {
     station: string
+    /** Scans not sent yet (rejected ones are listed apart). */
     waiting: number
+    /** Scans the server refused (W-07): stay visible with their reason until taken out. */
+    rejected?: { id: string; code: string; reason: string }[]
+    onDismissRejected?: (id: string) => void
     online: boolean
     sound: boolean
     onSoundChange: (sound: boolean) => void
@@ -52,6 +56,19 @@ export function StationHeader({ station, waiting, online, sound, onSoundChange, 
                     {!online && <span className="inline-flex items-center gap-2 font-semibold"><CloudOff className="h-5 w-5 text-warning" aria-hidden="true" />Keine Verbindung</span>}
                     {waiting > 0 && <span>{waiting === 1 ? "1 Scan wartet" : `${waiting} Scans warten`} auf Verbindung</span>}
                 </p>
+            )}
+            {rejected.length > 0 && (
+                <section aria-label="Abgelehnte Scans" className="flex flex-col gap-2 rounded-panel border border-danger bg-danger-subtle px-4 py-3">
+                    <h2 className="m-0 text-lg font-semibold text-fg">Abgelehnte Scans ({rejected.length})</h2>
+                    <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                        {rejected.map((r) => (
+                            <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 text-lg text-fg">
+                                <span><span className="font-mono">{r.code}</span>: {r.reason}. Zettel ins Büro bringen.</span>
+                                <Button variant="outline" aria-label={`${r.code} aus der Liste nehmen`} onClick={() => onDismissRejected?.(r.id)} className="min-h-12 text-base">Aus der Liste nehmen</Button>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
             )}
             <ConfirmDialog
                 open={confirm}

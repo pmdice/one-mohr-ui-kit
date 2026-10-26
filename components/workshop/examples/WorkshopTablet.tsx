@@ -6,6 +6,7 @@ import { normalizeIdentifier } from "@/components/nav/identifier"
 import { resolveScan, type ScanTarget } from "@/components/status/scan"
 import { NOW, STATIONS, applyEvent, number, seedWorld, stationLabel, type World } from "@/components/status/examples/slip"
 import { cn } from "@/lib/utils"
+import { useAutoFlush } from "../autoFlush"
 import { CameraScanner } from "../CameraScanner"
 import { HereList } from "../HereList"
 import { ScanBanner, type BannerResult } from "../ScanBanner"
@@ -13,9 +14,10 @@ import { createScanQueue, type QueuedScan } from "../scanQueue"
 import { SlipCard } from "../SlipCard"
 import { StationHeader, StationPicker } from "../StationHeader"
 import { memoryStorage, useStation } from "../station"
+import { unlockOnFirstTouch } from "../tones"
 
 type Variant = "default" | "setup" | "denied" | "offline"
-type Undo = { snapshot: World; queuedId: string; code: string; station: string }
+type Undo = { snapshot: World; slip: string; queuedId: string; code: string; station: string }
 
 const UNDO_MS = 10_000
 const URGENCY: Record<number, string> = { 1: "Dringend", 2: "Normal", 3: "Hoch", 4: "Normal" }
@@ -66,7 +68,11 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
             return { ok: true }
         },
     }))
-    const waiting = React.useSyncExternalStore(queue.subscribe, () => queue.items().length, () => queue.items().length)
+    const items = React.useSyncExternalStore(queue.subscribe, queue.items, queue.items)
+    const waiting = items.filter((s) => !s.error).length
+    const rejected = items.filter((s) => s.error).map((s) => ({ id: s.id, code: s.code, reason: s.error! }))
+    useAutoFlush(queue)
+    React.useEffect(() => unlockOnFirstTouch(), [])
     const [banner, setBanner] = React.useState<BannerResult | null>(null)
     const [undo, setUndo] = React.useState<Undo | null>(null)
     const [selected, setSelected] = React.useState<string | null>(null)
@@ -109,18 +115,22 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
             visits: s.visits,
         }))
         const r = resolveScan({ code, station, stationLabel: label, targets, lastScans, now: Date.now(), dedupeMs })
+        if (r.kind === "duplicate") {
+            // The same slip read again: keep its EIN/AUS and the way back, say it only for another slip
+            if (banner?.code === r.target!.code) return
+            return show({ kind: "repeat", message: r.message, code: r.target!.code })
+        }
         setUndo(null)
         // Errors name the next step (W-06)
         if (r.kind === "unknown") return show({ kind: "error", message: `Code nicht erkannt: ${code.trim()}`, next: "Nummer unten eintippen oder Zettel ins Büro bringen." })
         if (r.kind === "locked") return show({ kind: "error", message: r.message, next: "Zettel ins Büro bringen." })
-        if (r.kind === "duplicate") return show({ kind: "repeat", message: r.message })
         const slip = world.slips.find((s) => number(s) === r.target!.label)!
         lastScans.set(normalizeIdentifier(r.target!.code), Date.now())
-        setWorld(applyEvent(world, { type: "scan", slip: slip.id, station, actor: `Tablet ${label}`, device: `Tablet ${label}`, at }))
+        setWorld((w) => applyEvent(w, { type: "scan", slip: slip.id, station, actor: `Tablet ${label}`, device: `Tablet ${label}`, at }))
         const queued = queue.add({ code: r.target!.code, station, at })
         if (online) void queue.flush()
-        show({ kind: r.kind, message: r.message, next: online ? undefined : "Gespeichert, wird gesendet, sobald die Verbindung zurück ist." })
-        setUndo({ snapshot: world, queuedId: queued.id, code: r.target!.code, station })
+        show({ kind: r.kind, message: r.message, code: r.target!.code, next: online ? undefined : "Gespeichert, wird gesendet, sobald die Verbindung zurück ist." })
+        setUndo({ snapshot: world, slip: slip.id, queuedId: queued.id, code: r.target!.code, station })
         setSelected(slip.id)
     }
 
@@ -131,14 +141,20 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
             // Never sent: as if it had not happened
             setWorld(undo.snapshot)
         } else {
-            // Already sent: a counter-scan, which the history records (S-09)
-            const slip = world.slips.find((s) => codeOf(s) === undo.code)!
+            // Already sent: an explicit revoke of that scan. The slip goes back to where it was, the history
+            // keeps both entries plus the reversal (S-09). A counter-scan would hit the server's double-read guard.
+            const before = undo.snapshot.slips.find((s) => s.id === undo.slip)!
             const at = clock()
-            setWorld(applyEvent(world, { type: "scan", slip: slip.id, station: undo.station, actor: `Tablet ${stationLabel(undo.station)}`, device: `Tablet ${stationLabel(undo.station)}`, at }))
-            queue.add({ code: undo.code, station: undo.station, at })
+            const device = `Tablet ${stationLabel(undo.station)}`
+            setWorld((w) => ({
+                slips: w.slips.map((s) => (s.id === undo.slip ? before : s)),
+                activity: [...w.activity, { id: `e${w.seq + 1}`, at, slip: undo.slip, actor: device, via: "scan", device, kind: "location", text: "hat den Scan zurückgenommen" }],
+                seq: w.seq + 1,
+            }))
+            queue.add({ code: undo.code, station: undo.station, at, revokes: undo.queuedId })
             if (online) void queue.flush()
         }
-        show({ kind: "repeat", message: "Scan zurückgenommen" })
+        show({ kind: "repeat", message: "Scan zurückgenommen", code: undo.code })
     }
 
     const renderNow = now + elapsed
@@ -168,6 +184,8 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
                         <StationHeader
                             station={stationLabel(station)}
                             waiting={waiting}
+                            rejected={rejected}
+                            onDismissRejected={(id) => queue.remove(id)}
                             online={online}
                             sound={sound}
                             onSoundChange={setSound}
