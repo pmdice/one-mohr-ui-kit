@@ -16,7 +16,7 @@ export function Breadcrumb({ trail, className }: { trail: Crumb[]; className?: s
                 {trail.map((crumb, index) => {
                     const last = index === trail.length - 1
                     return (
-                        <li key={crumb.href} className={cn("flex items-center gap-1", last ? "min-w-0 flex-1" : "min-w-0 shrink")}>
+                        <li key={crumb.href} className={cn("flex items-center gap-1", last ? "min-w-0 [flex-shrink:0.1]" : "min-w-[3rem] [flex-shrink:10]")}>
                             {last ? (
                                 <span aria-current="page" title={crumb.label} className="truncate font-medium text-fg">
                                     {crumb.label}
