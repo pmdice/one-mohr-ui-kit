@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S06Bad, S06Good } from './examples'
+
+<Meta title="Handbuch/Status/S-06 Bestätigen nur was sich nicht zurücknehmen lässt" />
+
+# S-06 · Bestätigen nur was sich nicht zurücknehmen lässt
+
+## Regel
+
+Frage nur bei endgültigen oder folgenreichen Schritten nach, mit den Folgen im Text und einem Knopf, der wie die Handlung heisst; alles andere passiert sofort und lässt sich 8 Sekunden lang rückgängig machen.
+
+## Warum
+
+Wer zehnmal am Tag „Sind Sie sicher?“ bestätigt, liest die elfte Frage nicht mehr. Rückgängig schützt, ohne zu bremsen.
+
+## Details
+
+- Die Bestätigung nennt Folgen, nicht nur die Frage; Pflicht-Grund als Feld im Dialog.
+- Der Fokus startet auf „Abbrechen“; Escape bricht ab.
+- Rückgängig ist ein neuer Verlaufseintrag (S-09), kein Löschen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S06Good />}
+  bad={<S06Bad />}
+  goodCaption="Folgen genannt, Knopf mit Verb"
+  badCaption="„Sind Sie sicher?“ – OK / Abbrechen"
+/>
+
+## Übertragen
+
+- In Nova: `->confirmText()` mit den Folgen und `->confirmButtonText('Stornieren')`; Grund als Action-Feld.
+- Rückgängig: Nova-Meldungen (`Action::message`) haben keinen Knopf. Dafür braucht es eine eigene Komponente oder eine Action „Rückgängig“ beim letzten Verlaufseintrag, die nur den Status zurücksetzt.

@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S02Bad, S02Good } from './examples'
+
+<Meta title="Handbuch/Status/S-02 Ort und Stand sind zwei Angaben" />
+
+# S-02 · Ort und Stand sind zwei Angaben
+
+## Regel
+
+Zeige getrennt, wie weit etwas ist (Stand) und wo es gerade ist (Ort) – im Kopf nebeneinander, in Listen als eigene Spalten.
+
+## Warum
+
+„Guss“ als Status sagt nicht, ob der Zettel dort liegt oder schon unterwegs zur Polissage ist – und genau das fragt man in der Produktion.
+
+## Details
+
+- Ort: „An Station Guss“, nach dem Ausscannen „Unterwegs, zuletzt Guss“, vor dem ersten Scan „Noch nicht eingescannt“.
+- Der Stand ändert sich selten, der Ort mit jedem Scan.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S02Good />}
+  bad={<S02Bad />}
+  goodCaption="Stand und Ort getrennt, mit „seit“"
+  badCaption="Ein Feld für beides"
+/>
+
+## Übertragen
+
+- In Nova: zwei Felder (`status`, `current_station`) und im Index zwei Spalten; der Ort wird aus den Scans berechnet, nicht von Hand gepflegt.

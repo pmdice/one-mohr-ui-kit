@@ -1,0 +1,32 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S12Bad, S12Good } from './examples'
+
+<Meta title="Handbuch/Status/S-12 Der Verlauf ist dort wo man ihn braucht" />
+
+# S-12 · Der Verlauf ist dort wo man ihn braucht
+
+## Regel
+
+Zeige auf der Detailseite die letzten 3 Einträge mit „Ganzer Verlauf“ und im Tab „Verlauf“ alle, neueste zuerst, filterbar nach Alle / Status & Ort / Felder – mit dem Filter in der URL.
+
+## Warum
+
+Die letzte Änderung braucht man oft, die ganze Geschichte selten – beides soll einen Klick entfernt sein.
+
+## Details
+
+- Der Filter steht in der URL (N-03), damit ein Link „alle Statuswechsel dieses Zettels“ teilbar ist.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S12Good />}
+  bad={<S12Bad />}
+  goodCaption="Kurzverlauf + Tab mit Filter"
+  badCaption="Verlauf drei Klicks tief, ungefiltert"
+/>
+
+## Übertragen
+
+- In Nova: Kurzverlauf als Panel in der Detail-Ansicht, voller Verlauf als HasMany-Relation des Datensatzes (eigener Bereich bzw. Tab) mit Filtern. Eine Lens passt nicht: sie zeigt die ganze Ressource, nicht einen Datensatz.

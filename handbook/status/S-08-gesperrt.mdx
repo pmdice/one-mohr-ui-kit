@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S08Bad, S08Good } from './examples'
+
+<Meta title="Handbuch/Status/S-08 Abgeschlossen heisst gesperrt mit Grund und Weg zurück" />
+
+# S-08 · Abgeschlossen heisst gesperrt mit Grund und Weg zurück
+
+## Regel
+
+Zeige bei einem erledigten oder abgebrochenen Datensatz oben, wann, von wem und warum er abgeschlossen wurde, sperre die Felder lesbar und biete „Wieder öffnen“ an – oder sage, wer es darf.
+
+## Warum
+
+Gesperrte Felder ohne Erklärung sehen aus wie ein Fehler der Software.
+
+## Details
+
+- Schreibgeschützt heisst lesbar und kopierbar, nicht ausgegraut.
+- „Storniert am 21.10.2026 von P. Mohr: Kunde hat abgesagt. Felder sind gesperrt.“
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S08Good />}
+  bad={<S08Bad />}
+  goodCaption="Hinweis mit Grund und Weg zurück"
+  badCaption="Felder einfach ausgegraut"
+/>
+
+## Übertragen
+
+- In Nova: `->readonly(fn () => $this->isClosed())` und ein Hinweis-Panel oben in der Detail-Ansicht. Nova zeigt schreibgeschützte Felder im Formular grau – gesperrte Datensätze besser gar nicht im Formular öffnen, sondern auf der Detailseite lesen lassen.
+- „Wieder öffnen“ als eigene Action mit Policy; ohne Recht den Hinweis anzeigen, wer es darf.

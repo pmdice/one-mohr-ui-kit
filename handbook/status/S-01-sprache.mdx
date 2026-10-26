@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S01Bad, S01Good } from './examples'
+
+<Meta title="Handbuch/Status/S-01 Ein Status hat ein Wort und eine Form" />
+
+# S-01 · Ein Status hat ein Wort und eine Form
+
+## Regel
+
+Ordne jeden Status einer von fünf Kategorien zu – Geplant, In Arbeit, Wartet, Erledigt, Abgebrochen – und zeige ihn überall mit demselben Wort, derselben Form und derselben Farbe.
+
+## Warum
+
+Wer die Form einmal gelernt hat, liest jeden Status jeder Liste – auch auf einem Schwarz-Weiss-Ausdruck.
+
+## Details
+
+- Formen: leerer Kreis (Geplant), Kreis mit Punkt (In Arbeit), Pause (Wartet), Haken (Erledigt), Kreuz (Abgebrochen).
+- Der Text nennt den konkreten Status („Zurückgestellt“), die Form die Kategorie (Wartet).
+- Dieselbe Darstellung in Liste, Detail, Suche, Verlauf und Druck – siehe auch L-03.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S01Good />}
+  bad={<S01Bad />}
+  goodCaption="Gleiche Form je Kategorie, Text immer dabei"
+  badCaption="Farbige Pillen, Farbe je Seite verschieden"
+/>
+
+## Übertragen
+
+- In Nova: ein gemeinsames Badge-Feld (`Badge::make()->map()->icons()`) für alle Ressourcen statt Farben pro Ressource.
+- Die Kategorie gehört ins Modell (z. B. Enum mit `category()`), nicht in die Ansicht.

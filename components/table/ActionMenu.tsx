@@ -5,17 +5,30 @@ import { createPortal } from "react-dom"
 import { MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export type MenuItem = { id: string; label: string; onSelect: () => void; disabled?: boolean }
+export type MenuItem = { id: string; label: string; onSelect: () => void; disabled?: boolean; /** Second line, e.g. why it is disabled. */ hint?: string }
 
 /** "…" menu for the less frequent actions of a row (L-11). ARIA menu button pattern. */
-export function ActionMenu({ items, label = "Weitere Aktionen", className }: { items: MenuItem[]; label?: string; className?: string }) {
+export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = label, trigger, triggerClassName, buttonRef: outerRef, className }: {
+    items: MenuItem[]
+    /** Accessible name of the button. */
+    label?: string
+    menuLabel?: string
+    /** Button content instead of the "…" icon. */
+    trigger?: React.ReactNode
+    triggerClassName?: string
+    buttonRef?: React.Ref<HTMLButtonElement>
+    className?: string
+}) {
     const [open, setOpen] = React.useState(false)
     const [position, setPosition] = React.useState<React.CSSProperties>({})
     const buttonRef = React.useRef<HTMLButtonElement>(null)
     const menuRef = React.useRef<HTMLDivElement>(null)
     const menuId = React.useId()
 
-    const itemsEls = () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])') ?? [])
+    React.useImperativeHandle(outerRef, () => buttonRef.current!, [])
+
+    // Disabled items stay focusable, so their hint can be read (ARIA menu pattern).
+    const itemsEls = () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
 
     React.useEffect(() => {
         if (!open) return
@@ -32,7 +45,7 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
     const place = () => {
         const rect = buttonRef.current?.getBoundingClientRect()
         if (!rect) return
-        const height = items.length * 32 + 8
+        const height = items.length * 32 + items.filter((i) => i.hint).length * 16 + 8
         const below = window.innerHeight - rect.bottom
         const right = window.innerWidth - rect.right
         setPosition(below < height + 8 && rect.top > height + 8
@@ -80,16 +93,20 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
                 aria-controls={open ? menuId : undefined}
                 onClick={() => toggleOpen(!open)}
                 onKeyDown={(e) => { if (e.key === "ArrowDown" && !open) { e.preventDefault(); toggleOpen(true) } }}
-                className="flex h-7 w-7 items-center justify-center rounded-control text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                className={cn(
+                    "flex items-center justify-center rounded-control text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                    trigger ? "gap-1 px-1 py-0.5" : "h-7 w-7",
+                    triggerClassName
+                )}
             >
-                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+                {trigger ?? <MoreHorizontal className="h-4 w-4" aria-hidden="true" />}
             </button>
             {open && createPortal(
                 <div
                     ref={menuRef}
                     id={menuId}
                     role="menu"
-                    aria-label={label}
+                    aria-label={menuLabel}
                     onKeyDown={onMenuKeyDown}
                     style={position}
                     className="fixed z-50 min-w-44 rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
@@ -100,14 +117,16 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
                             role="menuitem"
                             tabIndex={-1}
                             aria-disabled={item.disabled || undefined}
+                            aria-describedby={item.hint ? `${menuId}-${item.id}-hint` : undefined}
                             onClick={() => select(item)}
                             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(item) } }}
                             className={cn(
                                 "cursor-pointer px-3 py-1.5 text-sm text-fg outline-none hover:bg-surface-hover focus:bg-surface-hover",
-                                item.disabled && "cursor-default opacity-50"
+                                item.disabled && "cursor-default text-fg-muted"
                             )}
                         >
-                            {item.label}
+                            {item.hint ? <span>{item.label}</span> : item.label}
+                            {item.hint && <span id={`${menuId}-${item.id}-hint`} className="block text-xs text-fg-muted">{item.hint}</span>}
                         </div>
                     ))}
                 </div>,

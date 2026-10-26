@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S07Bad, S07Good } from './examples'
+
+<Meta title="Handbuch/Status/S-07 Ein Scan gibt eine eindeutige Rückmeldung" />
+
+# S-07 · Ein Scan gibt eine eindeutige Rückmeldung
+
+## Regel
+
+Behandle einen Scan wie jeden Wechsel – ein, wenn der Zettel nicht hier liegt, aus, wenn er hier liegt – und antworte gross in einem Satz mit Kennung, Richtung und Station.
+
+## Warum
+
+Am Scanner schaut man auf das Werkstück, nicht auf den Bildschirm. Ein doppelt gelesener Code darf den Zettel nicht gleich wieder ausscannen.
+
+## Details
+
+- „26100013 – 1/4 eingescannt in Guss“; ein erneuter Besuch wird gezählt („2. Durchlauf“).
+- Unbekannter Code oder abgeschlossener Zettel: Fehlermeldung mit dem gelesenen Code bzw. dem Grund.
+- Derselbe Code innerhalb von 3 Sekunden: „Schon erfasst“, nichts passiert.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S07Good />}
+  bad={<S07Bad />}
+  goodCaption="Ein Satz, gross, mit Icon"
+  badCaption="Kleiner Haken, kein Text"
+/>
+
+## Übertragen
+
+- Hand-Scanner tippen wie eine Tastatur und senden Enter – ein normales Eingabefeld mit Submit genügt.
+- Die Doppel-Sperre gehört auch ins Backend (gleicher Code innerhalb weniger Sekunden).
