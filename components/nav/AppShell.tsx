@@ -55,14 +55,43 @@ export function AppShell({ logo, groups, activeId, search, headerEnd, children, 
     }
     useShortcut("[", toggle)
 
-    // Navigating closes the drawer
-    React.useEffect(() => { setDrawerOpen(false) }, [activeId])
+    const menuButtonRef = React.useRef<HTMLButtonElement>(null)
+    const asideRef = React.useRef<HTMLElement>(null)
+    const wasOpen = React.useRef(false)
+
+    // Drawer is a modal: focus moves in on open and back to the menu button on close
+    React.useEffect(() => {
+        if (drawerOpen) {
+            const links = asideRef.current?.querySelectorAll<HTMLElement>("a[href], button")
+            const current = asideRef.current?.querySelector<HTMLElement>('[aria-current="page"]')
+            ;(current ?? links?.[0])?.focus()
+        } else if (wasOpen.current) {
+            menuButtonRef.current?.focus()
+        }
+        wasOpen.current = drawerOpen
+    }, [drawerOpen])
+
     React.useEffect(() => {
         if (!drawerOpen) return
         const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setDrawerOpen(false) }
         document.addEventListener("keydown", onKey)
         return () => document.removeEventListener("keydown", onKey)
     }, [drawerOpen])
+
+    const onDrawerKeyDown = (e: React.KeyboardEvent) => {
+        if (!narrow || e.key !== "Tab" || !asideRef.current) return
+        const focusable = Array.from(asideRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"))
+        if (focusable.length === 0) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+
+    // Any navigation from the drawer closes it, also to a page under the same menu entry
+    const onDrawerClick = (e: React.MouseEvent) => {
+        if (narrow && (e.target as Element).closest("a")) setDrawerOpen(false)
+    }
 
     const iconsOnly = !narrow && collapsed
     const toggleLabel = iconsOnly ? "Seitenleiste ausklappen" : "Seitenleiste einklappen"
@@ -72,6 +101,7 @@ export function AppShell({ logo, groups, activeId, search, headerEnd, children, 
             <header className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface px-3">
                 {narrow && (
                     <button
+                        ref={menuButtonRef}
                         type="button"
                         aria-label="Menü öffnen"
                         aria-expanded={drawerOpen}
@@ -90,6 +120,12 @@ export function AppShell({ logo, groups, activeId, search, headerEnd, children, 
                     <div className="fixed inset-0 z-40 bg-black/40" aria-hidden="true" onClick={() => setDrawerOpen(false)} /* token-guard: allow */ />
                 )}
                 <aside
+                    ref={asideRef}
+                    role={narrow ? "dialog" : undefined}
+                    aria-modal={narrow ? true : undefined}
+                    aria-label={narrow ? "Menü" : undefined}
+                    onKeyDown={onDrawerKeyDown}
+                    onClick={onDrawerClick}
                     className={cn(
                         "flex shrink-0 flex-col border-r border-border bg-surface",
                         narrow

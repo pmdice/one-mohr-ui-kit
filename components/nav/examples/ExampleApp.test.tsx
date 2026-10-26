@@ -51,4 +51,14 @@ describe('ExampleApp', () => {
         await userEvent.keyboard('j')
         expect(pathTexts().at(-1)).toBe('Laufzettel 2/4')
     })
+
+    it('back after paging past the list page lands on the page of the current record (N-03)', async () => {
+        render(<ExampleApp initial="/auftraege" />)
+        await userEvent.click(screen.getByRole('link', { name: /^#26100011/ }))
+        await userEvent.keyboard('j')
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('#26100010')
+        await userEvent.click(screen.getByRole('link', { name: /Alle · Aufträge/ }))
+        expect(screen.getByText('Seite 2 von 2')).toBeInTheDocument()
+        expect(screen.getByRole('link', { name: /^#26100010/ }).closest('tr')).toHaveAttribute('data-highlighted', 'true')
+    })
 })

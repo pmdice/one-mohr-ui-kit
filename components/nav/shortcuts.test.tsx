@@ -53,6 +53,46 @@ describe('useShortcut', () => {
         expect(onModK).toHaveBeenCalledTimes(2)
     })
 
+    it('accepts symbol keys typed with AltGr (Swiss and German layouts)', async () => {
+        const onBracket = vi.fn()
+        function Bracket() { useShortcut('[', onBracket); return <button>B</button> }
+        render(<Bracket />)
+        await userEvent.keyboard('{Control>}{Alt>}[[{/Alt}{/Control}')
+        await userEvent.keyboard('{Alt>}[[{/Alt}')
+        expect(onBracket).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not fire inside a modal dialog, menu or listbox', async () => {
+        const onJ = vi.fn()
+        function InDialog() {
+            useShortcut('j', onJ)
+            return (
+                <>
+                    <div role="dialog" aria-modal="true"><button>Im Dialog</button></div>
+                    <div role="menu"><button role="menuitem">Eintrag</button></div>
+                    <div role="listbox" tabIndex={0} aria-label="Liste" />
+                </>
+            )
+        }
+        render(<InDialog />)
+        await userEvent.click(screen.getByRole('button', { name: 'Im Dialog' }))
+        await userEvent.keyboard('j')
+        screen.getByRole('menuitem').focus()
+        await userEvent.keyboard('j')
+        screen.getByRole('listbox').focus()
+        await userEvent.keyboard('j')
+        expect(onJ).not.toHaveBeenCalled()
+    })
+
+    it('does not fire while a modal dialog is open, even with focus elsewhere', async () => {
+        const onJ = vi.fn()
+        function Open() { useShortcut('j', onJ); return <><div role="dialog" aria-modal="true" /><button>Draussen</button></> }
+        render(<Open />)
+        await userEvent.click(screen.getByRole('button', { name: 'Draussen' }))
+        await userEvent.keyboard('j')
+        expect(onJ).not.toHaveBeenCalled()
+    })
+
     it('never fires when disabled', async () => {
         const onJ = vi.fn()
         render(<Fixture onJ={onJ} enabled={false} />)

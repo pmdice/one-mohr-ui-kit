@@ -73,4 +73,14 @@ describe('GlobalSearch', () => {
         await act(async () => { releaseOld() })
         expect(screen.getAllByRole('option')).toHaveLength(1)
     })
+
+    it('Enter right after typing (scanner) opens the exact hit, even before results arrived', async () => {
+        const { onNavigate, input } = setup()
+        await userEvent.type(input, '26100013{Enter}')
+        await waitFor(() => expect(onNavigate).toHaveBeenCalledWith('/auftraege/26100013'))
+        onNavigate.mockClear()
+        await userEvent.type(input, '26100013-2{Enter}')
+        await waitFor(() => expect(onNavigate).toHaveBeenCalledWith('/auftraege/26100013/laufzettel/2'))
+        expect(onNavigate).toHaveBeenCalledTimes(1)
+    })
 })

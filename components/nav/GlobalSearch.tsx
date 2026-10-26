@@ -8,6 +8,17 @@ import { useShortcut } from "./shortcuts"
 
 const DEBOUNCE_MS = 120
 
+/** Results in display order: the group of the exact hit first, the exact hit first within it. */
+function ordered(result: SearchResult): SearchRecord[] {
+    const { exact } = result
+    const groups = result.groups.map((g) => ({
+        ...g,
+        results: exact && g.type === exact.type ? [exact, ...g.results.filter((r) => r.id !== exact.id)] : g.results,
+    }))
+    if (exact) groups.sort((a, b) => Number(b.type === exact.type) - Number(a.type === exact.type))
+    return groups.flatMap((g) => g.results)
+}
+
 interface GlobalSearchProps {
     search: (query: string) => Promise<SearchResult>
     /** Group headings per record type */
@@ -25,10 +36,11 @@ export function GlobalSearch({ search, typeLabels, placeholder = "Nummer, Kunde 
     const inputRef = React.useRef<HTMLInputElement>(null)
     const listId = React.useId()
     const [query, setQuery] = React.useState("")
-    const [result, setResult] = React.useState<SearchResult | null>(null)
+    const [answer, setAnswer] = React.useState<{ query: string; value: SearchResult } | null>(null)
     const [open, setOpen] = React.useState(false)
     const [highlight, setHighlight] = React.useState(0)
     const requestRef = React.useRef(0)
+    const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const focus = () => { inputRef.current?.focus(); inputRef.current?.select() }
     useShortcut("/", focus)
@@ -37,29 +49,18 @@ export function GlobalSearch({ search, typeLabels, placeholder = "Nummer, Kunde 
     // Every keystroke invalidates older answers: a slow response must never replace a newer one
     React.useEffect(() => {
         const requestId = ++requestRef.current
-        if (!query.trim()) { setResult(null); return }
-        const timer = setTimeout(() => {
-            search(query).then((next) => {
+        if (!query.trim()) { setAnswer(null); return }
+        timerRef.current = setTimeout(() => {
+            search(query).then((value) => {
                 if (requestRef.current !== requestId) return
-                setResult(next)
+                setAnswer({ query, value })
                 setHighlight(0)
             }, () => {})
         }, DEBOUNCE_MS)
-        return () => clearTimeout(timer)
+        return () => { if (timerRef.current) clearTimeout(timerRef.current) }
     }, [query, search])
 
-    // The exact hit is listed first within its group; flatten in display order
-    const flat = React.useMemo<SearchRecord[]>(() => {
-        if (!result) return []
-        const groups = result.groups.map((g) => ({
-            ...g,
-            results: result.exact && g.type === result.exact.type
-                ? [result.exact, ...g.results.filter((r) => r.id !== result.exact!.id)]
-                : g.results,
-        }))
-        const exactFirst = result.exact ? [...groups].sort((a, b) => Number(b.type === result.exact!.type) - Number(a.type === result.exact!.type)) : groups
-        return exactFirst.flatMap((g) => g.results)
-    }, [result])
+    const flat = React.useMemo(() => (answer ? ordered(answer.value) : []), [answer])
 
     const groups = React.useMemo(() => {
         const map = new Map<string, SearchRecord[]>()
@@ -67,10 +68,10 @@ export function GlobalSearch({ search, typeLabels, placeholder = "Nummer, Kunde 
         return [...map.entries()]
     }, [flat])
 
-    const showList = open && query.trim() !== "" && result !== null
+    const showList = open && query.trim() !== "" && answer !== null
     const optionId = (record: SearchRecord) => `${listId}-${record.type}-${record.id}`
 
-    const close = () => { setOpen(false); setQuery(""); setResult(null) }
+    const close = () => { setOpen(false); setQuery(""); setAnswer(null) }
     const go = (record: SearchRecord | undefined) => {
         if (!record) return
         close()
@@ -89,9 +90,20 @@ export function GlobalSearch({ search, typeLabels, placeholder = "Nummer, Kunde 
                 e.preventDefault()
                 setHighlight((h) => Math.max(h - 1, 0))
                 break
-            case "Enter":
-                if (showList) { e.preventDefault(); go(flat[highlight]) }
+            case "Enter": {
+                if (!query.trim()) break
+                e.preventDefault()
+                if (answer?.query === query) { go(flat[highlight]); break }
+                // Typed faster than the debounce (or scanned): search now and open the best hit
+                if (timerRef.current) clearTimeout(timerRef.current)
+                const requestId = ++requestRef.current
+                const typed = query
+                search(typed).then((value) => {
+                    if (requestRef.current !== requestId) return
+                    go(value.exact ?? ordered(value)[0])
+                }, () => {})
                 break
+            }
             case "Escape":
                 if (open || query) { e.preventDefault(); close() }
                 break

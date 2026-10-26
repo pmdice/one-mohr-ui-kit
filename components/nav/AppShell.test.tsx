@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, it, expect, vi } from 'vitest'
 import { ClipboardList } from 'lucide-react'
 import { AppShell } from './AppShell'
+import { act } from '@testing-library/react'
 import type { NavGroup } from './Sidebar'
 
 const groups: NavGroup[] = [{ id: 'w', entries: [{ id: 'orders', label: 'Aufträge', href: '/a', icon: ClipboardList }] }]
@@ -43,5 +44,33 @@ describe('AppShell', () => {
         vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked') })
         render(<Shell />)
         expect(screen.getByRole('main')).toBeInTheDocument()
+    })
+
+    describe('narrow screens (drawer)', () => {
+        function narrow() {
+            vi.stubGlobal('matchMedia', (q: string) => ({ matches: true, media: q, addEventListener() {}, removeEventListener() {} }))
+        }
+        afterEach(() => vi.unstubAllGlobals())
+
+        it('moves focus into the drawer, keeps Tab inside, and returns it on Escape', async () => {
+            narrow()
+            render(<Shell />)
+            const menu = await screen.findByRole('button', { name: 'Menü öffnen' })
+            await userEvent.click(menu)
+            const drawer = screen.getByRole('dialog', { name: 'Menü' })
+            expect(drawer.contains(document.activeElement)).toBe(true)
+            await userEvent.tab()
+            expect(drawer.contains(document.activeElement)).toBe(true)
+            await userEvent.keyboard('{Escape}')
+            expect(menu).toHaveFocus()
+        })
+
+        it('closes on every link click, even to a page under the same menu entry', async () => {
+            narrow()
+            render(<Shell />)
+            await userEvent.click(await screen.findByRole('button', { name: 'Menü öffnen' }))
+            await act(async () => { screen.getByRole('link', { name: 'Aufträge' }).click() })
+            expect(screen.queryByRole('dialog', { name: 'Menü' })).toBeNull()
+        })
     })
 })

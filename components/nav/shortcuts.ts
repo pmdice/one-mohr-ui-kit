@@ -10,9 +10,18 @@ export function isEditableTarget(target: EventTarget | null): boolean {
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement
 }
 
+const WIDGETS = '[role="dialog"][aria-modal="true"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="grid"], [role="tree"]'
+
+/** True when keys belong to an open modal or to a widget that uses letters itself (menus, lists, grids). */
+function insideWidget(target: EventTarget | null): boolean {
+    if (document.querySelector('[role="dialog"][aria-modal="true"], [role="alertdialog"][aria-modal="true"]')) return true
+    return target instanceof Element && !!target.closest(WIDGETS)
+}
+
 /**
- * Global keyboard shortcut. `mod` requires ⌘ or Ctrl; without it no modifier may be held.
- * Never fires while typing in an editable element, and never with Alt.
+ * Global keyboard shortcut. `mod` requires ⌘ or Ctrl; without it no modifier may be held, except the
+ * AltGr/Option needed to type a symbol. Plain shortcuts never fire while typing, inside menus, lists
+ * and grids, or while a modal dialog is open.
  */
 export function useShortcut(
     key: string,
@@ -26,11 +35,15 @@ export function useShortcut(
     React.useEffect(() => {
         if (!enabled) return
         const onKeyDown = (event: KeyboardEvent) => {
-            if (event.defaultPrevented || event.isComposing || event.altKey) return
+            if (event.defaultPrevented || event.isComposing) return
             if (event.key.toLowerCase() !== key.toLowerCase()) return
-            const modHeld = event.metaKey || event.ctrlKey
-            if (mod !== modHeld) return
-            if (!mod && isEditableTarget(event.target)) return
+            // Symbols like "[" need AltGr (Ctrl+Alt) or Option on Swiss/German layouts: the produced key counts
+            const symbol = !/^[a-z0-9]$/i.test(key)
+            if (!symbol || mod) {
+                if (event.altKey) return
+                if (mod !== (event.metaKey || event.ctrlKey)) return
+            }
+            if (!mod && (isEditableTarget(event.target) || insideWidget(event.target))) return
             event.preventDefault()
             handlerRef.current(event)
         }

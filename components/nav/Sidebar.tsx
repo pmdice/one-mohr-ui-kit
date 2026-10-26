@@ -70,28 +70,31 @@ function SidebarGroup({ group, activeId, collapsed }: { group: NavGroup; activeI
 
 function SidebarEntry({ entry, activeId, collapsed, nested = false }: { entry: NavEntry; activeId?: string; collapsed: boolean; nested?: boolean }) {
     const active = entry.id === activeId
+    // Collapsed, nested views are hidden: their parent carries the mark (but is not the current page)
+    const marked = active || (collapsed && contains(entry.children ?? [], activeId))
     const Icon = entry.icon
     const link = (
         <NavLink
             href={entry.href}
             aria-current={active ? "page" : undefined}
             aria-label={collapsed ? entry.label : undefined}
+            data-active={marked || undefined}
             className={cn(
                 "flex items-center gap-2 rounded-control text-sm transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
                 collapsed ? "h-8 w-8 justify-center" : "h-7 px-2",
                 nested && !collapsed && "pl-8 text-xs",
-                active ? "bg-surface-hover font-medium text-fg" : "text-fg-muted hover:bg-surface-hover hover:text-fg"
+                marked ? "bg-surface-hover font-medium text-fg" : "text-fg-muted hover:bg-surface-hover hover:text-fg"
             )}
         >
-            {!nested && <Icon className={cn("h-4 w-4 shrink-0", active ? "text-accent" : "text-fg-subtle")} aria-hidden="true" />}
+            {!nested && <Icon className={cn("h-4 w-4 shrink-0", marked ? "text-accent" : "text-fg-subtle")} aria-hidden="true" />}
             {!collapsed && <span className="truncate">{entry.label}</span>}
         </NavLink>
     )
 
     return (
         <li>
-            {collapsed ? <Tooltip content={entry.label} side="right">{link}</Tooltip> : link}
+            {collapsed ? <Tooltip content={entry.label} side="right" portal>{link}</Tooltip> : link}
             {!collapsed && entry.children && (
                 <ul className="m-0 mt-0.5 flex list-none flex-col gap-0.5 p-0">
                     {entry.children.map((child) => (

@@ -54,4 +54,18 @@ describe('Sidebar', () => {
         link.focus()
         expect(await screen.findByRole('tooltip')).toHaveTextContent('Aufträge')
     })
+
+    it('collapsed: the tooltip is rendered outside the scrolling rail so it is not clipped', async () => {
+        render(<Sidebar groups={groups} activeId="orders" collapsed />)
+        screen.getByRole('link', { name: 'Laufzettel' }).focus()
+        const tooltip = await screen.findByRole('tooltip')
+        expect(screen.getByRole('navigation', { name: 'Hauptmenü' }).contains(tooltip)).toBe(false)
+    })
+
+    it('collapsed: the parent of an active nested view stays marked', () => {
+        render(<Sidebar groups={groups} activeId="orders-mine" collapsed />)
+        const parent = screen.getByRole('link', { name: 'Aufträge' })
+        expect(parent).toHaveAttribute('data-active', 'true')
+        expect(parent).not.toHaveAttribute('aria-current')
+    })
 })

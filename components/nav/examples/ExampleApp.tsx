@@ -103,10 +103,15 @@ function originOf(from: string | null) {
     return null
 }
 
-/** Back to the list, with the opened row highlighted (N-03). */
-const backHref = (originHref: string, highlight: string) => {
+/**
+ * Back to the list, with the current row highlighted (N-03). The page is the one the record is on now:
+ * paging with J/K may have moved past the page it was opened from.
+ */
+const backHref = (originHref: string, highlight: string, keys: string[]) => {
     const [path, search = ""] = originHref.split("?")
-    return hrefOf(path, { ...Object.fromEntries(new URLSearchParams(search)), highlight })
+    const index = keys.indexOf(highlight)
+    const page = index >= 0 ? Math.floor(index / PAGE_SIZE) + 1 : undefined
+    return hrefOf(path, { ...Object.fromEntries(new URLSearchParams(search)), page: page && page > 1 ? page : undefined, highlight })
 }
 
 const orderHref = (id: string, from?: string, sub = "") => hrefOf(`/auftraege/${id}${sub}`, { from })
@@ -244,8 +249,10 @@ const td = "border-b border-border px-3 py-2"
 const link = "text-accent underline-offset-2 hover:underline"
 
 function Row({ highlighted, children }: { highlighted: boolean; children: React.ReactNode }) {
+    const ref = React.useRef<HTMLTableRowElement>(null)
+    React.useEffect(() => { if (highlighted) ref.current?.scrollIntoView?.({ block: "nearest" }) }, [highlighted])
     return (
-        <tr data-highlighted={highlighted || undefined} className={cn("transition-colors duration-700", highlighted ? "bg-accent-subtle" : "hover:bg-surface-hover")}>
+        <tr ref={ref} data-highlighted={highlighted || undefined} className={cn("transition-colors duration-700", highlighted ? "bg-accent-subtle" : "hover:bg-surface-hover")}>
             {children}
         </tr>
     )
@@ -365,7 +372,7 @@ function OrderPage({ order, sub, origin }: { order: Order; sub: string; origin: 
         <>
             <PageHeader
                 trail={[{ label: "Aufträge", href: "/auftraege" }, { label: orderLabel(order), href: orderHref(order.id) }]}
-                back={origin ? { label: origin.label, href: backHref(origin.href, order.id) } : undefined}
+                back={origin ? { label: origin.label, href: backHref(origin.href, order.id, origin.kind === "orders" ? pagerIds : []) } : undefined}
                 title={orderLabel(order)}
                 badges={<StatusBadge order={order} />}
                 pager={origin?.kind === "orders" && (
@@ -427,7 +434,7 @@ function SlipPage({ slip, origin }: { slip: Slip; origin: Origin }) {
                     { label: orderLabel(order), href: orderHref(order.id) },
                     { label: slipLabel(slip), href: slipHref(slip) },
                 ]}
-                back={fromList ? { label: fromList.label, href: backHref(fromList.href, slipKey(slip)) } : undefined}
+                back={fromList ? { label: fromList.label, href: backHref(fromList.href, slipKey(slip), filterSlips(fromList.query).map(slipKey)) } : undefined}
                 title={slipLabel(slip)}
                 badges={<Badge variant="secondary">{slip.material}</Badge>}
                 pager={pager}
