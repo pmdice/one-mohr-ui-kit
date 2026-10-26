@@ -94,7 +94,7 @@ const URGENCY_STYLE: Record<Urgency, { variant: "destructive" | "warning" | "sec
     niedrig: { variant: "outline", icon: <ArrowDown className="h-3 w-3" aria-hidden="true" /> },
 }
 
-function UrgencyBadge({ urgency }: { urgency: Urgency }) {
+export function UrgencyBadge({ urgency }: { urgency: Urgency }) {
     const style = URGENCY_STYLE[urgency]
     return <Badge variant={style.variant} className="gap-1 px-1.5">{style.icon}{urgencyOf(urgency).label}</Badge>
 }

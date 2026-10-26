@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L09Bad, L09Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-09 Mit der Tastatur durch die Liste" />
+
+# L-09 · Mit der Tastatur durch die Liste
+
+## Regel
+
+Lass J/K eine sichtbare Zeilenmarkierung bewegen, Enter die markierte Zeile öffnen und X sie auswählen.
+
+## Warum
+
+Wer 40 Zettel durchgeht, greift nicht 40-mal zur Maus.
+
+## Details
+
+- Markierung ist nicht Auswahl: die Markierung zeigt, wo man ist; die Auswahl, womit man etwas tut.
+- Kürzel wirken nicht in Eingabefeldern, Menüs und Dialogen.
+- Die markierte Zeile wird senkrecht ins Bild gescrollt, nie seitlich.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L09Good />}
+  bad={<L09Bad />}
+  goodCaption="J, J, X, Enter ausprobieren"
+  badCaption="Nur Maus"
+/>
+
+## Übertragen
+
+- Kürzel global registrieren, aber Ziel prüfen (Eingabefeld, Dialog).
+- Die Kürzel unter der Tabelle anzeigen, damit man sie entdeckt.

@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L10Bad, L10Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-10 Mehrere auf einmal" />
+
+# L-10 · Mehrere auf einmal
+
+## Regel
+
+Gib jeder Zeile eine Checkbox und dem Kopf eine für die ganze Seite und zeig bei Auswahl eine Leiste mit Anzahl und Sammelaktionen.
+
+## Warum
+
+Drucken oder Weitergeben passiert stapelweise; einzeln klicken ist eine Fehlerquelle.
+
+## Details
+
+- Kopf-Checkbox mit Teilzustand.
+- Die Auswahl überlebt Blättern, nicht aber einen Filterwechsel; die Leiste sagt, wie viele gerade nicht sichtbar sind.
+- „Auswahl aufheben“ immer in der Leiste.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L10Good />}
+  bad={<L10Bad />}
+  goodCaption="3 ausgewählt · Drucken"
+  badCaption="Jeden Zettel einzeln drucken"
+/>
+
+## Übertragen
+
+- In Nova: Actions mit `->showOnIndex()` als Sammelaktionen.
+- Ausgewählte IDs ausserhalb der Seite mitführen, nicht nur die sichtbaren.

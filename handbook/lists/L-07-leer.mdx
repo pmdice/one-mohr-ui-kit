@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L07Bad, L07Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-07 Leer ist nicht gleich leer" />
+
+# L-07 · Leer ist nicht gleich leer
+
+## Regel
+
+Unterscheide „noch nichts da“, „keine Treffer für diese Filter“ und „Fehler beim Laden“ – mit eigenem Text und eigener Aktion.
+
+## Warum
+
+„Keine Einträge“ nach einem Filter lässt glauben, die Daten seien weg.
+
+## Details
+
+- Noch nichts da: Hauptaktion („Auftrag erfassen“), falls erlaubt.
+- Keine Treffer: „Filter zurücksetzen“, die Chips bleiben sichtbar.
+- Fehler: „Erneut versuchen“; beim Nachladen bleiben die alten Zeilen stehen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L07Good />}
+  bad={<L07Bad />}
+  goodCaption="Sagt, warum leer, und was tun"
+  badCaption="„Keine Einträge“"
+/>
+
+## Übertragen
+
+- Der Server muss „gefiltert leer“ von „insgesamt leer“ unterscheidbar machen (Gesamtzahl mitliefern).
+- In Nova: eigene Texte über `emptyStateMessage` je nach Filterzustand.

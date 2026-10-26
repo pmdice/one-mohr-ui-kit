@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { L12Bad, L12Good } from './examples'
+
+<Meta title="Handbuch/Listen/L-12 Die Menge ist immer sichtbar" />
+
+# L-12 · Die Menge ist immer sichtbar
+
+## Regel
+
+Zeig über der Tabelle die Trefferzahl („27 von 312 Laufzettel“) und darunter den Bereich mit Blättern und einer gespeicherten Seitengrösse.
+
+## Warum
+
+Ohne Zahl weiss man nicht, ob man fertig ist oder ob der Filter zu eng ist.
+
+## Details
+
+- „1–25 von 27“, Blättern, Seitengrösse 25 / 50 / 100.
+- Die Seitengrösse bleibt pro Liste auf dem Gerät gespeichert.
+- Die Zahl wird bei Änderungen angesagt (`aria-live`).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<L12Good />}
+  bad={<L12Bad />}
+  goodCaption="27 von 312 · 1–25 von 27"
+  badCaption="Nur „Seite 1“"
+/>
+
+## Übertragen
+
+- Gesamtzahl und gefilterte Zahl vom Server mitliefern.
+- In Nova: `perPageOptions` setzen; die Zahl über dem Index ergänzen.
