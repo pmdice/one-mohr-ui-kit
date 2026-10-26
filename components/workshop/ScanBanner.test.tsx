@@ -44,6 +44,6 @@ describe('ScanBanner', () => {
 
     it('invites the first scan when there is none yet', () => {
         render(<ScanBanner result={null} play={vi.fn()} />)
-        expect(screen.getByText('Zettel vor die Kamera halten')).toBeInTheDocument()
+        expect(screen.getByText('Zettel vor die Kamera halten oder Nummer eintippen')).toBeInTheDocument()
     })
 })

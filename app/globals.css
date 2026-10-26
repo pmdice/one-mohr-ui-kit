@@ -75,3 +75,14 @@ body {
   color: var(--fg);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Workshop: the scan line in the camera finder and the draining undo time (W-02, W-06). */
+@keyframes scan-sweep {
+  0%, 100% { top: 22%; }
+  50% { top: 78%; }
+}
+
+@keyframes undo-drain {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}

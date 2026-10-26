@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { AlertTriangle } from "lucide-react"
 import { Button } from "@/components/atoms/Button/Button"
 import { normalizeIdentifier } from "@/components/nav/identifier"
 import { resolveScan, type ScanTarget } from "@/components/status/scan"
@@ -160,74 +161,96 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
     const renderNow = now + elapsed
     const card = world.slips.find((s) => s.id === selected)
 
+    const tone = banner && banner.kind !== "repeat" ? banner.kind : "idle"
+
     return (
-        <div data-density="comfortable" className="flex min-h-full flex-col gap-4 bg-surface p-4 text-fg">
-            <div className="flex flex-wrap items-center gap-3 rounded-panel border border-dashed border-border-strong px-3 py-2 text-sm text-fg-muted">
-                <span className="font-medium">Simulation</span>
+        <div className="flex min-h-full flex-col gap-4 bg-surface-sunken p-4 text-fg">
+            {/* Outside the device: what the story simulates */}
+            <div className="flex flex-wrap items-center gap-3 text-sm text-fg-muted">
+                <span className="rounded-control border border-dashed border-border-strong px-2 py-0.5 font-medium uppercase tracking-[0.12em]">Simulation</span>
                 <button
                     type="button"
                     role="switch"
                     aria-checked={online}
-                    aria-label="Verbindung"
                     onClick={toggleOnline}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-control border border-border px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                    className="inline-flex min-h-10 items-center gap-2 rounded-control border border-border bg-surface px-3 text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                 >
-                    <span className={cn("h-3 w-6 rounded-control", online ? "bg-success" : "bg-border-strong")} aria-hidden="true" />
-                    Verbindung {online ? "an" : "aus"}
+                    <span className={cn("relative h-4 w-7 rounded-control transition-colors", online ? "bg-success" : "bg-border-strong")} aria-hidden="true">
+                        <span className={cn("absolute top-0.5 h-3 w-3 rounded-[3px] bg-surface transition-[left]", online ? "left-3.5" : "left-0.5")} />
+                    </span>
+                    Verbindung
+                    <span className="text-fg-muted" aria-hidden="true">{online ? "an" : "aus"}</span>
                 </button>
             </div>
 
-            {!station
-                ? <StationPicker stations={STATIONS} onPick={setStation} />
-                : (
-                    <>
-                        <StationHeader
-                            station={stationLabel(station)}
-                            waiting={waiting}
-                            rejected={rejected}
-                            onDismissRejected={(id) => queue.remove(id)}
-                            online={online}
-                            sound={sound}
-                            onSoundChange={setSound}
-                            onChangeStation={() => { setStation(null); setUndo(null); setBanner(null) }}
-                        />
-                        <ScanBanner result={banner} sound={sound} onUndo={undo ? takeBack : undefined} />
-                        <div className="grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-                            <CameraScanner
-                                onCode={handleCode}
-                                simulated={initial === "denied" ? undefined : <SimulatedCamera slips={world.slips} onHold={handleCode} />}
-                                getStream={initial === "denied" ? deniedStream : undefined}
-                                createDetector={initial === "denied" ? () => ({ detect: async () => [] }) : undefined}
-                                fallback={<TypedInput onSubmit={handleCode} />}
+            {/* The tablet */}
+            <div data-density="comfortable" className="flex flex-col gap-5 rounded-[14px] border border-border bg-surface p-5 shadow-sm sm:p-6">
+                {!station
+                    ? <StationPicker stations={STATIONS} onPick={setStation} />
+                    : (
+                        <>
+                            <StationHeader
+                                station={stationLabel(station)}
+                                stations={STATIONS}
+                                waiting={waiting}
+                                rejected={rejected}
+                                onDismissRejected={(id) => queue.remove(id)}
+                                online={online}
+                                sound={sound}
+                                onSoundChange={setSound}
+                                onChangeStation={() => { setStation(null); setUndo(null); setBanner(null) }}
                             />
-                            <div className="flex flex-col gap-5">
-                                {card && (
-                                    <SlipCard
-                                        number={number(card)}
-                                        customer={card.customer}
-                                        material={card.material}
-                                        pieces={card.pieces}
-                                        urgency={URGENCY[card.index]}
-                                        notes={NOTES[card.id]}
-                                    />
-                                )}
-                                <HereList
-                                    station={stationLabel(station)}
-                                    now={renderNow}
-                                    onSelect={setSelected}
-                                    items={world.slips.filter((s) => s.station === station).map((s) => ({
-                                        id: s.id,
-                                        number: number(s),
-                                        since: s.locationSince,
-                                        norm: STATIONS.find((x) => x.id === station)?.norm,
-                                    }))}
+                            <ScanBanner result={banner} sound={sound} onUndo={undo ? takeBack : undefined} undoMs={UNDO_MS} />
+                            <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+                                <CameraScanner
+                                    onCode={handleCode}
+                                    tone={tone}
+                                    simulated={initial === "denied" ? undefined : <SimulatedFeed />}
+                                    getStream={initial === "denied" ? deniedStream : undefined}
+                                    createDetector={initial === "denied" ? () => ({ detect: async () => [] }) : undefined}
+                                    fallback={
+                                        <>
+                                            {initial !== "denied" && <Table slips={world.slips} onHold={handleCode} />}
+                                            <TypedInput onSubmit={handleCode} />
+                                        </>
+                                    }
                                 />
+                                <div className="flex flex-col gap-6">
+                                    {card && (
+                                        <SlipCard
+                                            number={number(card)}
+                                            customer={card.customer}
+                                            material={card.material}
+                                            pieces={card.pieces}
+                                            urgency={<Urgency index={card.index} />}
+                                            notes={NOTES[card.id]}
+                                        />
+                                    )}
+                                    <HereList
+                                        station={stationLabel(station)}
+                                        now={renderNow}
+                                        onSelect={setSelected}
+                                        selected={selected}
+                                        items={world.slips.filter((s) => s.station === station).map((s) => ({
+                                            id: s.id,
+                                            number: number(s),
+                                            since: s.locationSince,
+                                            norm: STATIONS.find((x) => x.id === station)?.norm,
+                                        }))}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </>
-                )}
+                        </>
+                    )}
+            </div>
         </div>
     )
+}
+
+function Urgency({ index }: { index: number }) {
+    const label = URGENCY[index]
+    if (label !== "Dringend") return <>{label}</>
+    return <span className="inline-flex items-center gap-1.5 font-semibold text-danger"><AlertTriangle className="h-5 w-5" aria-hidden="true" />{label}</span>
 }
 
 /** A switchable stand-in for the network of the example. */
@@ -240,32 +263,40 @@ const deniedStream = async (): Promise<MediaStream> => {
     throw Object.assign(new Error("Permission denied"), { name: "NotAllowedError" })
 }
 
-function SimulatedCamera({ slips, onHold }: { slips: World["slips"]; onHold: (code: string) => void }) {
+function SimulatedFeed() {
     return (
-        <div className="flex h-full flex-col gap-3 p-4 text-surface">
-            <p className="m-0 text-base">Simulation: Zettel antippen = vor die Kamera halten</p>
-            <div className="grid flex-1 grid-cols-2 content-center gap-3">
-                {slips.map((s) => (
-                    <button
-                        key={s.id}
-                        type="button"
-                        aria-label={`${number(s)} vor die Kamera halten`}
-                        onClick={() => onHold(codeOf(s))}
-                        className="min-h-14 rounded-panel border-2 border-surface/60 px-3 font-mono text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus active:bg-surface/20"
-                    >
-                        {number(s)}
-                    </button>
-                ))}
-                <button
-                    type="button"
-                    aria-label="Unbekannter Code vor die Kamera halten"
-                    onClick={() => onHold(UNKNOWN)}
-                    className="min-h-14 rounded-panel border-2 border-dashed border-surface/60 px-3 text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus active:bg-surface/20"
-                >
-                    Unbekannter Code
-                </button>
+        <p className="absolute inset-x-0 bottom-4 m-0 text-center text-sm text-white/70">Simulierte Kamera – einen Zettel unten antippen</p>
+    )
+}
+
+/** The slips lying next to the tablet; tapping one holds it in front of the camera (simulation only). */
+function Table({ slips, onHold }: { slips: World["slips"]; onHold: (code: string) => void }) {
+    return (
+        <section aria-label="Simulation: Zettel auf dem Tisch" className="flex flex-col gap-2 rounded-panel border border-dashed border-border-strong bg-surface-sunken p-3">
+            <p className="m-0 text-sm text-fg-muted">Simulation · Zettel auf dem Tisch – antippen hält ihn vor die Kamera</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {slips.map((s) => <PaperSlip key={s.id} label={number(s)} onClick={() => onHold(codeOf(s))} />)}
+                <PaperSlip label="Unbekannter Code" unknown onClick={() => onHold(UNKNOWN)} />
             </div>
-        </div>
+        </section>
+    )
+}
+
+function PaperSlip({ label, unknown, onClick }: { label: string; unknown?: boolean; onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            aria-label={`${label} vor die Kamera halten`}
+            onClick={onClick}
+            className="flex min-h-16 -rotate-1 flex-col items-start gap-1.5 rounded-[3px] bg-white px-2.5 py-2 text-left text-black shadow-md transition-transform even:rotate-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus active:scale-95"
+        >
+            <span
+                className="h-5 w-full opacity-80"
+                aria-hidden="true"
+                style={{ background: unknown ? "repeating-linear-gradient(90deg, #000 0 1px, transparent 1px 7px)" : "repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 3px, #000 3px 4px, transparent 4px 7px, #000 7px 10px, transparent 10px 12px)" }}
+            />
+            <span className={cn("whitespace-nowrap text-sm font-semibold", !unknown && "font-mono")}>{label}</span>
+        </button>
     )
 }
 
