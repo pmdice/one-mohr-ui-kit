@@ -27,17 +27,17 @@ export function useToast() {
 }
 
 const ICONS: Record<ToastVariant, React.ReactNode> = {
-    success: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-    error:   <AlertCircle className="h-5 w-5 text-red-500" />,
-    info:    <Info className="h-5 w-5 text-blue-500" />,
-    warning: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+    success: <CheckCircle2 className="h-5 w-5 text-success" />,
+    error:   <AlertCircle className="h-5 w-5 text-danger" />,
+    info:    <Info className="h-5 w-5 text-accent" />,
+    warning: <AlertTriangle className="h-5 w-5 text-warning" />,
 }
 
 const VARIANT_BORDER: Record<ToastVariant, string> = {
-    success: "border-green-200 dark:border-green-800",
-    error:   "border-red-200 dark:border-red-800",
-    info:    "border-blue-200 dark:border-blue-800",
-    warning: "border-amber-200 dark:border-amber-800",
+    success: "border-success/30",
+    error:   "border-danger/30",
+    info:    "border-accent/30",
+    warning: "border-warning/30",
 }
 
 const AUTO_DISMISS_MS = 4000
@@ -70,21 +70,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: 48, scale: 0.95 }}
                             transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.35 }}
                             className={cn(
-                                "flex w-80 items-start gap-3 rounded-xl border bg-white p-4 shadow-lg dark:bg-neutral-900",
-                                t.variant ? VARIANT_BORDER[t.variant] : "border-neutral-200 dark:border-neutral-800"
+                                "flex w-80 items-start gap-3 rounded-panel border bg-surface-raised p-4 shadow-lg",
+                                t.variant ? VARIANT_BORDER[t.variant] : "border-border"
                             )}
                         >
                             {t.variant && ICONS[t.variant]}
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-neutral-900 dark:text-white">{t.title}</p>
+                                <p className="text-sm font-medium text-fg">{t.title}</p>
                                 {t.description && (
-                                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{t.description}</p>
+                                    <p className="mt-0.5 text-xs text-fg-muted">{t.description}</p>
                                 )}
                             </div>
                             <button
                                 onClick={() => dismiss(t.id)}
                                 aria-label="Dismiss notification"
-                                className="text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200"
+                                className="text-fg-subtle transition-colors hover:text-fg-muted"
                             >
                                 <X className="h-4 w-4" />
                             </button>

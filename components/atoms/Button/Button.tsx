@@ -1,25 +1,26 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-control font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1 focus-visible:ring-offset-surface disabled:pointer-events-none disabled:opacity-50 aria-busy:cursor-progress",
     {
         variants: {
             variant: {
-                default:     "bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg active:scale-[0.97] transition-all duration-150",
-                destructive: "bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-lg active:scale-[0.97] transition-all duration-150",
-                outline:     "border border-neutral-300 bg-transparent text-neutral-900 hover:bg-neutral-100 active:scale-[0.97] transition-all duration-150 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-800",
-                secondary:   "bg-neutral-200 text-neutral-900 hover:bg-neutral-300 active:scale-[0.97] transition-all duration-150 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700",
-                ghost:       "text-neutral-900 hover:bg-neutral-100 hover:text-neutral-900 transition-colors duration-150 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-100",
-                link:        "text-blue-600 underline-offset-4 hover:underline dark:text-blue-400",
+                default:     "bg-accent text-accent-fg hover:bg-accent-hover",
+                destructive: "bg-danger text-danger-fg hover:bg-danger-hover",
+                outline:     "border border-border-strong bg-transparent text-fg hover:bg-surface-hover",
+                secondary:   "bg-surface-sunken text-fg hover:bg-surface-hover",
+                ghost:       "text-fg hover:bg-surface-hover",
+                link:        "text-accent underline-offset-4 hover:underline",
             },
             size: {
-                default: "h-10 px-6 py-2",
-                sm: "h-9 px-4",
-                lg: "h-11 px-8 text-base",
-                icon: "h-10 w-10",
+                default: "h-control px-control text-control",
+                sm: "h-7 px-2.5 text-xs",
+                lg: "h-11 px-5 text-base",
+                icon: "h-control w-[var(--control-h)]",
             },
         },
         defaultVariants: {
@@ -37,21 +38,43 @@ export interface ButtonProps
      * while maintaining button styling. Useful for semantic HTML.
      */
     asChild?: boolean
+    /**
+     * Work in progress: shows a spinner and swallows clicks, but stays enabled
+     * so focus is not lost and the reason stays visible.
+     */
+    busy?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant, size, asChild = false, ...props }, ref) => {
+    ({ className, variant, size, asChild = false, busy = false, onClick, children, ...props }, ref) => {
         // SENIOR PATTERN: Polymorphism
         // If asChild is true, we render a Slot (which merges props onto the child).
         // If false, we render a standard button.
         const Comp = asChild ? Slot : "button"
 
+        const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+            if (busy) {
+                event.preventDefault()
+                return
+            }
+            onClick?.(event)
+        }
+
         return (
             <Comp
                 className={cn(buttonVariants({ variant, size, className }))}
                 ref={ref}
+                aria-busy={busy || undefined}
+                onClick={handleClick}
                 {...props}
-            />
+            >
+                {asChild ? children : (
+                    <>
+                        {busy && <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />}
+                        {children}
+                    </>
+                )}
+            </Comp>
         )
     }
 )

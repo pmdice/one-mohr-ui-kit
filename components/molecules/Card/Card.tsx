@@ -17,7 +17,7 @@ interface CardProps {
 export function Card({ className, interactive = false, children, style, onClick, id }: CardProps) {
     const shouldReduce = useReducedMotion()
     const base = cn(
-        "rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900",
+        "rounded-panel border border-border bg-surface-raised p-6 shadow-sm",
         className
     )
 
@@ -49,11 +49,11 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-    return <h3 className={cn("text-lg font-semibold text-neutral-900 dark:text-white", className)} {...props} />
+    return <h3 className={cn("text-lg font-semibold text-fg", className)} {...props} />
 }
 
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-    return <p className={cn("mt-1 text-sm text-neutral-500 dark:text-neutral-400", className)} {...props} />
+    return <p className={cn("mt-1 text-sm text-fg-muted", className)} {...props} />
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

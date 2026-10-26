@@ -17,6 +17,11 @@ const withTheme: Decorator = (Story, context) => {
     )
 }
 
+const withDensity: Decorator = (Story, context) => {
+    const density = (context.globals.density as string) ?? 'compact'
+    return React.createElement('div', { 'data-density': density }, React.createElement(Story as React.ElementType))
+}
+
 const preview: Preview = {
     globalTypes: {
         theme: {
@@ -32,8 +37,21 @@ const preview: Preview = {
                 dynamicTitle: true,
             },
         },
+        density: {
+            description: 'Density',
+            defaultValue: 'compact',
+            toolbar: {
+                title: 'Density',
+                icon: 'component',
+                items: [
+                    { value: 'compact', title: 'Compact (desk)' },
+                    { value: 'comfortable', title: 'Comfortable (shop floor)' },
+                ],
+                dynamicTitle: true,
+            },
+        },
     },
-    decorators: [withTheme],
+    decorators: [withDensity, withTheme],
     parameters: {
         backgrounds: { disable: true },
         controls: {

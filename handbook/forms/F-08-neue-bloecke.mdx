@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F08Bad, PositionsDemo } from './examples'
+
+<Meta title="Handbuch/Formulare/F-08 Neue Blöcke zeigen sofort, was fehlt" />
+
+# F-08 · Neue Blöcke zeigen sofort, was fehlt
+
+## Regel
+
+Öffne einen neu hinzugefügten Block, setze den Fokus ins erste Feld und zeige im Kopf, wie viele Pflichtfelder offen sind.
+
+## Warum
+
+Wer eine Position hinzufügt, will sie gleich ausfüllen. Der neutrale Zähler sagt, was noch fehlt, ohne schon mit roten Fehlern zu drohen.
+
+## Details
+
+- Fehlermeldungen erscheinen trotzdem erst nach F-02.
+- Die Zähler-Anzeige ist neutral, nicht rot.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<PositionsDemo />}
+  bad={<F08Bad />}
+  goodCaption="„Position hinzufügen“ klicken"
+  badCaption="Leere Zeile ohne Hinweis"
+/>
+
+## Übertragen
+
+- Nach dem Hinzufügen per Script fokussieren und den Block aufgeklappt rendern.
+- Zähler aus „sichtbar + Pflicht + leer“ berechnen, nicht aus der Validierung.

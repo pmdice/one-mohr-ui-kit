@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F05Bad, F05Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-05 Lange Formulare in Abschnitte gliedern" />
+
+# F-05 · Lange Formulare in Abschnitte gliedern
+
+## Regel
+
+Gliedere Formulare ab etwa 7–8 Feldern in Abschnitte mit Überschrift und stelle Zusammengehöriges nebeneinander.
+
+## Warum
+
+Abschnitte geben Orientierung und Pausenpunkte. Die Reihenfolge des Denkflusses (oder der Papiervorlage) macht das Ausfüllen schneller als eine alphabetische oder technische Reihenfolge.
+
+## Details
+
+- Zusammengehöriges in eine Zeile, z. B. Typ / Material / Menge.
+- Reihenfolge = Denkfluss bzw. die gewohnte Papiervorlage.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F05Good />}
+  bad={<F05Bad />}
+  goodCaption="Abschnitte, zusammengehörige Felder nebeneinander"
+  badCaption="Lange Liste in zufälliger Reihenfolge"
+/>
+
+## Übertragen
+
+- Abschnitte als eigene Panels/Fieldsets mit Überschrift anlegen.
+- Feldreihenfolge mit den Anwendern am Papierformular abgleichen.

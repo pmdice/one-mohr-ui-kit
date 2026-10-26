@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F02Bad, F02Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-02 Wann Fehler erscheinen" />
+
+# F-02 · Wann Fehler erscheinen
+
+## Regel
+
+Zeige eine Fehlermeldung erst, wenn das Feld verlassen oder gespeichert wird – und lass sie sofort verschwinden, sobald die Eingabe stimmt.
+
+## Warum
+
+Wer schon beim ersten Tippen angemeckert wird, fühlt sich bestraft. Wer korrigiert, will sofort sehen, dass es jetzt stimmt.
+
+## Details
+
+- Erste Prüfung beim Verlassen (blur) oder beim Speichern.
+- Ist ein Fehler sichtbar, wird live bei jeder Eingabe neu geprüft.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F02Good />}
+  bad={<F02Bad />}
+  goodCaption="Feld anklicken und leer verlassen"
+  badCaption="Fehler steht da, bevor man etwas getan hat"
+/>
+
+## Übertragen
+
+- Validierung „on blur, dann on change“ einstellen – in fast jeder Formular-Bibliothek ein Modus, kein Eigenbau.
+- Serverfehler nach dem Speichern genauso am Feld anzeigen.

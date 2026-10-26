@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F03Bad, F03Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-03 Fehlermeldungen sagen, was zu tun ist" />
+
+# F-03 · Fehlermeldungen sagen, was zu tun ist
+
+## Regel
+
+Formuliere jede Fehlermeldung als Anweisung und zeige sie direkt am Feld.
+
+## Warum
+
+„Ungültige Eingabe“ lässt raten. Eine Meldung am Feld mit klarer Anweisung spart den Weg über Support oder Kollegen.
+
+## Details
+
+- „Menge muss mindestens 1 sein“ statt „Ungültige Eingabe“.
+- Die Meldung steht am Feld, nicht nur oben im Formular.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F03Good />}
+  bad={<F03Bad />}
+  goodCaption="Anweisung, direkt am Feld"
+  badCaption="Vage Meldung, weit weg vom Feld"
+/>
+
+## Übertragen
+
+- Standard-Validierungstexte des Frameworks pro Feld überschreiben.
+- Fehlertext per `aria-describedby` mit dem Feld verknüpfen.

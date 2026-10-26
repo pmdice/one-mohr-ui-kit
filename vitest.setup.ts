@@ -7,3 +7,6 @@ expect.extend(matchers)
 afterEach(() => {
     cleanup()
 })
+// Animations are not under test; finish them instantly so exits unmount synchronously.
+import { MotionGlobalConfig } from 'framer-motion'
+MotionGlobalConfig.skipAnimations = true

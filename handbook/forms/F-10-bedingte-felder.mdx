@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F10Bad, F10Good } from './examples'
+
+<Meta title="Handbuch/Formulare/F-10 Bedingte Felder" />
+
+# F-10 · Bedingte Felder
+
+## Regel
+
+Zeige ein Feld, das von einer Auswahl abhängt, direkt beim auslösenden Feld – und blende es aus, wenn es nicht gilt.
+
+## Warum
+
+Ausgegraute Felder lassen rätseln, ob man etwas tun muss. Ein Feld, das weit weg erscheint, wird übersehen.
+
+## Details
+
+- Einblenden mit dezenter Animation (respektiert reduzierte Bewegung).
+- Ein bedingtes Pflichtfeld sieht aus wie jedes Pflichtfeld und zählt im Blockzähler, solange es sichtbar ist.
+- Beim Umschalten bleibt ein eingegebener Wert im Hintergrund erhalten, gespeichert und validiert wird er aber nur, wenn das Feld gilt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<F10Good />}
+  bad={<F10Bad />}
+  goodCaption="Typ auf „Bestehende Vorlage“ stellen"
+  badCaption="Ausgegraut und weit weg"
+/>
+
+## Übertragen
+
+- Sichtbarkeit und Pflicht aus derselben Bedingung ableiten (z. B. `required_if` + Feld-Abhängigkeit).
+- Beim Speichern Werte inaktiver Felder verwerfen, statt sie mitzuschreiben.

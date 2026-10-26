@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { F06Bad, PositionsDemo } from './examples'
+
+<Meta title="Handbuch/Formulare/F-06 Positionen sind Blöcke mit stabiler Nummer" />
+
+# F-06 · Positionen sind Blöcke mit stabiler Nummer
+
+## Regel
+
+Stelle jede wiederholbare Gruppe als abgegrenzten Block dar – mit stabiler Nummer, Zusammenfassung und Zustand im Kopf.
+
+## Warum
+
+Bei vielen Positionen mit vielen Unterzeilen verliert man sonst, wo eine Position anfängt und was in ihr fehlt. Nummern wandern auf Papier, in die Werkstatt und auf Rechnungen („schau bei Position 3“) – ändern sie sich nachträglich, zeigt jeder Verweis auf die falsche Position.
+
+## Details
+
+- Kopf: Nummer, Zusammenfassung aus den Werten („#2 · Neue Form · AlSi10Mg · 40 Stk“), Zustand („3 Pflichtfelder offen“, „Fehler“ oder „vollständig“).
+- Gezählt werden leere, sichtbare Pflichtfelder inklusive der eigenen Unterzeilen.
+- Aktionen im Kopf: ein-/ausklappen, duplizieren, entfernen – mit „Rückgängig“ statt Bestätigungsdialog.
+- **Nummern sind stabil:** Löschen hinterlässt eine Lücke (#1, #3, #4). Neue Position = höchste je vergebene Nummer + 1. Gelöschte Nummern werden nicht wiederverwendet, ausser „Rückgängig“ stellt genau diese Position wieder her. Ein Duplikat bekommt eine neue Nummer.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<PositionsDemo />}
+  bad={<F06Bad />}
+  goodCaption="Blöcke mit Nummer, Zusammenfassung und Zustand"
+  badCaption="Lose Zeilen, Nummern rutschen nach"
+/>
+
+## Übertragen
+
+- Die Positionsnummer als eigenes Datenbankfeld speichern – nie aus der Sortierung oder dem Index ableiten.
+- Nächste Nummer = max(je vergeben) + 1; den Höchstwert am Auftrag mitführen, damit gelöschte Nummern nicht zurückkommen.
+- Entfernen mit Undo-Hinweis statt Bestätigungsdialog.
