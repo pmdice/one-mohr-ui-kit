@@ -16,6 +16,8 @@ export type ActivityEntry = {
     to?: React.ReactNode
     /** Predicate for location entries: "hat eingescannt in Guss". */
     text?: string
+    /** Reason given with the change. */
+    note?: string
 }
 
 export type ActivityGroup = { id: string; entries: ActivityEntry[] }

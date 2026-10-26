@@ -25,11 +25,7 @@ export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = labe
     const menuRef = React.useRef<HTMLDivElement>(null)
     const menuId = React.useId()
 
-    const setButton = (el: HTMLButtonElement | null) => {
-        buttonRef.current = el
-        if (typeof outerRef === "function") outerRef(el)
-        else if (outerRef) outerRef.current = el
-    }
+    React.useImperativeHandle(outerRef, () => buttonRef.current!, [])
 
     // Disabled items stay focusable, so their hint can be read (ARIA menu pattern).
     const itemsEls = () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
@@ -89,7 +85,7 @@ export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = labe
     return (
         <div className={cn("relative inline-flex", className)}>
             <button
-                ref={setButton}
+                ref={buttonRef}
                 type="button"
                 aria-label={label}
                 aria-haspopup="menu"

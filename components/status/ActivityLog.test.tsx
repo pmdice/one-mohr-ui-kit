@@ -51,6 +51,11 @@ describe('ActivityLog', () => {
         expect(screen.getByRole('link', { name: 'Ganzer Verlauf' })).toHaveAttribute('href', '?tab=verlauf')
     })
 
+    it('adds the reason of a change', () => {
+        render(<ActivityLog entries={[{ ...ENTRIES[1], note: 'Kunde hat abgesagt' }]} now={now} />)
+        expect(items()[0]).toHaveTextContent('P. Mohr hat Status von Offen auf In Arbeit gesetzt – Kunde hat abgesagt')
+    })
+
     it('says when there is nothing yet', () => {
         render(<ActivityLog entries={[]} now={now} />)
         expect(screen.getByText('Noch keine Einträge')).toBeInTheDocument()

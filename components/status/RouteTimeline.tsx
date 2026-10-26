@@ -2,6 +2,7 @@ import * as React from "react"
 import { AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatDateTime, formatDuration, overdueHint } from "./time"
+import { useNow } from "./useNow"
 
 export type Visit = {
     station: string
@@ -18,7 +19,8 @@ export type Visit = {
 const DOT = "mt-1.5 h-[11px] w-[11px] shrink-0 rounded-full border-2" // token-guard: allow
 
 /** The way of a slip through the stations, first visit first, repeated visits counted (S-10). */
-export function RouteTimeline({ visits, now = Date.now(), className }: { visits: Visit[]; now?: number; className?: string }) {
+export function RouteTimeline({ visits, now: givenNow, className }: { visits: Visit[]; now?: number; className?: string }) {
+    const now = useNow(givenNow)
     if (visits.length === 0) return <p className={cn("m-0 text-sm text-fg-muted", className)}>Noch nicht eingescannt</p>
     const seen = new Map<string, number>()
     return (

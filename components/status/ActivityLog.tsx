@@ -7,6 +7,7 @@ import { ViewFilter } from "@/components/nav/ViewFilter"
 import { cn } from "@/lib/utils"
 import { groupActivity, type ActivityEntry } from "./activity"
 import { formatDateTime, formatRelative } from "./time"
+import { useNow } from "./useNow"
 
 export type ActivityFilter = "all" | "status" | "fields"
 
@@ -27,6 +28,7 @@ function Sentence({ entry }: { entry: ActivityEntry }) {
             {entry.kind === "field" && <>hat {entry.field} von <Value>{entry.from}</Value> auf <Value>{entry.to}</Value> geändert</>}
             {entry.kind === "status" && <>hat Status von {entry.from} auf {entry.to} gesetzt</>}
             {entry.kind === "location" && entry.text}
+            {entry.note && <> – {entry.note}</>}
             {entry.via === "scan" && <span className="text-fg-muted"> · per Scan{entry.device ? ` (${entry.device})` : ""}</span>}
             {entry.via === "system" && <span className="text-fg-muted"> · automatisch</span>}
         </>
@@ -42,7 +44,7 @@ const Time = ({ at, now }: { at: number; now: number }) => (
 )
 
 /** History as sentences, newest first, series folded, filterable; `limit` gives the short form (S-11, S-12). */
-export function ActivityLog({ entries, now = Date.now(), filter = "all", filterHref, limit, moreHref, className }: {
+export function ActivityLog({ entries, now: givenNow, filter = "all", filterHref, limit, moreHref, className }: {
     entries: ActivityEntry[]
     now?: number
     filter?: ActivityFilter
@@ -53,6 +55,7 @@ export function ActivityLog({ entries, now = Date.now(), filter = "all", filterH
     moreHref?: string
     className?: string
 }) {
+    const now = useNow(givenNow)
     const [open, setOpen] = React.useState<Set<string>>(new Set())
     const all = groupActivity(entries.filter(matches(filter)))
     const groups = limit ? all.slice(0, limit) : all

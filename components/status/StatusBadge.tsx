@@ -2,6 +2,7 @@ import * as React from "react"
 import { AlertTriangle, Circle, CircleCheck, CircleDot, CirclePause, CircleX } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatDateTime, formatDuration } from "./time"
+import { useNow } from "./useNow"
 import type { StatusCategory, StatusDef } from "./workflow"
 
 /** One shape per category, so the status reads on a black-and-white print too (S-01). */
@@ -13,7 +14,7 @@ const LOOK: Record<StatusCategory, { icon: typeof Circle; className: string }> =
     canceled: { icon: CircleX, className: "bg-surface-sunken text-fg-muted" },
 }
 
-export function StatusBadge({ status, since, now = Date.now(), overdue, className }: {
+export function StatusBadge({ status, since, now: givenNow, overdue, className }: {
     status: StatusDef
     /** Since when this status holds (ms) (S-03). */
     since?: number
@@ -22,6 +23,7 @@ export function StatusBadge({ status, since, now = Date.now(), overdue, classNam
     overdue?: string
     className?: string
 }) {
+    const now = useNow(givenNow)
     const { icon: Icon, className: look } = LOOK[status.category]
     return (
         <span className={cn("inline-flex flex-wrap items-center gap-x-2 gap-y-1", className)}>
