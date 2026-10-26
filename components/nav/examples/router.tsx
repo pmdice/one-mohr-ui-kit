@@ -36,10 +36,11 @@ export const useReplace = () => useRouter().replace
 export const useBack = () => useRouter().back
 
 /** Link for LinkProvider: plain clicks navigate in memory, ⌘/Ctrl/Shift-clicks keep browser behaviour. */
-export function RouterLink({ href, onClick, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) {
+export function RouterLink({ href, onClick, ref, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: React.Ref<HTMLAnchorElement> }) {
     const navigate = useNavigate()
     return (
         <a
+            ref={ref}
             href={href}
             onClick={(event) => {
                 onClick?.(event)

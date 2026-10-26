@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
@@ -70,5 +71,12 @@ describe('NavLink', () => {
         const Custom = ({ href, children }: { href: string; children?: React.ReactNode }) => <a data-testid="custom" href={href}>{children}</a>
         render(<LinkProvider component={Custom}><NavLink href="/b">B</NavLink></LinkProvider>)
         expect(screen.getByTestId('custom')).toHaveAttribute('href', '/b')
+    })
+
+    it('hands the ref to the provider component', () => {
+        const Custom = ({ ref, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; ref?: React.Ref<HTMLAnchorElement> }) => <a ref={ref} {...props} />
+        const ref = React.createRef<HTMLAnchorElement>()
+        render(<LinkProvider component={Custom}><NavLink ref={ref} href="/c">C</NavLink></LinkProvider>)
+        expect(ref.current).toBe(screen.getByRole('link', { name: 'C' }))
     })
 })
