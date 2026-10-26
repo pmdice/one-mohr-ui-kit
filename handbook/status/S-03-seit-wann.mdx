@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S03Bad, S03Good } from './examples'
+
+<Meta title="Handbuch/Status/S-03 Seit wann und ob es zu lange ist" />
+
+# S-03 · Seit wann und ob es zu lange ist
+
+## Regel
+
+Zeige neben Stand und Ort, seit wann sie gelten, und weise in Worten darauf hin, wenn eine Richtzeit überschritten ist.
+
+## Warum
+
+Ein hängender Zettel fällt sonst erst auf, wenn der Kunde anruft.
+
+## Details
+
+- „seit 2 h 10 min“; das genaue Datum mit Uhrzeit (TT.MM.JJJJ HH:MM) steht im Tooltip.
+- Richtzeit je Station; überschritten → „Länger als üblich (Richtzeit 4 h)“ mit Warn-Icon und -Farbe.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S03Good />}
+  bad={<S03Bad />}
+  goodCaption="Dauer und Warnung in Worten"
+  badCaption="Nur ein Zeitstempel"
+/>
+
+## Übertragen
+
+- In Nova: berechnetes Feld aus `entered_at`; Richtzeit als Station-Eigenschaft, Warnung als Text im Badge, nicht nur als rote Zeile.
+- Dieselbe Warnung als Filter „Länger als üblich“ in der Liste anbieten.

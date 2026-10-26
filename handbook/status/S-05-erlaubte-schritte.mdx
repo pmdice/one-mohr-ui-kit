@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S05Bad, S05Good } from './examples'
+
+<Meta title="Handbuch/Status/S-05 Nur erlaubte Schritte und der nächste vorne" />
+
+# S-05 · Nur erlaubte Schritte und der nächste vorne
+
+## Regel
+
+Biete nur die Schritte an, die der Ablauf von hier aus erlaubt – den üblichen als Knopf mit Verb, den Rest im Status-Menü (Kürzel S) – und nenne den Grund, wenn der übliche gerade nicht geht.
+
+## Warum
+
+Ein Menü mit allen Werten lädt zu Fehlern ein, und ein grauer Knopf ohne Grund ist ein Rätsel.
+
+## Details
+
+- Unmögliche Schritte erscheinen nicht; möglich, aber gerade blockiert: sichtbar mit Grund („Fertig melden geht erst nach dem Ausscannen“).
+- Knöpfe heissen wie die Handlung: „Fertig melden“, „Zurückstellen …“, „Wieder öffnen“.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S05Good />}
+  bad={<S05Bad />}
+  goodCaption="Erlaubte Schritte, Grund bei blockiert"
+  badCaption="Auswahlfeld mit allen Werten"
+/>
+
+## Übertragen
+
+- In Nova: Actions je Übergang statt Select-Feld; `canRun` prüft den Ablauf, `->help()` oder eine Meldung nennt den Grund.
+- Den Ablauf an einer Stelle definieren (State-Machine im Modell) und dieselbe Definition im UI und im Backend nutzen.

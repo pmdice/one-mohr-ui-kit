@@ -198,11 +198,13 @@ function SlipPage({ slip }: { slip: SlipState }) {
                 title={number(slip)}
                 badges={
                     <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <StatusBadge status={status} since={slip.statusSince} now={app.now} />
+                        <span className="inline-flex items-center gap-2">
+                            <StatusMenu workflow={SLIP_WORKFLOW} current={slip.status} ctx={ctx} onSelect={choose} />
+                            <span className="whitespace-nowrap text-xs text-fg-muted" title={formatDateTime(slip.statusSince)}>seit {formatDuration(app.now - slip.statusSince)}</span>
+                        </span>
                         <Place slip={slip} now={app.now} />
                     </span>
                 }
-                moreActions={<StatusMenu workflow={SLIP_WORKFLOW} current={slip.status} ctx={ctx} onSelect={choose} />}
                 primaryAction={primary && (
                     <span className="flex items-center gap-2">
                         {primary.blocked && <span id={reasonId} className="text-xs text-fg-muted">{primary.blocked}</span>}

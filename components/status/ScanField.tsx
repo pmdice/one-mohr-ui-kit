@@ -40,7 +40,7 @@ export function ScanField({ stationLabel, resolve, onScan, className }: {
     const look = result ? LOOK[result.kind] : null
     const Icon = look?.icon
     return (
-        <div className={cn("flex flex-col gap-3", className)}>
+        <div className={cn("flex flex-col", className)}>
             <form onSubmit={submit} className="flex flex-col gap-1">
                 <label htmlFor={id} className="text-sm font-medium text-fg">Scannen an {stationLabel}</label>
                 <div className="relative">
@@ -65,7 +65,7 @@ export function ScanField({ stationLabel, resolve, onScan, className }: {
 
 function Message({ result, Icon, className }: { result: ScanResult; Icon: typeof ScanLine; className: string }) {
     return (
-        <p key={result.message} className={cn("m-0 flex items-center gap-3 rounded-panel border px-4 py-3 text-lg font-semibold", className)}>
+        <p key={result.message} className={cn("m-0 mt-3 flex items-center gap-3 rounded-panel border px-4 py-3 text-lg font-semibold", className)}>
             <Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
             {result.message}
         </p>

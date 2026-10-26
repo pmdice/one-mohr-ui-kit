@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { FORM_RULE_GROUPS } from './forms/rules'
 import { NAV_RULE_GROUPS } from './navigation/rules'
 import { LIST_RULE_GROUPS } from './lists/rules'
+import { STATUS_RULE_GROUPS } from './status/rules'
 import type { RuleGroup } from './rules.types'
 
 const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.id))
@@ -21,5 +22,10 @@ describe('rule index', () => {
     it('lists L-01 to L-12 once, in order, linking to list pages', () => {
         expect(ids(LIST_RULE_GROUPS)).toEqual(expected('L'))
         for (const rule of LIST_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-listen-l-/)
+    })
+
+    it('lists S-01 to S-12 once, in order, linking to status pages', () => {
+        expect(ids(STATUS_RULE_GROUPS)).toEqual(expected('S'))
+        for (const rule of STATUS_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-status-s-/)
     })
 })

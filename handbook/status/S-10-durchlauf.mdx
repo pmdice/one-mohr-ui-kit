@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S10Bad, S10Good } from './examples'
+
+<Meta title="Handbuch/Status/S-10 Der Durchlauf zeigt den Weg" />
+
+# S-10 · Der Durchlauf zeigt den Weg
+
+## Regel
+
+Zeige den Weg durch die Stationen als geordnete Liste vom ersten zum letzten Besuch, mit Ein, Aus und Dauer, mehrfache Besuche gezählt und den aktuellen als „jetzt hier“.
+
+## Warum
+
+Wie lange ein Zettel wo war, ist die Grundlage jeder Frage nach Verzug – und das Papier kann sie nicht beantworten.
+
+## Details
+
+- Mehrfache Besuche derselben Station stehen mehrfach da („2. Durchlauf“).
+- Überschrittene Richtzeit wie in S-03.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S10Good />}
+  bad={<S10Bad />}
+  goodCaption="Geordnet, mit Dauer und „jetzt hier“"
+  badCaption="Nur die aktuelle Station"
+/>
+
+## Übertragen
+
+- In Nova: HasMany `visits` (station, entered_at, left_at) und ein eigenes Panel bzw. Tab mit Zeitleiste.
+- Die Besuche sind die Quelle; Ort und Dauer werden daraus berechnet.

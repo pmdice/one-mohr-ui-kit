@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S09Bad, S09Good } from './examples'
+
+<Meta title="Handbuch/Status/S-09 Jede Änderung hinterlässt einen Eintrag" />
+
+# S-09 · Jede Änderung hinterlässt einen Eintrag
+
+## Regel
+
+Schreibe für jeden Wechsel von Stand, Ort und Feldern einen Verlaufseintrag – wer, wann, was (alt → neu) und wie (von Hand, per Scan, automatisch) – und ändere oder lösche Einträge nie.
+
+## Warum
+
+Der Verlauf ist die Antwort auf „wer hat das geändert?“ – aber nur, wenn nichts darin fehlt.
+
+## Details
+
+- Auch automatische Wechsel (erster Scan setzt „In Arbeit“) bekommen einen Eintrag – als „System“.
+- Ein Rückgängig ist ein neuer Eintrag („Rückgängig gemacht“).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S09Good />}
+  bad={<S09Bad />}
+  goodCaption="Wer, wann, was, wie – vollständig"
+  badCaption="Nur „zuletzt geändert am“"
+/>
+
+## Übertragen
+
+- In Nova: `spatie/laravel-activitylog` oder eine eigene `activities`-Tabelle per Model-Observer (die Nova-Action-Events allein decken Feldänderungen ausserhalb von Actions nicht ab); Scans schreiben in denselben Log.
+- Einträge append-only; keine Edit-/Delete-Actions dafür.

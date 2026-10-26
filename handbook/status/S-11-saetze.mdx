@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { S11Bad, S11Good } from './examples'
+
+<Meta title="Handbuch/Status/S-11 Der Verlauf liest sich wie Sätze" />
+
+# S-11 · Der Verlauf liest sich wie Sätze
+
+## Regel
+
+Schreibe Verlaufseinträge als Sätze mit Namen und Bezeichnungen statt IDs und Feldnamen, Zeit relativ mit genauer Zeit im Tooltip, und fasse eine Serie von Feldänderungen derselben Person aufklappbar zusammen.
+
+## Warum
+
+Wer den Verlauf liest, sucht eine Geschichte, keine Datenbankzeilen.
+
+## Details
+
+- „P. Mohr hat Gewicht (g) von 412 auf 418 geändert“.
+- Zeit: „vor 5 min“, ab gestern „gestern 14:05“, davor das Datum.
+- Feldänderungen derselben Person innerhalb von 5 Minuten → „P. Mohr hat 3 Felder geändert“; Status- und Ortswechsel stehen immer einzeln.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<S11Good />}
+  bad={<S11Bad />}
+  goodCaption="Sätze, gruppiert, relative Zeit"
+  badCaption="Datenbankzeilen"
+/>
+
+## Übertragen
+
+- In Nova: Feld-Labels statt Spaltennamen aus der Ressource holen (`$field->name`), Fremdschlüssel als Titel auflösen.
+- Gruppierung beim Anzeigen, nicht beim Speichern.
