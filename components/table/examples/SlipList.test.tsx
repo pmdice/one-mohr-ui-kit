@@ -57,4 +57,28 @@ describe('SlipList example', () => {
         await userEvent.click(screen.getByRole('button', { name: 'Filter zurücksetzen' }))
         await waitFor(() => expect(dataRows().length).toBeGreaterThan(0))
     })
+
+    it('jumps back to the last page when the page is past the end', async () => {
+        render(<SlipList loader={instant} initial="/laufzettel?page=99" />)
+        expect(await screen.findByText(/–300 von 300/)).toBeInTheDocument()
+        expect(screen.queryByText('Keine Laufzettel für diese Filter')).toBeNull()
+    })
+
+    it('keeps cursor and selection after opening a row and coming back', async () => {
+        render(<SlipList loader={instant} />)
+        await waitFor(() => expect(dataRows().length).toBeGreaterThan(3))
+        await userEvent.keyboard('jjx')
+        const second = dataRows()[1].textContent
+        await userEvent.keyboard('{Enter}')
+        await userEvent.click((await screen.findAllByRole('link', { name: /Laufzettel$/ }))[0])
+        await waitFor(() => expect(dataRows().length).toBeGreaterThan(3))
+        expect(document.querySelector('[data-cursor="true"]')?.textContent).toBe(second)
+        expect(screen.getByRole('region', { name: 'Auswahl' })).toHaveTextContent('1 ausgewählt')
+    })
+
+    it('counts a search alone as a filter', async () => {
+        render(<SlipList loader={instant} initial="/laufzettel?q=DÖPPER" />)
+        const hits = SLIPS.filter((s) => s.customer.includes('DÖPPER')).length
+        expect(await screen.findByText(`${hits} von ${SLIPS.length} Laufzettel`)).toBeInTheDocument()
+    })
 })

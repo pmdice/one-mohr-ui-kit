@@ -42,4 +42,9 @@ describe('FilterBar', () => {
         await userEvent.click(within(dialog).getByRole('button', { name: 'Hinzufügen' }))
         expect(onChange).toHaveBeenLastCalledWith([{ field: 'station', value: 'guss' }, { field: 'station', value: '3d' }])
     })
+
+    it('counts as filtered when only a search narrows the list', () => {
+        render(<FilterBar fields={fields} active={[]} filtered onChange={vi.fn()} total={300} filteredTotal={5} noun="Laufzettel" />)
+        expect(screen.getByText('5 von 300 Laufzettel')).toBeInTheDocument()
+    })
 })

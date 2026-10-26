@@ -117,5 +117,29 @@ describe('DataTable – identifier column after a narrow lead column', () => {
         expect(screen.getAllByRole('cell', { name: 'Hoch' })[0].className).toContain('sticky')
         expect(screen.queryByRole('link', { name: 'Hoch' })).toBeNull()
     })
-})
 
+describe('DataTable – review fixes', () => {
+    it('shows the default sort in the header and leaves it on the first click', async () => {
+        const onSortChange = vi.fn()
+        render(<DataTable<Row> label="L" columns={columns} rows={rows} getRowId={(r) => r.id} sort={null} defaultSort={{ id: 'weight', dir: 'desc' }}
+            onSortChange={onSortChange} status="ready" />)
+        const header = screen.getByRole('columnheader', { name: /Gewicht/ })
+        expect(header).toHaveAttribute('aria-sort', 'descending')
+        await userEvent.click(within(header).getByRole('button'))
+        expect(onSortChange).toHaveBeenLastCalledWith({ id: 'weight', dir: 'asc' })
+    })
+
+    it('a click beside the checkbox or the actions does not open the row', async () => {
+        const onOpenRow = vi.fn()
+        const onSelectedChange = vi.fn()
+        render(<DataTable<Row> label="L" columns={columns} rows={rows} getRowId={(r) => r.id} sort={null} onSortChange={vi.fn()} status="ready"
+            onOpenRow={onOpenRow} selected={new Set()} onSelectedChange={onSelectedChange} rowLabel={(r) => r.no}
+            rowAction={() => ({ label: 'Drucken', onSelect: vi.fn() })} />)
+        const box = screen.getByRole('checkbox', { name: '26100013 – 1/4 auswählen' })
+        await userEvent.click(box.closest('td')!)
+        expect(onSelectedChange).toHaveBeenCalled()
+        await userEvent.click(screen.getAllByRole('button', { name: 'Drucken' })[0].closest('td')!)
+        expect(onOpenRow).not.toHaveBeenCalled()
+    })
+})
+})

@@ -10,7 +10,7 @@ export function isEditableTarget(target: EventTarget | null): boolean {
     return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement
 }
 
-const WIDGETS = '[role="dialog"][aria-modal="true"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="grid"], [role="tree"]'
+const WIDGETS = '[role="dialog"], [role="alertdialog"], [role="menu"], [role="menubar"], [role="listbox"], [role="grid"], [role="tree"]'
 
 /** True when keys belong to an open modal or to a widget that uses letters itself (menus, lists, grids). */
 function insideWidget(target: EventTarget | null): boolean {

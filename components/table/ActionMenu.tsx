@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -9,6 +10,7 @@ export type MenuItem = { id: string; label: string; onSelect: () => void; disabl
 /** "…" menu for the less frequent actions of a row (L-11). ARIA menu button pattern. */
 export function ActionMenu({ items, label = "Weitere Aktionen", className }: { items: MenuItem[]; label?: string; className?: string }) {
     const [open, setOpen] = React.useState(false)
+    const [position, setPosition] = React.useState<React.CSSProperties>({})
     const buttonRef = React.useRef<HTMLButtonElement>(null)
     const menuRef = React.useRef<HTMLDivElement>(null)
     const menuId = React.useId()
@@ -24,6 +26,23 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
         document.addEventListener("mousedown", onDown)
         return () => document.removeEventListener("mousedown", onDown)
     }, [open])
+
+    // Fixed position next to the button, in a portal: table scroll containers would clip it.
+    // Opens upwards when there is not enough room below.
+    const place = () => {
+        const rect = buttonRef.current?.getBoundingClientRect()
+        if (!rect) return
+        const height = items.length * 32 + 8
+        const below = window.innerHeight - rect.bottom
+        const right = window.innerWidth - rect.right
+        setPosition(below < height + 8 && rect.top > height + 8
+            ? { right, bottom: window.innerHeight - rect.top + 4 }
+            : { right, top: rect.bottom + 4 })
+    }
+    const toggleOpen = (next: boolean) => {
+        if (next) place()
+        setOpen(next)
+    }
 
     const close = (refocus: boolean) => {
         setOpen(false)
@@ -59,20 +78,21 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
                 aria-haspopup="menu"
                 aria-expanded={open}
                 aria-controls={open ? menuId : undefined}
-                onClick={() => setOpen((o) => !o)}
-                onKeyDown={(e) => { if (e.key === "ArrowDown" && !open) { e.preventDefault(); setOpen(true) } }}
+                onClick={() => toggleOpen(!open)}
+                onKeyDown={(e) => { if (e.key === "ArrowDown" && !open) { e.preventDefault(); toggleOpen(true) } }}
                 className="flex h-7 w-7 items-center justify-center rounded-control text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
                 <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
             </button>
-            {open && (
+            {open && createPortal(
                 <div
                     ref={menuRef}
                     id={menuId}
                     role="menu"
                     aria-label={label}
                     onKeyDown={onMenuKeyDown}
-                    className="absolute right-0 top-full z-40 mt-1 min-w-44 rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
+                    style={position}
+                    className="fixed z-50 min-w-44 rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
                 >
                     {items.map((item) => (
                         <div
@@ -90,7 +110,8 @@ export function ActionMenu({ items, label = "Weitere Aktionen", className }: { i
                             {item.label}
                         </div>
                     ))}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

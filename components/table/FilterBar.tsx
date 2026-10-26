@@ -17,6 +17,8 @@ interface FilterBarProps {
     filteredTotal: number
     /** Plural noun for the count, e.g. "Laufzettel" */
     noun: string
+    /** Whether anything narrows the list, including a search outside the chips; defaults to "chips present" */
+    filtered?: boolean
     /** Usually the list search field */
     children?: React.ReactNode
 }
@@ -24,7 +26,7 @@ interface FilterBarProps {
 const select = "h-7 w-full rounded-control border border-border bg-surface px-1.5 text-xs text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
 
 /** Every active filter visible as a chip, the count always in view (L-05, L-12). */
-export function FilterBar({ fields, active, onChange, total, filteredTotal, noun, children }: FilterBarProps) {
+export function FilterBar({ fields, active, onChange, total, filteredTotal, noun, filtered: narrowed, children }: FilterBarProps) {
     const [adding, setAdding] = React.useState(false)
     const [field, setField] = React.useState(fields[0]?.id ?? "")
     const [value, setValue] = React.useState("")
@@ -58,6 +60,7 @@ export function FilterBar({ fields, active, onChange, total, filteredTotal, noun
     }
 
     const filtered = active.length > 0
+    const counted = narrowed ?? filtered
 
     return (
         <div className="flex flex-col gap-2">
@@ -95,7 +98,7 @@ export function FilterBar({ fields, active, onChange, total, filteredTotal, noun
                     )}
                 </div>
                 <span className="ml-auto text-xs tabular-nums text-fg-muted" aria-live="polite">
-                    {filtered ? `${formatNumber(filteredTotal)} von ${formatNumber(total)} ${noun}` : `${formatNumber(total)} ${noun}`}
+                    {counted ? `${formatNumber(filteredTotal)} von ${formatNumber(total)} ${noun}` : `${formatNumber(total)} ${noun}`}
                 </span>
             </div>
             {filtered && (

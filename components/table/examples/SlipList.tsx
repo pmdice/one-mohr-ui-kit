@@ -53,11 +53,15 @@ export function SlipList({ initial = "/laufzettel", loader = simulatedLoader, va
     )
 }
 
+/** Cursor and selection live above the routes, so opening a row and coming back keeps them (L-09, L-10, N-03). */
+type WorkState = { filterKey: string; selected: Set<string>; cursorId: string | null }
+
 function Routes({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
     const { path, query } = useLocation()
+    const [work, setWork] = React.useState<WorkState>({ filterKey: "", selected: new Set(), cursorId: null })
     const m = path.match(/^\/laufzettel\/(.+)$/)
     if (m) return <SlipDetail id={m[1]} from={query.get("from")} />
-    return <List loader={loader} />
+    return <List loader={loader} work={work} setWork={setWork} />
 }
 
 // ---- URL <-> list state (N-03) ------------------------------------------------------
@@ -121,7 +125,11 @@ const COLUMNS: Column<Slip>[] = [
 
 type LoadState = { status: "loading" | "ready" | "reloading"; data: SlipResult | null; error: boolean }
 
-function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
+function List({ loader, work, setWork }: {
+    loader: (q: SlipQuery) => Promise<SlipResult>
+    work: WorkState
+    setWork: React.Dispatch<React.SetStateAction<WorkState>>
+}) {
     const { href, query } = useLocation()
     const replace = useReplace()
     const navigate = useNavigate()
@@ -145,10 +153,13 @@ function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
     }, [key, attempt, loader])
 
     // Selection survives paging, not a change of what is shown (L-10)
-    const [selected, setSelected] = React.useState<Set<string>>(new Set())
-    const [cursorId, setCursorId] = React.useState<string | null>(null)
+    // A selection belongs to the filters it was made under; another filter starts empty
     const filterKey = JSON.stringify([state.filters, state.q])
-    React.useEffect(() => { setSelected(new Set()) }, [filterKey])
+    const current = work.filterKey === filterKey
+    const selected = current ? work.selected : new Set<string>()
+    const cursorId = current ? work.cursorId : null
+    const setSelected = (next: Set<string>) => setWork((w) => ({ filterKey, selected: next, cursorId: w.filterKey === filterKey ? w.cursorId : null }))
+    const setCursorId = (id: string | null) => setWork((w) => ({ filterKey, selected: w.filterKey === filterKey ? w.selected : new Set(), cursorId: id }))
 
     const [message, setMessage] = React.useState("")
     const say = (text: string) => setMessage(text)
@@ -162,6 +173,14 @@ function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
     const resetFilters = () => set({ filters: [], q: "", page: 1 })
 
     const empty = load.status !== "loading" && rows.length === 0 && !load.error
+
+    // A page past the end (old link, or the last rows moved on) goes to the last page instead of a false "no results"
+    const lastPage = Math.max(1, Math.ceil(filteredTotal / state.pageSize))
+    const pastEnd = load.status === "ready" && !!load.data && rows.length === 0 && filteredTotal > 0 && state.page > lastPage
+    React.useEffect(() => {
+        if (pastEnd) set({ page: lastPage })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pastEnd, lastPage])
     const setStation = (ids: string[]) => say(`Station für ${ids.length} Laufzettel setzen – im Beispiel ohne Wirkung`)
 
     return (
@@ -178,6 +197,7 @@ function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
                 total={total}
                 filteredTotal={filteredTotal}
                 noun="Laufzettel"
+                filtered={filtered}
             >
                 <input
                     type="search"
@@ -212,7 +232,7 @@ function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
 
             {load.error && !load.data ? (
                 <EmptyState kind="error" title="Liste konnte nicht geladen werden" action={<Button size="sm" variant="outline" onClick={() => setAttempt((a) => a + 1)}>Erneut versuchen</Button>} />
-            ) : empty ? (
+            ) : empty && !pastEnd ? (
                 filtered || total > 0
                     ? <EmptyState kind="no-results" title="Keine Laufzettel für diese Filter" action={<Button size="sm" variant="outline" onClick={resetFilters}>Filter zurücksetzen</Button>} />
                     : <EmptyState kind="none" title="Noch keine Laufzettel" description="Laufzettel entstehen, wenn ein Auftrag erfasst wird." action={<Button size="sm">Auftrag erfassen</Button>} />
@@ -227,6 +247,7 @@ function List({ loader }: { loader: (q: SlipQuery) => Promise<SlipResult> }) {
                     identifierColumn="number"
                     rowLabel={slipNumber}
                     sort={state.sort}
+                    defaultSort={{ id: "urgency", dir: "desc" }}
                     onSortChange={(sort) => set({ sort, page: 1 })}
                     status={load.status}
                     onOpenRow={(id) => { const s = rows.find((r) => r.id === id); if (s) navigate(rowHref(s)) }}

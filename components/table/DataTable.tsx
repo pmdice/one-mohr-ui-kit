@@ -32,6 +32,8 @@ export interface DataTableProps<T> {
     /** Target of the identifier link in the first column (L-01) */
     getRowHref?: (row: T) => string
     sort: Sort
+    /** The order the list has when `sort` is null (L-06); shown in the header like a chosen sort */
+    defaultSort?: Sort
     onSortChange: (sort: Sort) => void
     /** loading: first load (skeleton) · reloading: keep rows, dimmed (L-08) */
     status: "loading" | "ready" | "reloading"
@@ -56,17 +58,21 @@ export interface DataTableProps<T> {
 }
 
 const SKELETON_ROWS = 8
-const INTERACTIVE = 'a, button, input, select, textarea, label, [role="menu"], [role="menuitem"]'
+const INTERACTIVE = 'a, button, input, select, textarea, label, [role="menu"], [role="menuitem"], [data-no-open]'
 
-/** Next state of a sortable header: ascending → descending → back to the list's default (L-06). */
-export function nextSort(current: Sort, id: string): Sort {
+/**
+ * Next state of a sortable header: ascending → descending → back to the list's default (L-06).
+ * On the default column the first click turns the default direction around.
+ */
+export function nextSort(current: Sort, id: string, defaultSort: Sort = null): Sort {
+    if (!current && defaultSort?.id === id) return { id, dir: defaultSort.dir === "asc" ? "desc" : "asc" }
     if (current?.id !== id) return { id, dir: "asc" }
     return current.dir === "asc" ? { id, dir: "desc" } : null
 }
 
 /** Dense work list (L-01–L-04, L-06, L-08). Controlled: sorting and loading state come from outside. */
 export function DataTable<T>({
-    label, columns, rows, getRowId, getRowHref, sort, onSortChange, status, onOpenRow, identifierColumn, stickyFirst = true,
+    label, columns, rows, getRowId, getRowHref, sort, defaultSort = null, onSortChange, status, onOpenRow, identifierColumn, stickyFirst = true,
     cursorId, onCursorChange, selected, onSelectedChange, rowLabel, rowAction, rowMenu, className,
 }: DataTableProps<T>) {
     const busy = status !== "ready"
@@ -124,6 +130,8 @@ export function DataTable<T>({
 
     const onRowClick = (event: React.MouseEvent, id: string) => {
         if ((event.target as Element).closest(INTERACTIVE)) return
+        // Selecting text to copy it is not a request to open the row
+        if (window.getSelection?.()?.toString()) return
         onOpenRow?.(id)
     }
 
@@ -172,7 +180,8 @@ export function DataTable<T>({
                             </th>
                         )}
                         {columns.map((column, index) => {
-                            const active = sort?.id === column.id ? sort.dir : null
+                            const shown = sort ?? defaultSort
+                            const active = shown?.id === column.id ? shown.dir : null
                             return (
                                 <th
                                     key={column.id}
@@ -184,7 +193,7 @@ export function DataTable<T>({
                                     {column.sortable ? (
                                         <button
                                             type="button"
-                                            onClick={() => onSortChange(nextSort(sort, column.id))}
+                                            onClick={() => onSortChange(nextSort(sort, column.id, defaultSort))}
                                             className={cn(
                                                 "inline-flex items-center gap-1 rounded-control hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
                                                 column.align === "right" && "flex-row-reverse",
@@ -235,14 +244,17 @@ export function DataTable<T>({
                                     )}
                                 >
                                     {selectable && (
-                                        <td className={checkCell()}>
-                                            <input
-                                                type="checkbox"
-                                                aria-label={`${rowLabel?.(row) ?? id} auswählen`}
-                                                className={checkbox}
-                                                checked={isSelected}
-                                                onChange={() => toggle(id)}
-                                            />
+                                        <td data-no-open className={cn(checkCell(), "p-0")} onClick={(e) => { if (e.target === e.currentTarget) toggle(id) }}>
+                                            {/* The whole cell toggles: a near miss must not open the row */}
+                                            <label className="flex h-full min-h-[var(--control-h)] cursor-pointer items-center px-3">
+                                                <input
+                                                    type="checkbox"
+                                                    aria-label={`${rowLabel?.(row) ?? id} auswählen`}
+                                                    className={checkbox}
+                                                    checked={isSelected}
+                                                    onChange={() => toggle(id)}
+                                                />
+                                            </label>
                                         </td>
                                     )}
                                     {columns.map((column, index) => {
@@ -258,7 +270,7 @@ export function DataTable<T>({
                                         )
                                     })}
                                     {hasActions && (
-                                        <td className="h-[var(--control-h)] border-b border-border px-2 text-right whitespace-nowrap">
+                                        <td data-no-open className="h-[var(--control-h)] cursor-default border-b border-border px-2 text-right whitespace-nowrap">
                                             <div className="inline-flex items-center gap-1">
                                                 {action && (
                                                     <Button type="button" size="sm" variant="ghost" onClick={action.onSelect}>

@@ -35,4 +35,10 @@ describe('ActionMenu', () => {
         expect(screen.queryByRole('menu')).toBeNull()
         expect(button).toHaveFocus()
     })
+
+    it('renders the menu outside clipping parents', async () => {
+        render(<div data-testid="box" style={{ overflow: 'auto' }}><ActionMenu items={items()} /></div>)
+        await userEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen' }))
+        expect(screen.getByTestId('box').contains(screen.getByRole('menu'))).toBe(false)
+    })
 })

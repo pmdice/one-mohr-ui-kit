@@ -93,6 +93,15 @@ describe('useShortcut', () => {
         expect(onJ).not.toHaveBeenCalled()
     })
 
+    it('does not fire inside a non-modal dialog such as a filter popover', async () => {
+        const onJ = vi.fn()
+        function Pop() { useShortcut('j', onJ); return <div role="dialog" aria-label="Filter hinzufügen"><button>Hinzufügen</button></div> }
+        render(<Pop />)
+        await userEvent.click(screen.getByRole('button', { name: 'Hinzufügen' }))
+        await userEvent.keyboard('j')
+        expect(onJ).not.toHaveBeenCalled()
+    })
+
     it('never fires when disabled', async () => {
         const onJ = vi.fn()
         render(<Fixture onJ={onJ} enabled={false} />)
