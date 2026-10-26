@@ -36,7 +36,9 @@ export interface DataTableProps<T> {
     /** loading: first load (skeleton) · reloading: keep rows, dimmed (L-08) */
     status: "loading" | "ready" | "reloading"
     onOpenRow?: (id: string) => void
-    /** Keep the identifier column visible when scrolling sideways (L-04) */
+    /** Column holding the identifier (L-01); linked via getRowHref. Defaults to the first column. */
+    identifierColumn?: string
+    /** Keep the identifier column, and the columns before it, visible when scrolling sideways (L-04) */
     stickyFirst?: boolean
     /** Keyboard cursor (L-09): J/K move it, Enter opens, X selects. Not the same as the selection. */
     cursorId?: string | null
@@ -64,7 +66,7 @@ export function nextSort(current: Sort, id: string): Sort {
 
 /** Dense work list (L-01–L-04, L-06, L-08). Controlled: sorting and loading state come from outside. */
 export function DataTable<T>({
-    label, columns, rows, getRowId, getRowHref, sort, onSortChange, status, onOpenRow, stickyFirst = true,
+    label, columns, rows, getRowId, getRowHref, sort, onSortChange, status, onOpenRow, identifierColumn, stickyFirst = true,
     cursorId, onCursorChange, selected, onSelectedChange, rowLabel, rowAction, rowMenu, className,
 }: DataTableProps<T>) {
     const busy = status !== "ready"
@@ -97,9 +99,14 @@ export function DataTable<T>({
         ignore: (e) => isEditableTarget(e.target) || (e.target instanceof Element && !!e.target.closest(INTERACTIVE)),
     })
 
+    // Keep the cursor row in view, vertically only: scrollIntoView would also shift a wide table sideways
     React.useEffect(() => {
-        if (!cursorId) return
-        tableRef.current?.querySelector('[data-cursor="true"]')?.scrollIntoView?.({ block: "nearest" })
+        const row = tableRef.current?.querySelector<HTMLElement>('[data-cursor="true"]')
+        const box = tableRef.current?.parentElement
+        if (!cursorId || !row || !box) return
+        const head = tableRef.current?.tHead?.offsetHeight ?? 0
+        if (row.offsetTop - head < box.scrollTop) box.scrollTop = row.offsetTop - head
+        else if (row.offsetTop + row.offsetHeight > box.scrollTop + box.clientHeight) box.scrollTop = row.offsetTop + row.offsetHeight - box.clientHeight
     }, [cursorId])
 
     const pageSelected = ids.filter((id) => selected?.has(id)).length
@@ -120,11 +127,23 @@ export function DataTable<T>({
         onOpenRow?.(id)
     }
 
+    const identIndex = Math.max(0, identifierColumn ? columns.findIndex((c) => c.id === identifierColumn) : 0)
+    // Columns up to the identifier stick; each one's left offset is the width of what is before it
+    const stickyLeft = (index: number): React.CSSProperties | undefined => {
+        if (!stickyFirst || index > identIndex) return undefined
+        const parts = [selectable ? "2.5rem" : "0px", ...columns.slice(0, index).map((c) => c.width ?? "0px")]
+        return { left: `calc(${parts.join(" + ")})` }
+    }
+    const cellStyle = (column: Column<T>, index: number): React.CSSProperties | undefined => {
+        const left = stickyLeft(index)
+        return column.width || left ? { ...(column.width ? { width: column.width } : {}), ...left } : undefined
+    }
+
     const cellClass = (column: Column<T>, index: number, head = false) => cn(
-        "border-b border-border px-3 text-left",
+        "border-b border-border px-3 text-left whitespace-nowrap",
         head ? "h-8 text-xs font-medium text-fg-subtle" : "h-[var(--control-h)] text-control text-fg",
         column.align === "right" && "text-right tabular-nums",
-        index === 0 && stickyFirst && cn("sticky z-[1] bg-inherit", selectable ? "left-10" : "left-0"),
+        stickyFirst && index <= identIndex && "sticky z-[1] bg-inherit",
     )
     const checkCell = (head = false) => cn("sticky left-0 z-[1] w-10 border-b border-border bg-inherit px-3", head ? "h-8" : "h-[var(--control-h)]")
     const checkbox = "h-3.5 w-3.5 cursor-pointer accent-[var(--accent)] align-middle"
@@ -158,7 +177,7 @@ export function DataTable<T>({
                                 <th
                                     key={column.id}
                                     scope="col"
-                                    style={column.width ? { width: column.width } : undefined}
+                                    style={cellStyle(column, index)}
                                     aria-sort={column.sortable ? (active === "asc" ? "ascending" : active === "desc" ? "descending" : "none") : undefined}
                                     className={cellClass(column, index, true)}
                                 >
@@ -190,7 +209,7 @@ export function DataTable<T>({
                             <tr key={i} data-skeleton aria-hidden="true" className="bg-surface">
                                 {selectable && <td className={checkCell()} />}
                                 {columns.map((column, index) => (
-                                    <td key={column.id} className={cellClass(column, index)}>
+                                    <td key={column.id} className={cellClass(column, index)} style={stickyLeft(index)}>
                                         <span className={cn("block h-3 animate-pulse rounded-control bg-surface-sunken", column.align === "right" ? "ml-auto w-10" : "w-3/4")} />
                                     </td>
                                 ))}
@@ -227,11 +246,11 @@ export function DataTable<T>({
                                         </td>
                                     )}
                                     {columns.map((column, index) => {
-                                        const content = index === 0 && getRowHref
+                                        const content = index === identIndex && getRowHref
                                             ? <NavLink href={getRowHref(row)} className="font-mono text-xs text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">{column.cell(row)}</NavLink>
                                             : column.cell(row)
                                         return (
-                                            <td key={column.id} className={cellClass(column, index)}>
+                                            <td key={column.id} className={cellClass(column, index)} style={stickyLeft(index)}>
                                                 {column.truncate
                                                     ? <div className="max-w-[16rem] truncate" title={column.title?.(row)}>{content}</div>
                                                     : content}

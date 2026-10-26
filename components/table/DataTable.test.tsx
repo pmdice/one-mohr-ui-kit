@@ -34,6 +34,12 @@ describe('DataTable – reading', () => {
         expect(screen.getByRole('link', { name: '26100013 – 1/4' })).toHaveAttribute('href', '/z/a')
     })
 
+    it('keeps every row on one line', () => {
+        setup()
+        expect(screen.getByRole('cell', { name: '1234' }).className).toContain('whitespace-nowrap')
+        expect(screen.getByRole('columnheader', { name: /Gewicht/ }).className).toContain('whitespace-nowrap')
+    })
+
     it('right-aligns numbers', () => {
         setup()
         const cell = screen.getByRole('cell', { name: '1234' })
@@ -96,3 +102,20 @@ describe('DataTable – row click', () => {
         expect(onOpenRow).not.toHaveBeenCalled()
     })
 })
+
+describe('DataTable – identifier column after a narrow lead column', () => {
+    it('links and pins the identifier column, and pins the columns before it', () => {
+        const lead: Column<Row>[] = [{ id: 'urg', header: 'Dringlichkeit', width: '6rem', cell: () => 'Hoch' }, ...columns]
+        render(
+            <DataTable<Row> label="L" columns={lead} rows={rows} getRowId={(r) => r.id} getRowHref={(r) => `/z/${r.id}`}
+                identifierColumn="no" sort={null} onSortChange={vi.fn()} status="ready" />
+        )
+        const link = screen.getByRole('link', { name: '26100013 – 1/4' })
+        const idCell = link.closest('td')!
+        expect(idCell.className).toContain('sticky')
+        expect(idCell.style.left).toContain('6rem')
+        expect(screen.getAllByRole('cell', { name: 'Hoch' })[0].className).toContain('sticky')
+        expect(screen.queryByRole('link', { name: 'Hoch' })).toBeNull()
+    })
+})
+

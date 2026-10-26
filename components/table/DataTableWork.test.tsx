@@ -46,6 +46,14 @@ describe('DataTable – keyboard (L-09)', () => {
         expect(onOpenRow).toHaveBeenCalledWith('b')
     })
 
+    it('moving the cursor never scrolls the table sideways', async () => {
+        const spy = vi.fn()
+        Element.prototype.scrollIntoView = spy
+        render(<Harness />)
+        await userEvent.keyboard('j')
+        expect(spy).not.toHaveBeenCalled()
+    })
+
     it('does nothing while typing in the list search', async () => {
         render(<Harness />)
         await userEvent.click(screen.getByRole('textbox', { name: 'In Laufzetteln suchen' }))
