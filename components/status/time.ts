@@ -45,3 +45,8 @@ export function formatRelative(ms: number, now: number): string {
     if (ms >= dayStart(today - 1)) return `gestern ${clock(t)}`
     return date(t)
 }
+
+/** Warning in words once a usual time is exceeded (S-03), else undefined. */
+export function overdueHint(ms: number, norm: number | undefined): string | undefined {
+    return norm !== undefined && ms > norm ? `Länger als üblich (Richtzeit ${formatDuration(norm)})` : undefined
+}
