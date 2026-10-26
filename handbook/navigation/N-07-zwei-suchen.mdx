@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N07Bad, N07Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-07 Globale Suche und Listensuche sehen verschieden aus" />
+
+# N-07 · Globale Suche und Listensuche sehen verschieden aus
+
+## Regel
+
+Unterscheide die globale Suche (navigiert) sichtbar von der Listensuche (schränkt ein) und beschrifte, was durchsucht wird.
+
+## Warum
+
+Zwei gleich aussehende Suchfelder zwingen zum Raten, und die falsche Wahl liefert scheinbar „keine Treffer“.
+
+## Details
+
+- Global: in der Kopfzeile, durchsucht alles, führt zum Treffer.
+- Liste: über der Liste, beschriftet mit dem Bereich („In Aufträgen suchen“), das Ergebnis ist eine Ansicht in der URL (N-03).
+- Nie direkt übereinander ohne Beschriftung, die den Unterschied sagt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N07Good />}
+  bad={<N07Bad />}
+  goodCaption="Ort und Beschriftung unterscheiden"
+  badCaption="Zweimal „Suchen …“"
+/>
+
+## Übertragen
+
+- Platzhalter der Listensuche immer mit dem Listennamen.
+- In Nova: das Suchfeld des Index als Listensuche beschriften; die globale Suche bleibt in der Kopfzeile.

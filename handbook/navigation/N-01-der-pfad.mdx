@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N01Bad, N01Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-01 Der Pfad zeigt die Zugehörigkeit" />
+
+# N-01 · Der Pfad zeigt die Zugehörigkeit
+
+## Regel
+
+Zeige im Pfad, wozu ein Objekt gehört – immer gleich, egal ob man über Menü, Liste, Suche oder Scan gekommen ist.
+
+## Warum
+
+Ein Pfad, der sich je nach Einstieg ändert, erklärt nichts, sondern widerspricht sich. Die Zugehörigkeit ist das, was man am Telefon sagt: „Laufzettel 1 von Auftrag 26100013“.
+
+## Details
+
+- Jedes Glied ist eine Seite, auf die man klicken kann. Menügruppen wie „Planung“ sind keine Seiten und erscheinen nicht.
+- Das erste Glied ist die oberste Liste des Objekttyps, das letzte die aktuelle Seite (kein Link).
+- Objekte erscheinen mit Kennung und Name. Ein Seiten-Tab ist kein eigenes Glied.
+- Bei wenig Platz werden die mittleren Glieder gekürzt (voller Text im Tooltip), das letzte bleibt lesbar.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N01Good />}
+  bad={<N01Bad />}
+  goodCaption="Gleich bei jedem Einstieg"
+  badCaption="Pfad nach Menüposition"
+/>
+
+## Übertragen
+
+- Den Pfad aus den Beziehungen des Objekts bauen (Laufzettel → Auftrag → Liste), nicht aus seiner Menüposition.
+- In Nova: nicht die Ressourcen-Breadcrumbs verwenden, sondern die Eltern-Beziehung im Detail-View als Pfad ausgeben.

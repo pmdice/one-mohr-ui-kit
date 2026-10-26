@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N08Bad, N08Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-08 Jeder Verweis ist ein Link" />
+
+# N-08 · Jeder Verweis ist ein Link
+
+## Regel
+
+Mach jede Erwähnung eines anderen Objekts zu einem Link auf dieses Objekt.
+
+## Warum
+
+Die Daten sind ein Netz. Wer einem Verweis nicht folgen kann, muss ihn abschreiben und suchen.
+
+## Details
+
+- Gilt in Detailansichten, Tabellen und Unterlisten.
+- Links sehen aus wie Links und öffnen mit ⌘/Ctrl-Klick in einem neuen Tab (echte `<a href>`, keine Klick-Handler auf `div`).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N08Good />}
+  bad={<N08Bad />}
+  goodCaption="Kunde und Auftrag verlinkt"
+  badCaption="Nur Text"
+/>
+
+## Übertragen
+
+- BelongsTo-Felder als Link ausgeben, auch in Tabellen.
+- Kennungen (Auftragsnummer) verlinken, nicht nur den Namen.

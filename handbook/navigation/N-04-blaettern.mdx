@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N04Bad, N04Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-04 Zwischen Geschwistern blättern" />
+
+# N-04 · Zwischen Geschwistern blättern
+
+## Regel
+
+Lass auf einem Objekt zum vorherigen und nächsten derselben Menge springen, ohne zurückzugehen („1/4 im Auftrag ‹ ›“, J/K).
+
+## Warum
+
+Durchgehen ist eine der häufigsten Tätigkeiten: alle Zettel eines Auftrags prüfen oder alle offenen Aufträge abarbeiten.
+
+## Details
+
+- Aus einer Liste geöffnet: die Menge ist die gefilterte Liste („3 von 17 · Offen“).
+- Ohne Herkunft: die Geschwister im Elternteil („1/4 im Auftrag“). Ohne Elternteil entfällt das Blättern.
+- Ist das Objekt nicht (mehr) in der Menge, wird nichts angezeigt statt „0 von 17“.
+- `J` = nächstes, `K` = vorheriges, nicht während man in einem Feld tippt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N04Good />}
+  bad={<N04Bad />}
+  goodCaption="Probier die Pfeile"
+  badCaption="Für jeden Zettel zurück"
+/>
+
+## Übertragen
+
+- Die Menge (IDs in Reihenfolge) aus derselben Abfrage holen wie die Liste, mit denselben Filtern.
+- Der bestehende „1/4 im Auftrag ‹ ›“-Knopf im Casting Manager ist genau diese Regel.

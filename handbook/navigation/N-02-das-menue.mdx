@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N02Bad, N02Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-02 Das Menü zeigt die Herkunft" />
+
+# N-02 · Das Menü zeigt die Herkunft
+
+## Regel
+
+Lass die Markierung im Menü auf dem Eintrag, über den man gekommen ist; ohne Herkunft markiere das erste Pfad-Glied.
+
+## Warum
+
+Pfad und Menü beantworten zwei verschiedene Fragen: „Wozu gehört das?“ und „Woher komme ich?“. Zeigen beide dasselbe, geht eine Antwort verloren.
+
+## Details
+
+- Wer über „Laufzettel“ einen Laufzettel öffnet, sieht „Laufzettel“ markiert, während der Pfad den Auftrag zeigt.
+- Ohne Herkunft (Suche, direkter Link, Scan) wird der Menüeintrag des ersten Pfad-Glieds markiert.
+- Die Markierung bleibt stehen, wenn man tiefer geht (Liste → Objekt → Unterobjekt).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N02Good />}
+  bad={<N02Bad />}
+  goodCaption="Aus der Laufzettel-Liste gekommen"
+  badCaption="Menü und Pfad springen um"
+/>
+
+## Übertragen
+
+- Die Herkunft als Parameter am Link mitgeben (z. B. `?from=/laufzettel?view=offen`) und die Menü-Markierung daraus ableiten.
+- Nicht aus der aktuellen URL raten: dieselbe Seite kann aus verschiedenen Listen geöffnet werden.

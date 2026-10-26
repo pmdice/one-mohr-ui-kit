@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N03Bad, N03Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-03 Zurück zur Liste an dieselbe Stelle" />
+
+# N-03 · Zurück zur Liste an dieselbe Stelle
+
+## Regel
+
+Führe von einem Objekt zurück in genau die Liste, aus der es geöffnet wurde – mit Ansicht, Filtern, Seite und hervorgehobener Zeile.
+
+## Warum
+
+Wer eine Liste abarbeitet, verliert sonst nach jedem Objekt seinen Platz und muss die Filter neu setzen.
+
+## Details
+
+- Der Zurück-Link nennt die Liste und die Ansicht („‹ Offen · Aufträge“).
+- Filter, Suche, Sortierung und Seite stehen in der URL; der Browser-Zurück-Knopf führt zum selben Ergebnis.
+- Die zuletzt geöffnete Zeile ist nach der Rückkehr kurz hervorgehoben.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N03Good />}
+  bad={<N03Bad />}
+  goodCaption="Ansicht und Suche bleiben"
+  badCaption="Immer zur ungefilterten Liste"
+/>
+
+## Übertragen
+
+- Listenzustand nie nur im Speicher halten, sondern in Query-Parametern.
+- In Nova: den Index-Link mit den aktuellen Filter-Parametern als Herkunft an den Detail-Link hängen.

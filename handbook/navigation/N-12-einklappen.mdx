@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N12Bad, N12Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-12 Sidebar einklappen ohne Orientierungsverlust" />
+
+# N-12 · Sidebar einklappen ohne Orientierungsverlust
+
+## Regel
+
+Lass die Sidebar auf Icons einklappen – mit Namen im Tooltip, sichtbarer Markierung und gespeichertem Zustand.
+
+## Warum
+
+Auf kleinen Bildschirmen braucht der Inhalt den Platz, aber man darf dafür nicht vergessen, wo man ist.
+
+## Details
+
+- Eingeklappt: nur Icons, jeder Eintrag hat seinen Namen als Tooltip und für Screenreader.
+- Die Markierung (N-02) bleibt sichtbar, Gruppen sind durch Abstände getrennt.
+- Ein- und Ausklappen per Knopf am Rand und mit `[`; der Zustand bleibt pro Gerät gespeichert.
+- Unter etwa 1024 px wird die Sidebar zur Schublade über dem Inhalt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N12Good />}
+  bad={<N12Bad />}
+  goodCaption="Fokus auf ein Icon zeigt den Namen"
+  badCaption="Icons ohne Namen und Markierung"
+/>
+
+## Übertragen
+
+- Den Zustand in localStorage speichern, nicht pro Seite zurücksetzen.
+- Für jedes Menü-Icon einen Namen setzen (`aria-label`), nicht nur `title`.

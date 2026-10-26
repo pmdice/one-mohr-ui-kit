@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ChevronRight } from "lucide-react"
 import { Unstyled } from "@storybook/addon-docs/blocks"
-import type { RuleGroup } from "./forms/rules"
+import type { RuleGroup } from "./rules.types"
 
 /** Link to a docs page from inside the preview iframe: navigate the manager, not the iframe. */
 export function docsHref(docsId: string) {

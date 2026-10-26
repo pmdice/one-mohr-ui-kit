@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N11Bad, N11Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-11 Seiten-Tabs sind keine Filter" />
+
+# N-11 · Seiten-Tabs sind keine Filter
+
+## Regel
+
+Gestalte Seiten-Tabs (Unterseiten eines Objekts) als Reiter und Listen-Ansichten als Segment-Schalter mit Anzahl.
+
+## Warum
+
+Sehen beide gleich aus, weiss man nicht, ob man gerade eine andere Seite oder dieselbe Liste anders sieht.
+
+## Details
+
+- Seiten-Tabs: Reiter mit Unterstrich, im Seitenkopf, ändern den URL-Pfad.
+- Kein Tab trägt den Namen des Objekttyps, auf dem man ist (kein Tab „Gusszettel“ auf einem Gusszettel).
+- Ansichts-Filter: Segment-Schalter mit Anzahl, über der Liste, ändern einen URL-Parameter.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N11Good />}
+  bad={<N11Bad />}
+  goodCaption="Zwei verschiedene Formen"
+  badCaption="Beides als Pillen"
+/>
+
+## Übertragen
+
+- Zwei getrennte Komponenten mit eigener Optik, auch wenn sie technisch ähnlich sind.
+- Tab-Namen nach dem Inhalt benennen („Digitaler Zettel“ → „Zettel“, „Gusszettel“ → „Druckansicht“).

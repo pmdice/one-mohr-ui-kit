@@ -1,0 +1,37 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { N06Bad, N06Good } from './examples'
+
+<Meta title="Handbuch/Navigation/N-06 Suchbar ist alles, was man ablesen kann" />
+
+# N-06 · Suchbar ist alles, was man ablesen kann
+
+## Regel
+
+Lass die globale Suche jede Kennung finden, die irgendwo steht, in jeder Schreibweise – und führe direkt zum Objekt.
+
+## Warum
+
+Am Telefon und an der Werkbank hat man eine Nummer in der Hand, keinen Pfad. Jeder Klick zwischen Nummer und Objekt ist Zeit, in der jemand wartet.
+
+## Details
+
+- Gefunden wird jede gedruckte Kennung: Auftragsnummer, Laufzettelnummer, Kundennummer, Kunden-Auftragsnummer, Name.
+- Schreibvarianten führen zum selben Treffer: „26100013 – 1/4“, „26100013-1/4“, „26100013 1/4“, „26100013-1“. Ein gescannter Code ist dieselbe Suche.
+- Ein Treffer führt zum Objekt selbst, nicht zum Elternteil, und zeigt, wozu es gehört.
+- Passt die Eingabe genau auf eine Kennung, steht dieser Treffer zuoberst und Enter öffnet ihn.
+- `/` öffnet die Suche von überall (ausser in Feldern), ⌘/Ctrl+K auch aus Feldern.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<N06Good />}
+  bad={<N06Bad />}
+  goodCaption="26100013-2 tippen, Enter"
+  badCaption="Nur Aufträge suchbar"
+/>
+
+## Übertragen
+
+- Kennungen beim Speichern normalisiert in einem Suchindex ablegen (Leerzeichen, Gedankenstrich, Bindestrich gleich behandeln).
+- In Nova: Gusszettel als eigene globale Suchressource mit `search`-Feldern für alle Nummernformen registrieren.
