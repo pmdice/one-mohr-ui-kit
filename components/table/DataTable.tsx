@@ -2,8 +2,11 @@
 
 import * as React from "react"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+import { Button } from "@/components/atoms/Button/Button"
 import { NavLink } from "@/components/nav/NavLink"
+import { isEditableTarget, useShortcut } from "@/components/nav/shortcuts"
 import { cn } from "@/lib/utils"
+import { ActionMenu, type MenuItem } from "./ActionMenu"
 
 export type Column<T> = {
     id: string
@@ -35,6 +38,18 @@ export interface DataTableProps<T> {
     onOpenRow?: (id: string) => void
     /** Keep the identifier column visible when scrolling sideways (L-04) */
     stickyFirst?: boolean
+    /** Keyboard cursor (L-09): J/K move it, Enter opens, X selects. Not the same as the selection. */
+    cursorId?: string | null
+    onCursorChange?: (id: string | null) => void
+    /** Selection (L-10); enables the checkbox column */
+    selected?: Set<string>
+    onSelectedChange?: (selected: Set<string>) => void
+    /** Name of a row for its checkbox, e.g. its identifier */
+    rowLabel?: (row: T) => string
+    /** The one visible action per row (L-11) */
+    rowAction?: (row: T) => { label: string; icon?: React.ReactNode; onSelect: () => void }
+    /** Further actions behind "…" */
+    rowMenu?: (row: T) => MenuItem[]
     className?: string
 }
 
@@ -49,9 +64,56 @@ export function nextSort(current: Sort, id: string): Sort {
 
 /** Dense work list (L-01–L-04, L-06, L-08). Controlled: sorting and loading state come from outside. */
 export function DataTable<T>({
-    label, columns, rows, getRowId, getRowHref, sort, onSortChange, status, onOpenRow, stickyFirst = true, className,
+    label, columns, rows, getRowId, getRowHref, sort, onSortChange, status, onOpenRow, stickyFirst = true,
+    cursorId, onCursorChange, selected, onSelectedChange, rowLabel, rowAction, rowMenu, className,
 }: DataTableProps<T>) {
     const busy = status !== "ready"
+    const selectable = !!selected && !!onSelectedChange
+    const hasActions = !!rowAction || !!rowMenu
+    const ids = rows.map(getRowId)
+    const tableRef = React.useRef<HTMLTableElement>(null)
+
+    // L-09: J/K move the cursor, X toggles selection, Enter opens — never while typing (useShortcut)
+    const move = (delta: number) => {
+        if (!onCursorChange || ids.length === 0) return
+        const index = cursorId ? ids.indexOf(cursorId) : -1
+        const next = index < 0 ? 0 : Math.min(Math.max(index + delta, 0), ids.length - 1)
+        onCursorChange(ids[next])
+    }
+    const toggle = (id: string) => {
+        if (!selected || !onSelectedChange) return
+        const next = new Set(selected)
+        if (next.has(id)) next.delete(id)
+        else next.add(id)
+        onSelectedChange(next)
+    }
+    const keys = !!onCursorChange && status !== "loading"
+    useShortcut("j", () => move(1), { enabled: keys })
+    useShortcut("k", () => move(-1), { enabled: keys })
+    useShortcut("x", () => { if (cursorId) toggle(cursorId) }, { enabled: keys && selectable })
+    useShortcut("Enter", () => { if (cursorId) onOpenRow?.(cursorId) }, {
+        enabled: keys && !!cursorId,
+        // Enter on a focused link or button keeps its own meaning
+        ignore: (e) => isEditableTarget(e.target) || (e.target instanceof Element && !!e.target.closest(INTERACTIVE)),
+    })
+
+    React.useEffect(() => {
+        if (!cursorId) return
+        tableRef.current?.querySelector('[data-cursor="true"]')?.scrollIntoView?.({ block: "nearest" })
+    }, [cursorId])
+
+    const pageSelected = ids.filter((id) => selected?.has(id)).length
+    const allRef = React.useRef<HTMLInputElement>(null)
+    React.useEffect(() => {
+        if (allRef.current) allRef.current.indeterminate = pageSelected > 0 && pageSelected < ids.length
+    })
+    const toggleAll = () => {
+        if (!selected || !onSelectedChange) return
+        const next = new Set(selected)
+        if (pageSelected === ids.length) ids.forEach((id) => next.delete(id))
+        else ids.forEach((id) => next.add(id))
+        onSelectedChange(next)
+    }
 
     const onRowClick = (event: React.MouseEvent, id: string) => {
         if ((event.target as Element).closest(INTERACTIVE)) return
@@ -62,8 +124,10 @@ export function DataTable<T>({
         "border-b border-border px-3 text-left",
         head ? "h-8 text-xs font-medium text-fg-subtle" : "h-[var(--control-h)] text-control text-fg",
         column.align === "right" && "text-right tabular-nums",
-        index === 0 && stickyFirst && "sticky left-0 z-[1] bg-inherit",
+        index === 0 && stickyFirst && cn("sticky z-[1] bg-inherit", selectable ? "left-10" : "left-0"),
     )
+    const checkCell = (head = false) => cn("sticky left-0 z-[1] w-10 border-b border-border bg-inherit px-3", head ? "h-8" : "h-[var(--control-h)]")
+    const checkbox = "h-3.5 w-3.5 cursor-pointer accent-[var(--accent)] align-middle"
 
     return (
         <div className={cn("relative overflow-auto rounded-panel border border-border bg-surface", className)}>
@@ -72,9 +136,22 @@ export function DataTable<T>({
                     <div className="h-full w-1/3 animate-pulse bg-accent" />
                 </div>
             )}
-            <table aria-label={label} aria-busy={busy || undefined} className="w-full border-separate border-spacing-0">
+            <table ref={tableRef} aria-label={label} aria-busy={busy || undefined} className="w-full border-separate border-spacing-0">
                 <thead className="sticky top-0 z-10 bg-surface">
                     <tr className="bg-surface">
+                        {selectable && (
+                            <th scope="col" className={checkCell(true)}>
+                                <input
+                                    ref={allRef}
+                                    type="checkbox"
+                                    aria-label="Alle auf dieser Seite auswählen"
+                                    className={checkbox}
+                                    checked={ids.length > 0 && pageSelected === ids.length}
+                                    onChange={toggleAll}
+                                    disabled={ids.length === 0}
+                                />
+                            </th>
+                        )}
                         {columns.map((column, index) => {
                             const active = sort?.id === column.id ? sort.dir : null
                             return (
@@ -104,27 +181,51 @@ export function DataTable<T>({
                                 </th>
                             )
                         })}
+                        {hasActions && <th scope="col" className="h-8 border-b border-border px-3"><span className="sr-only">Aktionen</span></th>}
                     </tr>
                 </thead>
                 <tbody className={cn(status === "reloading" && "opacity-60 transition-opacity")}>
                     {status === "loading"
                         ? Array.from({ length: SKELETON_ROWS }, (_, i) => (
                             <tr key={i} data-skeleton aria-hidden="true" className="bg-surface">
+                                {selectable && <td className={checkCell()} />}
                                 {columns.map((column, index) => (
                                     <td key={column.id} className={cellClass(column, index)}>
                                         <span className={cn("block h-3 animate-pulse rounded-control bg-surface-sunken", column.align === "right" ? "ml-auto w-10" : "w-3/4")} />
                                     </td>
                                 ))}
+                                {hasActions && <td className="border-b border-border" />}
                             </tr>
                         ))
                         : rows.map((row) => {
                             const id = getRowId(row)
+                            const isCursor = id === cursorId
+                            const isSelected = !!selected?.has(id)
+                            const action = rowAction?.(row)
                             return (
                                 <tr
                                     key={id}
+                                    data-cursor={isCursor || undefined}
+                                    aria-selected={selectable ? isSelected : undefined}
                                     onClick={(e) => onRowClick(e, id)}
-                                    className={cn("bg-surface transition-colors hover:bg-surface-hover", onOpenRow && "cursor-pointer")}
+                                    className={cn(
+                                        "transition-colors hover:bg-surface-hover",
+                                        isSelected ? "bg-accent-subtle" : "bg-surface",
+                                        isCursor && "outline outline-2 -outline-offset-2 outline-focus",
+                                        onOpenRow && "cursor-pointer"
+                                    )}
                                 >
+                                    {selectable && (
+                                        <td className={checkCell()}>
+                                            <input
+                                                type="checkbox"
+                                                aria-label={`${rowLabel?.(row) ?? id} auswählen`}
+                                                className={checkbox}
+                                                checked={isSelected}
+                                                onChange={() => toggle(id)}
+                                            />
+                                        </td>
+                                    )}
                                     {columns.map((column, index) => {
                                         const content = index === 0 && getRowHref
                                             ? <NavLink href={getRowHref(row)} className="font-mono text-xs text-accent underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">{column.cell(row)}</NavLink>
@@ -137,6 +238,19 @@ export function DataTable<T>({
                                             </td>
                                         )
                                     })}
+                                    {hasActions && (
+                                        <td className="h-[var(--control-h)] border-b border-border px-2 text-right whitespace-nowrap">
+                                            <div className="inline-flex items-center gap-1">
+                                                {action && (
+                                                    <Button type="button" size="sm" variant="ghost" onClick={action.onSelect}>
+                                                        {action.icon}
+                                                        {action.label}
+                                                    </Button>
+                                                )}
+                                                {rowMenu && <ActionMenu items={rowMenu(row)} />}
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             )
                         })}

@@ -26,9 +26,11 @@ function insideWidget(target: EventTarget | null): boolean {
 export function useShortcut(
     key: string,
     handler: (event: KeyboardEvent) => void,
-    options: { mod?: boolean; enabled?: boolean } = {}
+    options: { mod?: boolean; enabled?: boolean; ignore?: (event: KeyboardEvent) => boolean } = {}
 ) {
     const { mod = false, enabled = true } = options
+    const ignoreRef = React.useRef(options.ignore)
+    React.useEffect(() => { ignoreRef.current = options.ignore })
     const handlerRef = React.useRef(handler)
     React.useEffect(() => { handlerRef.current = handler })
 
@@ -44,6 +46,7 @@ export function useShortcut(
                 if (mod !== (event.metaKey || event.ctrlKey)) return
             }
             if (!mod && (isEditableTarget(event.target) || insideWidget(event.target))) return
+            if (ignoreRef.current?.(event)) return
             event.preventDefault()
             handlerRef.current(event)
         }
