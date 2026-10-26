@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W05Bad, W05Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-05 Nur das Nötigste zum Zettel" />
+
+# W-05 · Nur das Nötigste zum Zettel
+
+## Regel
+
+Zeig nach dem Scan höchstens fünf Angaben – Kennung, Kunde, Material, Stück, Dringlichkeit – und Hinweise zum Zettel gross als Warnung darüber.
+
+## Warum
+
+An der Station braucht man die Bestätigung, dass es der richtige Zettel ist, und den einen Hinweis, der einen Fehler verhindert. Alles andere lenkt ab.
+
+## Details
+
+- Weitere Details gibt es hier nicht; wer mehr braucht, geht an den Arbeitsplatz.
+- Ein Tippen auf einen Zettel der Liste zeigt dieselbe Karte.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W05Good />}
+  bad={<W05Bad />}
+  goodCaption="Fünf Angaben und der Hinweis"
+  badCaption="Alle Felder klein untereinander"
+/>
+
+## Übertragen
+
+- Der Scan-Endpunkt liefert genau diese Angaben mit, damit die Karte ohne zweite Anfrage erscheint.

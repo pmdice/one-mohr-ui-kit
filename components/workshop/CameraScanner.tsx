@@ -103,7 +103,7 @@ export function CameraScanner({ onCode, getStream = defaultStream, createDetecto
     return (
         <div className={cn("flex flex-col gap-4", className)}>
             {!blocked && (
-                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-panel bg-fg">
+                <div className="relative aspect-[4/3] max-h-[55vh] w-full overflow-hidden rounded-panel bg-fg">
                     {simulated ?? <video ref={videoRef} aria-label="Kamera" muted playsInline className="h-full w-full object-cover" />}
                     {!simulated && <div className="pointer-events-none absolute inset-[18%] rounded-panel border-4 border-accent-fg/80" aria-hidden="true" />}
                     {state === "starting" && (

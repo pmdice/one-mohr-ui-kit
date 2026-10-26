@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W03Bad, W03Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-03 Gross genug für Handschuhe und Abstand" />
+
+# W-03 · Gross genug für Handschuhe und Abstand
+
+## Regel
+
+Nutze die komfortable Dichte, Ziele von mindestens 48 px und die wichtigste Information in mindestens 20 px – ohne Hover, Tooltips oder Bedeutung nur im Icon.
+
+## Warum
+
+Wer mit Handschuhen, im Stehen und aus Abstand bedient, trifft keine 32-px-Knöpfe und liest keine 13-px-Schrift.
+
+## Details
+
+- Kontrast für grelles Hallenlicht; Farbe nie allein (S-01).
+- Knöpfe mit Text, nicht nur mit Symbol.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W03Good />}
+  bad={<W03Bad />}
+  goodCaption="Grosse Ziele mit Text"
+  badCaption="Kompakte Zeile mit kleinen Icons"
+/>
+
+## Übertragen
+
+- Die Werkstatt-Seiten bekommen ihr eigenes Layout mit der komfortablen Dichte, statt die Schreibtisch-Seiten zu verkleinern.
