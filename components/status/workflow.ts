@@ -32,14 +32,15 @@ export function allowedTransitions<C>(workflow: Workflow<C>, from: string, ctx: 
         .map((transition) => ({ transition, blocked: transition.when?.(ctx) ?? null }))
 }
 
-/** A parent's status from its parts (S-04). Canceled parts count as settled. */
+/** A parent's status from its parts (S-04). Canceled parts count as settled and do not start the work. */
 export function deriveStatus(parts: StatusCategory[]): { category: StatusCategory; done: number; total: number } {
     const total = parts.length
     const done = parts.filter((c) => c === "done" || c === "canceled").length
     const all = (c: StatusCategory) => total > 0 && parts.every((p) => p === c)
     let category: StatusCategory = "active"
-    if (all("planned")) category = "planned"
-    else if (all("canceled")) category = "canceled"
+    const live = parts.filter((p) => p !== "canceled")
+    if (all("canceled")) category = "canceled"
+    else if (live.every((p) => p === "planned")) category = "planned"
     else if (done === total && parts.includes("done")) category = "done"
     return { category, done, total }
 }

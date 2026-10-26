@@ -38,6 +38,6 @@ describe('workflow', () => {
         expect(deriveStatus(['canceled', 'canceled'])).toEqual({ category: 'canceled', done: 2, total: 2 })
         expect(deriveStatus(['done', 'canceled', 'done'])).toEqual({ category: 'done', done: 3, total: 3 })
         expect(deriveStatus(['done', 'planned', 'active', 'waiting'])).toEqual({ category: 'active', done: 1, total: 4 })
-        expect(deriveStatus(['planned', 'canceled'])).toEqual({ category: 'active', done: 1, total: 2 })
+        expect(deriveStatus(['planned', 'canceled'])).toEqual({ category: 'planned', done: 1, total: 2 })
     })
 })

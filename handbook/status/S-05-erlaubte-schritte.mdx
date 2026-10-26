@@ -30,5 +30,5 @@ Ein Menü mit allen Werten lädt zu Fehlern ein, und ein grauer Knopf ohne Grund
 
 ## Übertragen
 
-- In Nova: Actions je Übergang statt Select-Feld; `canRun` prüft den Ablauf, `->help()` oder eine Meldung nennt den Grund.
+- In Nova: eine Action je Übergang statt Select-Feld. `canSee` blendet unmögliche Schritte aus; `canRun` sperrt einen gerade blockierten, und `Action::danger('…')` nennt beim Auslösen den Grund. Damit der Grund vorher sichtbar ist, gehört er zusätzlich als Text in die Detail-Ansicht.
 - Den Ablauf an einer Stelle definieren (State-Machine im Modell) und dieselbe Definition im UI und im Backend nutzen.

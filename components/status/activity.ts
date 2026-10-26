@@ -1,4 +1,5 @@
 import type * as React from "react"
+import type { StatusDef } from "./workflow"
 
 /** One line of history (S-09). Entries are only ever added; an undo is a new entry. */
 export type ActivityEntry = {
@@ -16,6 +17,9 @@ export type ActivityEntry = {
     to?: React.ReactNode
     /** Predicate for location entries: "hat eingescannt in Guss". */
     text?: string
+    /** Status entries: shown as badges (S-01, S-11). */
+    statusFrom?: StatusDef
+    statusTo?: StatusDef
     /** Reason given with the change. */
     note?: string
 }

@@ -32,4 +32,4 @@ Wer zehnmal am Tag „Sind Sie sicher?“ bestätigt, liest die elfte Frage nich
 ## Übertragen
 
 - In Nova: `->confirmText()` mit den Folgen und `->confirmButtonText('Stornieren')`; Grund als Action-Feld.
-- Rückgängig: Toast mit Link auf eine Undo-Action, die den vorherigen Stand wiederherstellt.
+- Rückgängig: Nova-Meldungen (`Action::message`) haben keinen Knopf. Dafür braucht es eine eigene Komponente oder eine Action „Rückgängig“ beim letzten Verlaufseintrag, die nur den Status zurücksetzt.

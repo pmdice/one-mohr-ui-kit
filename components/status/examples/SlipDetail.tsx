@@ -72,6 +72,8 @@ export function SlipDetail({ initial = "default", now = NOW }: { initial?: Varia
     const dispatch = React.useCallback<Ctx["dispatch"]>((event) => {
         const passed = mounted.current === null ? 0 : Date.now() - mounted.current
         setElapsed(passed)
+        // A later scan or edit is not part of the status change any more: its undo would revert more than it says
+        if (event.type === "scan" || event.type === "field") setUndo(null)
         setWorld((w) => applyEvent(w, { ...event, actor: ME, at: now + passed } as SlipEvent))
     }, [now])
 
@@ -280,7 +282,7 @@ function Fields({ slip }: { slip: SlipState }) {
     const commit = (field: "weight" | "pieces", label: string) => (e: React.FocusEvent<HTMLInputElement>) => {
         const raw = e.target.value.trim()
         const value = raw === "" ? null : Number(raw)
-        if (value !== null && Number.isNaN(value)) return
+        if ((value !== null && Number.isNaN(value)) || value === slip[field]) return
         dispatch({ type: "field", slip: slip.id, field, label, value })
     }
     const input = "h-control w-full rounded-control border border-border-strong bg-surface px-3 text-sm text-fg tabular-nums read-only:border-border read-only:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
@@ -359,8 +361,8 @@ function ScanBox() {
                 resolve={(code) => resolveScan({ code, station, stationLabel: stationLabel(station), targets, lastScans, now: Date.now() })}
                 onScan={(result) => {
                     if (!result.target) return
-                    if (result.kind !== "duplicate") lastScans.set(normalizeIdentifier(result.target.code), Date.now())
                     if (result.kind !== "in" && result.kind !== "out") return
+                    lastScans.set(normalizeIdentifier(result.target.code), Date.now())
                     const slip = world.slips.find((s) => number(s) === result.target!.label)!
                     dispatch({ type: "scan", slip: slip.id, station, device: `Tablet ${stationLabel(station)}` })
                 }}

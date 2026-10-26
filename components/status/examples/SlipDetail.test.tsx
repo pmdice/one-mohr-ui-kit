@@ -6,7 +6,7 @@ import { NOW } from './slip'
 
 const scan = async (code: string, station?: string) => {
     if (station) await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Diese Station' }), station)
-    await userEvent.type(screen.getByRole('textbox', { name: 'Code scannen' }), `${code}{Enter}`)
+    await userEvent.type(screen.getByRole('textbox', { name: /Code scannen/ }), `${code}{Enter}`)
 }
 const head = () => screen.getByRole('banner')
 const tab = async (name: string) => userEvent.click(within(screen.getByRole('navigation', { name: 'Seitenbereiche' })).getByRole('link', { name: new RegExp(`^${name}`) }))
@@ -94,6 +94,35 @@ describe('SlipDetail', () => {
         render(<SlipDetail now={NOW} />)
         await scan('26100013-2/4', 'guss')
         expect(screen.getByRole('alert')).toHaveTextContent('26100013 – 2/4 ist fertig. Kein Scan möglich.')
+    })
+
+    it('a second read of a closed slip is refused again, not "Schon erfasst"', async () => {
+        render(<SlipDetail now={NOW} />)
+        await scan('26100013-2/4', 'guss')
+        await scan('26100013-2/4')
+        expect(screen.getByRole('alert')).toHaveTextContent('26100013 – 2/4 ist fertig. Kein Scan möglich. (2×)')
+    })
+
+    it('a scan or field change after a status change removes its undo', async () => {
+        render(<SlipDetail now={NOW} />)
+        await userEvent.click(screen.getByRole('link', { name: '26100013 – 4/4' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Fortsetzen' }))
+        expect(screen.getByRole('button', { name: 'Rückgängig' })).toBeInTheDocument()
+        const weight = screen.getByRole('textbox', { name: 'Gewicht (g)' })
+        await userEvent.clear(weight)
+        await userEvent.type(weight, '250')
+        await userEvent.tab()
+        expect(screen.queryByRole('button', { name: 'Rückgängig' })).toBeNull()
+    })
+
+    it('canceling at a station leaves the station', async () => {
+        render(<SlipDetail now={NOW} />)
+        await userEvent.click(screen.getByRole('button', { name: /Status ändern/ }))
+        await userEvent.click(screen.getByRole('menuitem', { name: 'Stornieren' }))
+        await userEvent.type(screen.getByRole('textbox', { name: /Grund/ }), 'Kunde hat abgesagt')
+        await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Stornieren' }))
+        expect(head()).toHaveTextContent('Unterwegs, zuletzt Guss')
+        expect(head()).not.toHaveTextContent('Länger als üblich')
     })
 
     it('a field change is written to the history', async () => {

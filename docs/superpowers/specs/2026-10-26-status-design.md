@@ -162,7 +162,7 @@ nicht beantworten.
 - Einträge sind Sätze mit Namen und Bezeichnungen statt IDs und Feldnamen: „P. Mohr hat Gewicht von 412 g
   auf 418 g geändert“.
 - Status-Wechsel nutzen die Badges aus S-01.
-- Die Zeit ist relativ („vor 5 min“, ab gestern als Datum), mit genauer Zeit als `title`.
+- Die Zeit ist relativ („vor 5 min“, gestern als „gestern 14:05“, davor als Datum), mit genauer Zeit als `title`.
 - Gleichartige Einträge derselben Person innerhalb von 5 Minuten werden zusammengefasst und lassen sich
   aufklappen („P. Mohr hat 3 Felder geändert“).
 
@@ -223,8 +223,8 @@ Uhr.
 - Stationen (Ort) wie in Teil 3: 3D, Guss, Polissage, Versand, mit Richtzeiten (z. B. Guss 4 h).
 
 **Auftrag:** Der Status ist aus seinen 4 Laufzetteln abgeleitet.
-- *Offen*: alle offen.
 - *Storniert*: alle storniert.
+- *Offen*: alle nicht stornierten offen (Nachtrag nach dem Review: ein stornierter Zettel startet die Arbeit nicht).
 - *Fertig*: alle fertig oder storniert, und mindestens einer fertig.
 - *In Arbeit*: sonst.
 - Dazu immer „x von n Laufzetteln erledigt“.

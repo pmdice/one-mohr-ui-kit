@@ -30,5 +30,5 @@ Gesperrte Felder ohne Erklärung sehen aus wie ein Fehler der Software.
 
 ## Übertragen
 
-- In Nova: `->readonly(fn () => $this->isClosed())` statt `->disabled`, dazu ein Hinweis-Feld oben in der Detail-Ansicht.
+- In Nova: `->readonly(fn () => $this->isClosed())` und ein Hinweis-Panel oben in der Detail-Ansicht. Nova zeigt schreibgeschützte Felder im Formular grau – gesperrte Datensätze besser gar nicht im Formular öffnen, sondern auf der Detailseite lesen lassen.
 - „Wieder öffnen“ als eigene Action mit Policy; ohne Recht den Hinweis anzeigen, wer es darf.

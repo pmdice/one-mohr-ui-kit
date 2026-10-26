@@ -6,6 +6,7 @@ import { NavLink } from "@/components/nav/NavLink"
 import { ViewFilter } from "@/components/nav/ViewFilter"
 import { cn } from "@/lib/utils"
 import { groupActivity, type ActivityEntry } from "./activity"
+import { StatusBadge } from "./StatusBadge"
 import { formatDateTime, formatRelative } from "./time"
 import { useNow } from "./useNow"
 
@@ -26,7 +27,9 @@ function Sentence({ entry }: { entry: ActivityEntry }) {
         <>
             <span className="font-medium text-fg">{entry.actor}</span>{" "}
             {entry.kind === "field" && <>hat {entry.field} von <Value>{entry.from}</Value> auf <Value>{entry.to}</Value> geändert</>}
-            {entry.kind === "status" && <>hat Status von {entry.from} auf {entry.to} gesetzt</>}
+            {entry.kind === "status" && (
+                <>hat Status von {entry.statusFrom ? <StatusBadge status={entry.statusFrom} /> : entry.from} auf {entry.statusTo ? <StatusBadge status={entry.statusTo} /> : entry.to} gesetzt</>
+            )}
             {entry.kind === "location" && entry.text}
             {entry.note && <> – {entry.note}</>}
             {entry.via === "scan" && <span className="text-fg-muted"> · per Scan{entry.device ? ` (${entry.device})` : ""}</span>}

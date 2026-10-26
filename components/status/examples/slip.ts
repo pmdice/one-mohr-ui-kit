@@ -115,7 +115,10 @@ export type SlipEvent =
     | { type: "undo"; slip: string; previous: SlipState; actor: string; at: number }
     | { type: "field"; slip: string; field: "weight" | "pieces"; label: string; value: number | null; actor: string; at: number }
 
-const label = (status: string) => statusOf(SLIP_WORKFLOW, status).label
+const change = (from: string, to: string) => {
+    const statusFrom = statusOf(SLIP_WORKFLOW, from), statusTo = statusOf(SLIP_WORKFLOW, to)
+    return { statusFrom, statusTo, from: statusFrom.label, to: statusTo.label }
+}
 const CLOSED = new Set(["fertig", "storniert"])
 
 /** All changes of the example; every one leaves an entry (S-09). */
@@ -134,29 +137,39 @@ export function applyEvent(world: World, event: SlipEvent): World {
                 next = { ...slip, visits, station: null, lastStation: event.station, locationSince: event.at }
                 add({ actor: event.actor, via: "scan", device: event.device, kind: "location", text: `hat ausgescannt aus ${stationLabel(event.station)}` })
             } else {
+                // Scanned in elsewhere without scanning out: the old visit ends here, and the history says so (S-09)
+                if (slip.station) add({ actor: event.actor, via: "scan", device: event.device, kind: "location", text: `hat ausgescannt aus ${stationLabel(slip.station)}` })
                 const nth = slip.visits.filter((v) => v.station === event.station).length + 1
                 next = { ...slip, visits: [...visits, visit(event.station, event.at, null)], station: event.station, lastStation: null, locationSince: event.at }
                 add({ actor: event.actor, via: "scan", device: event.device, kind: "location", text: `hat eingescannt in ${stationLabel(event.station)}${nth >= 2 ? ` (${nth}. Durchlauf)` : ""}` })
                 if (slip.status === "offen") {
                     next = { ...next, status: "in-arbeit", statusSince: event.at }
-                    add({ actor: "System", via: "system", kind: "status", from: label("offen"), to: label("in-arbeit") })
+                    add({ actor: "System", via: "system", kind: "status", ...change("offen", "in-arbeit") })
                 }
             }
             break
         }
         case "transition": {
+            const closing = CLOSED.has(event.to)
             next = {
                 ...slip,
                 status: event.to,
                 statusSince: event.at,
-                closed: CLOSED.has(event.to) ? { at: event.at, by: event.actor, reason: event.reason } : null,
+                closed: closing ? { at: event.at, by: event.actor, reason: event.reason } : null,
             }
-            add({ actor: event.actor, via: "hand", kind: "status", from: label(slip.status), to: label(event.to), note: event.reason })
+            add({ actor: event.actor, via: "hand", kind: "status", ...change(slip.status, event.to), note: event.reason })
+            // A closed slip cannot stay at a station: it could neither be scanned out nor stop counting time
+            if (closing && slip.station) {
+                next = { ...next, station: null, lastStation: slip.station, locationSince: event.at, visits: slip.visits.map((v) => (v.out === null ? { ...v, out: event.at } : v)) }
+                add({ actor: "System", via: "system", kind: "location", text: `hat ausgescannt aus ${stationLabel(slip.station)}` })
+            }
             break
         }
         case "undo": {
-            next = { ...event.previous }
-            add({ actor: event.actor, via: "hand", kind: "status", from: label(slip.status), to: label(event.previous.status), note: "Rückgängig gemacht" })
+            // Only the status goes back; scans and field changes since then stay (S-09)
+            const { status, statusSince, closed } = event.previous
+            next = { ...slip, status, statusSince, closed }
+            add({ actor: event.actor, via: "hand", kind: "status", ...change(slip.status, status), note: "Rückgängig gemacht" })
             break
         }
         case "field": {

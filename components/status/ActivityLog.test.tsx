@@ -51,6 +51,14 @@ describe('ActivityLog', () => {
         expect(screen.getByRole('link', { name: 'Ganzer Verlauf' })).toHaveAttribute('href', '?tab=verlauf')
     })
 
+    it('shows status changes as badges', () => {
+        const offen = { id: 'offen', label: 'Offen', category: 'planned' as const }
+        const aktiv = { id: 'in-arbeit', label: 'In Arbeit', category: 'active' as const }
+        render(<ActivityLog entries={[{ ...ENTRIES[1], from: undefined, to: undefined, statusFrom: offen, statusTo: aktiv }]} now={now} />)
+        expect(items()[0]).toHaveTextContent('P. Mohr hat Status von Offen auf In Arbeit gesetzt')
+        expect(items()[0].querySelector('[data-category="active"]')).not.toBeNull()
+    })
+
     it('adds the reason of a change', () => {
         render(<ActivityLog entries={[{ ...ENTRIES[1], note: 'Kunde hat abgesagt' }]} now={now} />)
         expect(items()[0]).toHaveTextContent('P. Mohr hat Status von Offen auf In Arbeit gesetzt – Kunde hat abgesagt')

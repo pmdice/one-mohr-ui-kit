@@ -30,5 +30,5 @@ Der Verlauf ist die Antwort auf „wer hat das geändert?“ – aber nur, wenn 
 
 ## Übertragen
 
-- In Nova: `spatie/laravel-activitylog` oder eine eigene `activities`-Tabelle per Model-Observer (die Nova-Action-Events allein decken Feldänderungen ausserhalb von Actions nicht ab); Scans schreiben in denselben Log.
+- In Nova: Die Action Events (`Actionable`) protokollieren Änderungen, die über Nova gemacht werden, mit alt und neu. Scans, API und Jobs laufen daran vorbei – deshalb `spatie/laravel-activitylog` oder ein Model-Observer, damit alles in einem Log landet.
 - Einträge append-only; keine Edit-/Delete-Actions dafür.
