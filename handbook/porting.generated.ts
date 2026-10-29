@@ -13,7 +13,7 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "id": "A-02",
         "title": "Meins zuerst",
         "notes": [
-            "Nova: Lenses („Meine Laufzettel“) mit `->where('assigned_to', $request->user()->id)` und ein Link darauf von der Startseite.",
+            "Nova: ein Filter „Meine“ auf der normalen Liste (N-09: eine Ansicht ist ein Filter, keine eigene Seite) und ein Link mit diesem Filter von der Startseite; eine Lens nur, wenn die Abfrage wirklich anders ist.",
             "Gespeicherte Ansicht „Meine“ als Standard der Liste (N-09)."
         ]
     },
@@ -22,7 +22,7 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "title": "Dringendes oben und mit Grund",
         "notes": [
             "Laravel: `orderBy('due_at')->orderByDesc('urgency_rank')`; der Grund aus `formatDue` (D-06) im Resource-Feld.",
-            "Nova: Index-Sortierung der Lens über `$request->orderBy`-Standard setzen."
+            "Nova: in `indexQuery()` bzw. `Lens::query()` die Standard-Reihenfolge mit `$request->withOrdering($query, fn ($q) => $q->orderBy('due_at')->orderByDesc('urgency_rank'))` setzen."
         ]
     },
     {
@@ -45,7 +45,7 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "id": "A-06",
         "title": "Zahlen sagen von wann sie sind",
         "notes": [
-            "Nova: Metrics mit `->refreshWhenActionsRun()`; Zeitstempel als Hilfetext der Karte.",
+            "Nova: `->refreshWhenActionsRun()` lädt Metrics nur nach Aktionen neu; „Stand …“ und das Neuladen beim Sichtbarwerden brauchen eine eigene Card mit etwas JavaScript.",
             "JS: `document.addEventListener('visibilitychange', …)` und Neuladen der Karte."
         ]
     },
