@@ -42,3 +42,6 @@ next-env.d.ts
 
 # storybook build output
 /storybook-static
+
+# Git worktrees for parallel feature work
+.worktrees/
