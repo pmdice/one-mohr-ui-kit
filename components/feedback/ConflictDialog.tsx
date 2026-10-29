@@ -33,7 +33,7 @@ export function ConflictDialog({ open, changes, by, at, now, record = "diesen Au
             initialFocus={back}
             hideClose
             title={`${by} hat ${record} inzwischen geändert`}
-            description={<span title={formatDateTime(at)}>Geändert {formatRelative(at, now)}, nachdem Sie ihn geöffnet haben. Wählen Sie für jede Abweichung, was gelten soll.</span>}
+            description={<span title={formatDateTime(at)}>Geändert {formatRelative(at, now)}, nachdem Sie die Seite geöffnet haben. Wählen Sie für jede Abweichung, was gelten soll.</span>}
             footer={
                 <>
                     <Button ref={back} variant="ghost" onClick={onCancel}>Zurück zum Formular</Button>

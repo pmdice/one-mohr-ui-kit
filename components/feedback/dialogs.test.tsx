@@ -52,7 +52,7 @@ describe('SessionDialog', () => {
     })
 
     it('a wrong password says so at the field and keeps the dialog', async () => {
-        const onLogin = vi.fn().mockRejectedValue(new Error('Passwort stimmt nicht.'))
+        const onLogin = vi.fn().mockRejectedValue('Passwort stimmt nicht.')
         render(<SessionDialog open user="P. Mohr" onLogin={onLogin} onDone={vi.fn()} />)
         await userEvent.type(screen.getByLabelText('Passwort'), 'falsch')
         await userEvent.click(screen.getByRole('button', { name: 'Anmelden' }))

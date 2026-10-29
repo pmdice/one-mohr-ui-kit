@@ -29,7 +29,9 @@ const OUTCOMES = [
     { value: "server", label: "Serverfehler" },
 ]
 
-type Values = { due: string | null; qty: number | null; note: string }
+type Values = { due: string | null; qty: number | null; note: string; version: number }
+/** The content without the version: a version bump alone is not a change (R-05). */
+const contentKey = ({ due, qty, note }: Values) => JSON.stringify([due, qty, note])
 
 /** Every way a save can go (R-01–R-10), triggered from the simulation bar. */
 export function SaveExample({ delay = 600 }: { delay?: number }) {
@@ -40,7 +42,10 @@ function Example({ delay }: { delay: number }) {
     const { notify } = useNotice()
     const [outcome, setOutcome] = React.useState<Outcome>("ok")
     const [online, setOnline] = React.useState(true)
-    const [values, setValues] = React.useState<Values>({ due: "2026-11-13", qty: 48, note: "Steine nicht mitgiessen." })
+    const [values, setValues] = React.useState<Values>({ due: "2026-11-13", qty: 48, note: "Steine nicht mitgiessen.", version: 2 })
+    /** What the simulated server holds; its version answers "has someone else changed it?" (R-08). */
+    const record = React.useRef<Values>({ due: "2026-11-13", qty: 48, note: "Steine nicht mitgiessen.", version: 2 })
+    const [queued, setQueued] = React.useState<Values | null>(null)
     const [status, setStatus] = React.useState("Offen")
     const [log, setLog] = React.useState<string[]>([])
     const [conflict, setConflict] = React.useState(false)
@@ -64,17 +69,29 @@ function Example({ delay }: { delay: number }) {
             if (next !== "ok") setOutcome("ok")
             if (next === "offline") return reject({ offline: true })
             if (next === "session") { setSession(true); return reject({ status: 419 }) }
-            if (next === "conflict") { setConflict(true); return reject({ status: 409 }) }
+            // Someone else saves in between: the server now holds their version
+            if (next === "conflict") record.current = { ...record.current, due: "2026-11-16", note: "Steine separat liefern.", version: record.current.version + 1 }
             if (next === "server") return reject({ status: 500 })
-            setLog((l) => [...l, `Gespeichert: ${v.due ?? "kein Termin"} · ${v.qty ?? "–"} Stk. · ${v.note}`])
+            if (v.version !== record.current.version) { setConflict(true); return reject({ status: 409 }) }
+            record.current = { ...v, version: v.version + 1 }
+            setValues((cur) => ({ ...cur, version: record.current.version }))
+            setLog((l) => [...l, `Version ${v.version}: ${v.due ?? "kein Termin"} · ${v.qty ?? "–"} Stk. · ${v.note}`])
             resolve()
         }, delay)
     }), [delay])
 
-    const save = useSave<Values>(server, { now: () => NOW })
+    const save = useSave<Values>(server, { now: () => NOW, key: contentKey })
     const change = (patch: Partial<Values>) => { setValues((v) => ({ ...v, ...patch })); save.markDirty() }
 
     const startExport = () => { setNow(NOW); setExportStart(NOW) }
+
+    // Without a connection the save waits and runs when it is back (R-10)
+    const submit = () => { if (online) void save.run(values); else setQueued(values) }
+    React.useEffect(() => {
+        if (!online || !queued) return
+        setQueued(null)
+        void save.run(queued)
+    }, [online, queued, save])
 
     return (
         <div className="flex min-h-full flex-col gap-4 bg-surface-sunken p-4 text-fg" data-density="compact">
@@ -87,10 +104,10 @@ function Example({ delay }: { delay: number }) {
                 </section>
             </section>
 
-            <ConnectionBanner online={online} waiting={online ? 0 : save.state === "dirty" ? 1 : 0} />
+            <ConnectionBanner online={online} waiting={queued ? 1 : 0} />
 
             <form
-                onSubmit={(e) => { e.preventDefault(); void save.run(values) }}
+                onSubmit={(e) => { e.preventDefault(); submit() }}
                 className="flex max-w-2xl flex-col gap-5 rounded-panel border border-border bg-surface p-5"
             >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -131,10 +148,9 @@ function Example({ delay }: { delay: number }) {
                 <FormField label="Notiz"><Textarea rows={2} value={values.note} onChange={(e) => change({ note: e.target.value })} /></FormField>
 
                 <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-4">
-                    <SaveIndicator state={save.state} savedAt={save.savedAt} error={save.state === "failed" && (conflict || session) ? undefined : save.error} now={NOW} onRetry={() => void save.retry()} />
-                    <Button type="submit" busy={save.state === "saving"} disabled={!online}>Speichern</Button>
+                    <SaveIndicator state={save.state} savedAt={save.savedAt} error={save.error} now={NOW} onRetry={() => void save.retry()} />
+                    <Button type="submit" busy={save.state === "saving"}>Speichern</Button>
                 </div>
-                {!online && <p className="m-0 text-right text-xs text-fg-muted">Speichern geht wieder, sobald die Verbindung zurück ist.</p>}
             </form>
 
             <ConflictDialog
@@ -143,8 +159,17 @@ function Example({ delay }: { delay: number }) {
                 at={NOW - 3 * 60_000}
                 now={NOW}
                 changes={[{ field: "Liefertermin", mine: values.due ?? "–", theirs: "Mo, 16.11.2026" }, { field: "Notiz", mine: values.note, theirs: "Steine separat liefern." }]}
-                onKeepMine={() => { setConflict(false); void save.retry() }}
-                onKeepTheirs={() => { setConflict(false); setValues((v) => ({ ...v, due: "2026-11-16", note: "Steine separat liefern." })) }}
+                // Mine: sent again against the version that is now on the server, not the stale one
+                onKeepMine={() => { setConflict(false); const v = { ...values, version: record.current.version }; setValues(v); void save.run(v) }}
+                onKeepTheirs={() => {
+                    setConflict(false)
+                    const server = record.current
+                    const merged = { ...values, due: server.due, note: server.note, version: server.version }
+                    setValues(merged)
+                    save.reset(server)
+                    // Own changes to other fields are still there and still unsaved
+                    if (merged.qty !== server.qty) save.markDirty()
+                }}
                 onCancel={() => setConflict(false)}
             />
             <SessionDialog

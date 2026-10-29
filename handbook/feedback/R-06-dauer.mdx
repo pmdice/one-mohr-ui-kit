@@ -30,5 +30,5 @@ Ohne Zeichen glaubt man nach zwei Sekunden, es hänge. Ein Kreisel ohne Text sag
 
 ## Übertragen
 
-- Laravel: lange Vorgänge als Queue-Job; Fortschritt über eine Spalte oder Cache abfragen; Nova: `Action` mit `ShouldQueue` und `Action::message('Export läuft im Hintergrund')`.
+- Laravel: lange Vorgänge als Queue-Job; Fortschritt über eine Spalte oder Cache abfragen; Nova: `Action` mit `ShouldQueue` – Nova meldet selbst, dass die Aktion eingereiht wurde; was `handle()` zurückgibt, läuft auf dem Worker und erreicht den Browser nicht.
 - Benachrichtigung am Ende über Nova Notifications (`NovaNotification`).
