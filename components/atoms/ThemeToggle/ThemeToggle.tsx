@@ -56,7 +56,7 @@ export function ThemeToggle() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.97 }}
                         transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.2 }}
-                        className="absolute right-0 top-full z-50 mt-1 min-w-[8rem] overflow-hidden rounded-panel border border-border bg-surface-raised p-1 shadow-lg"
+                        className="absolute right-0 top-full z-50 mt-1 min-w-[8rem] overflow-hidden rounded-panel border border-border bg-surface-raised p-1 shadow-overlay"
                     >
                         {OPTIONS.map(({ value, label, Icon }) => (
                             <button

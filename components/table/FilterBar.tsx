@@ -78,7 +78,7 @@ export function FilterBar({ fields, active, onChange, total, filteredTotal, noun
                             role="dialog"
                             aria-labelledby={titleId}
                             onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); setAdding(false); triggerRef.current?.focus() } }}
-                            className="absolute left-0 top-full z-40 mt-1 flex w-60 flex-col gap-2 rounded-panel border border-border bg-surface-raised p-3 shadow-lg"
+                            className="absolute left-0 top-full z-40 mt-1 flex w-60 flex-col gap-2 rounded-panel border border-border bg-surface-raised p-3 shadow-overlay"
                         >
                             <p id={titleId} className="m-0 text-xs font-medium text-fg">Filter hinzufügen</p>
                             <label className="flex flex-col gap-1 text-xs text-fg-muted">

@@ -17,7 +17,7 @@ interface CardProps {
 export function Card({ className, interactive = false, children, style, onClick, id }: CardProps) {
     const shouldReduce = useReducedMotion()
     const base = cn(
-        "rounded-panel border border-border bg-surface-raised p-6 shadow-sm",
+        "rounded-panel border border-border bg-surface-raised p-6",
         className
     )
 
@@ -27,7 +27,7 @@ export function Card({ className, interactive = false, children, style, onClick,
                 whileHover={shouldReduce ? undefined : { y: -4 }}
                 whileTap={shouldReduce ? undefined : { scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className={cn(base, "transition-shadow hover:shadow-lg")}
+                className={cn(base, "transition-colors hover:border-border-strong")}
                 style={style}
                 onClick={onClick}
                 id={id}

@@ -49,6 +49,9 @@
 
   --text-control: var(--control-text);
 
+  --shadow-overlay: var(--shadow-overlay);
+  --ease-out-soft: var(--ease-out);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -64,6 +67,14 @@
 
 @utility pl-control {
   padding-left: var(--control-px);
+}
+
+@utility duration-fast {
+  transition-duration: var(--dur-fast);
+}
+
+@utility duration-base {
+  transition-duration: var(--dur-base);
 }
 
 @utility gap-stack {

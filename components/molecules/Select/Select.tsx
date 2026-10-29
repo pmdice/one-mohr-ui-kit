@@ -137,7 +137,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(function 
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={shouldReduce ? { duration: 0 } : { duration: 0.12, ease: "easeOut" }}
-                        className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
+                        className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-panel border border-border bg-surface-raised py-1 shadow-overlay"
                     >
                         {options.map((option, index) => (
                             <li
