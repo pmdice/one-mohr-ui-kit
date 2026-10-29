@@ -35,8 +35,8 @@ describe('toCsv', () => {
         expect(csv).toContain(';1200;412.5;14.11.2026;')
     })
 
-    it('keeps leading zeros of identifiers by quoting them as text', () => {
-        expect(csv).toContain('\r\n"00123";')
+    it('keeps leading zeros of identifiers as ="…", which Excel keeps as text', () => {
+        expect(csv).toContain('\r\n="00123";')
     })
 
     it('quotes values with separators, quotes or line breaks', () => {

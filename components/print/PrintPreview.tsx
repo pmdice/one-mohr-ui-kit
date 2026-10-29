@@ -1,8 +1,11 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { Printer } from "lucide-react"
 import { Button } from "@/components/atoms/Button/Button"
+
+const subscribeNothing = () => () => {}
 
 /**
  * Shows what comes out of the printer before it does (P-01): pages at a glance, how many, and the hint to
@@ -15,9 +18,11 @@ export function PrintPreview({ title, pages, onPrint = () => window.print() }: {
     onPrint?: () => void
 }) {
     const count = pages.length === 1 ? "1 Seite" : `${pages.length} Seiten`
+    // The printer gets its own copy at real size, directly under body (after hydration, so server and client match)
+    const mounted = React.useSyncExternalStore(subscribeNothing, () => true, () => false)
     return (
         <div className="flex flex-col gap-3">
-            <div className="print-hide flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-surface px-4 py-2 text-sm text-fg">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-border bg-surface px-4 py-2 text-sm text-fg">
                 <span className="flex flex-col">
                     <span className="font-medium">{title}</span>
                     <span className="text-xs text-fg-muted">{count} · A4 hoch</span>
@@ -27,14 +32,15 @@ export function PrintPreview({ title, pages, onPrint = () => window.print() }: {
                     <Button size="sm" onClick={onPrint}><Printer className="h-3.5 w-3.5" aria-hidden="true" />Drucken</Button>
                 </span>
             </div>
-            <div className="print-area flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4">
                 {pages.map((page, i) => (
-                    // Half size on screen, real size on paper
-                    <div key={i} className="print-page h-[148.5mm] w-[105mm] overflow-hidden shadow-overlay">
+                    // Half size on screen only
+                    <div key={i} className="h-[148.5mm] w-[105mm] overflow-hidden shadow-overlay">
                         <div className="origin-top-left scale-50">{page}</div>
                     </div>
                 ))}
             </div>
+            {mounted && createPortal(<div className="print-root" aria-hidden="true">{pages}</div>, document.body)}
         </div>
     )
 }

@@ -3,7 +3,7 @@ import { Barcode } from "./Barcode"
 
 /**
  * The run slip that travels with the piece (P-02): the number very large, the barcode, then exactly what the
- * station shows (W-05) in the same order, and notes in a box. Readable in black and white; A6, four per A4.
+ * station shows (W-05) in the same order, notes in a box right after it (as on the station). Readable in black and white; A6, four per A4.
  */
 export function RunSlip({ number, code, customer, material, pieces, urgency, notes = [] }: {
     /** As people say it: "26100013 – 3/4". */
@@ -26,17 +26,17 @@ export function RunSlip({ number, code, customer, material, pieces, urgency, not
                 {urgent && <span className="bg-black px-[2mm] py-[1mm] text-[3.5mm] font-bold tracking-wider text-white">DRINGEND</span>}
             </div>
             <Barcode value={code} height={14} />
+            {notes.length > 0 && (
+                <div role="note" className="border-2 border-black p-[2mm] text-[4mm] font-semibold">
+                    {notes.map((n) => <p key={n} className="m-0">{n}</p>)}
+                </div>
+            )}
             <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-[4mm] gap-y-[1.5mm] text-[4mm]">
                 <dt>Kunde</dt><dd className="m-0 font-semibold">{customer}</dd>
                 <dt>Material</dt><dd className="m-0 font-semibold">{material}</dd>
                 <dt>Stück</dt><dd className="m-0 font-semibold tabular-nums">{pieces}</dd>
                 <dt>Dringlichkeit</dt><dd className="m-0 font-semibold">{urgency}</dd>
             </dl>
-            {notes.length > 0 && (
-                <div role="note" className="mt-auto border-2 border-black p-[2mm] text-[4mm] font-semibold">
-                    {notes.map((n) => <p key={n} className="m-0">{n}</p>)}
-                </div>
-            )}
         </article>
     )
 }

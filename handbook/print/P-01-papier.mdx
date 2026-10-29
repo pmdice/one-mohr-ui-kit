@@ -30,5 +30,5 @@ Gedruckt wird auf Schwarzweiss-Laserdruckern, oft als Kopie einer Kopie. Was auf
 
 ## Übertragen
 
-- Laravel: Druckansichten als eigene Blade-Views mit Druck-CSS oder als PDF (z. B. spatie/browsershot oder barryvdh/laravel-dompdf); in Nova als Action, die das PDF zurückgibt (`Action::download()`).
+- Laravel: Druckansichten als eigene Blade-Views mit Druck-CSS oder als PDF (z. B. spatie/browsershot oder barryvdh/laravel-dompdf); in Nova als Action, die das PDF speichert und mit `Action::download($url, $name)` (eine URL, nicht der Inhalt) anbietet.
 - Farben im Druck nur, wenn der Drucker sicher farbig ist – und dann zusätzlich zu Wort und Form.

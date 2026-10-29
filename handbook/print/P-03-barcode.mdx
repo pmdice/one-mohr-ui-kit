@@ -31,5 +31,5 @@ Ein Barcode ist ein Mass, keine Grafik. Wird er skaliert, gestaucht oder steht T
 
 ## Übertragen
 
-- PHP: picqer/php-barcode-generator (`BarcodeGeneratorSVG`, Typ `TYPE_CODE_128`) mit Breitenfaktor so, dass ein Modul ≥ 0.33 mm ist.
-- Etikettendrucker (Zebra) drucken mit ZPL eigene Barcodes – dort `^BC` mit `^BY2` bei 203 dpi.
+- PHP: picqer/php-barcode-generator (`BarcodeGeneratorSVG`, Typ `TYPE_CODE_128`) – der Breitenfaktor ist in SVG-Einheiten; das SVG mit `width` in mm einbetten, damit ein Modul ≥ 0.33 mm wird.
+- Etikettendrucker (Zebra) drucken mit ZPL eigene Barcodes – dort `^BC` mit `^BY3` bei 203 dpi (3 Punkte = 0.375 mm); `^BY2` erst ab 300 dpi.
