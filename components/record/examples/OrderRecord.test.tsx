@@ -15,11 +15,11 @@ describe('Beispiel: Datensatz Auftrag', () => {
 
     it('changes the delivery date in place and writes it into the history', async () => {
         setup()
-        await userEvent.click(screen.getByRole('button', { name: 'Liefertermin ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Liefertermin ändern/ }))
         const field = screen.getByRole('textbox', { name: 'Liefertermin' })
         await userEvent.clear(field)
         await userEvent.type(field, '20.11.{Enter}')
-        expect(await screen.findByRole('button', { name: 'Liefertermin ändern' })).toHaveTextContent('Fr, 20.11.2026')
+        expect(await screen.findByRole('button', { name: /^Liefertermin ändern/ })).toHaveTextContent('Fr, 20.11.2026')
         const history = screen.getByRole('region', { name: 'Verlauf' })
         expect(within(history).getByText(/Liefertermin/)).toBeInTheDocument()
     })
@@ -27,7 +27,7 @@ describe('Beispiel: Datensatz Auftrag', () => {
     it('when saving fails the typed value stays with the reason', async () => {
         setup()
         await userEvent.click(screen.getByRole('switch', { name: 'Speichern schlägt fehl' }))
-        await userEvent.click(screen.getByRole('button', { name: 'Bestellnummer des Kunden hinzufügen' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Bestellnummer des Kunden hinzufügen/ }))
         await userEvent.type(screen.getByRole('textbox', { name: 'Bestellnummer des Kunden' }), 'PO-4471{Enter}')
         expect(await screen.findByRole('alert')).toHaveTextContent('Keine Verbindung zum Server. Nochmals versuchen oder später speichern.')
         expect(screen.getByRole('textbox', { name: 'Bestellnummer des Kunden' })).toHaveValue('PO-4471')
@@ -54,5 +54,44 @@ describe('Beispiel: Datensatz Auftrag', () => {
         await userEvent.click(within(dialog).getByRole('button', { name: 'Adresse speichern' }))
         expect(screen.queryByRole('dialog')).toBeNull()
         expect(screen.getByRole('region', { name: 'Eigenschaften' })).toHaveTextContent('Nidau')
+    })
+
+    it('arrow keys move the choice; Enter saves it', async () => {
+        setup()
+        await userEvent.click(screen.getByRole('button', { name: /^Dringlichkeit ändern/ }))
+        expect(screen.getByRole('radio', { name: 'Normal' })).toHaveFocus()
+        await userEvent.keyboard('{ArrowRight}{ArrowRight}{Enter}')
+        expect(await screen.findByRole('button', { name: /^Dringlichkeit ändern/ })).toHaveTextContent('Warten')
+    })
+
+    it('arrow keys in the date field do not save on their own', async () => {
+        setup()
+        await userEvent.click(screen.getByRole('button', { name: /^Liefertermin ändern/ }))
+        await userEvent.keyboard('{ArrowUp}{ArrowUp}')
+        expect(screen.getByRole('textbox', { name: 'Liefertermin' })).toHaveValue('15.11.2026')
+        await userEvent.keyboard('{Enter}')
+        expect(await screen.findByRole('button', { name: /^Liefertermin ändern/ })).toHaveTextContent('So, 15.11.2026')
+    })
+
+    it('an unreadable date stays in the field when leaving', async () => {
+        setup()
+        await userEvent.click(screen.getByRole('button', { name: /^Liefertermin ändern/ }))
+        const field = screen.getByRole('textbox', { name: 'Liefertermin' })
+        await userEvent.clear(field)
+        await userEvent.type(field, '31.02.2027')
+        await userEvent.click(screen.getByRole('heading', { name: /Positionen/ }))
+        expect(screen.getByRole('textbox', { name: 'Liefertermin' })).toHaveValue('31.02.2027')
+    })
+
+    it('a cancelled address edit is gone when the dialog opens again, and cancelling with changes asks first', async () => {
+        setup()
+        await userEvent.click(screen.getByRole('button', { name: 'Lieferadresse bearbeiten' }))
+        const street = within(screen.getByRole('dialog')).getByRole('textbox', { name: 'Strasse' })
+        await userEvent.clear(street)
+        await userEvent.type(street, 'Falsch 1')
+        await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Abbrechen' }))
+        await userEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Verwerfen' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Lieferadresse bearbeiten' }))
+        expect(within(screen.getByRole('dialog')).getByRole('textbox', { name: 'Strasse' })).toHaveValue('Zentralstrasse 12')
     })
 })
