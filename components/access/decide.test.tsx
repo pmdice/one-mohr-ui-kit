@@ -6,7 +6,7 @@ import { Guarded } from './Guarded'
 
 const archive = { roles: ['buero', 'leitung'], when: (ctx: { open: boolean }) => (ctx.open ? 'Zuerst alle Laufzettel abschliessen.' : null) }
 const remove = { roles: ['leitung'] }
-const price = { roles: ['buero', 'leitung'], known: 'Nur Büro und Teamleitung' }
+const price = { roles: ['buero', 'leitung'], known: { roles: ['werkstatt'], text: 'Nur Büro und Teamleitung' } }
 
 describe('decide', () => {
     it('a role that never may: hidden', () => {
@@ -19,7 +19,7 @@ describe('decide', () => {
         expect(decide(price, { role: 'werkstatt' })).toEqual({ kind: 'disabled', reason: 'Nur Büro und Teamleitung', requestable: true })
     })
     it('a missing role wins over a state reason', () => {
-        expect(decide({ ...archive, known: 'Nur Büro' }, { role: 'gast', open: true })).toEqual({ kind: 'disabled', reason: 'Nur Büro', requestable: true })
+        expect(decide({ ...archive, known: { roles: ['gast'], text: 'Nur Büro' } }, { role: 'gast', open: true })).toEqual({ kind: 'disabled', reason: 'Nur Büro', requestable: true })
     })
     it('otherwise allowed', () => {
         expect(decide(archive, { role: 'leitung', open: false })).toEqual({ kind: 'allowed' })

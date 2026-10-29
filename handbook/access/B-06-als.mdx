@@ -30,5 +30,5 @@ Ohne Band vergisst man nach fünf Minuten, als wer man gerade arbeitet – und �
 
 ## Übertragen
 
-- Nova: `Nova::impersonation()` bzw. `Impersonatable` am User; Nova zeigt ein Band – den Text nach dieser Regel anpassen und im Audit-Log `impersonator_id` speichern.
+- Nova: Trait `Laravel\Nova\Auth\Impersonatable` am User mit `canImpersonate()`/`canBeImpersonated()`; Nova bietet „Stop Impersonating“ im Benutzermenü – das Band nach dieser Regel im eigenen Layout ergänzen; in den Events `StartedImpersonating`/`StoppedImpersonating` den Wechsel und im Audit-Log `impersonator_id` festhalten.
 - Laravel: lab404/laravel-impersonate mit eigenem Band im Layout.

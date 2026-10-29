@@ -18,6 +18,8 @@ Eine Werkstatt, die nie löscht, braucht keinen Löschen-Knopf – er wäre nur 
 
 - Die Entscheidung als eine Regel pro Aktion an einer Stelle (`decide`), nicht verstreut in Templates.
 - Fehlt die Rolle, gewinnt das vor einem Zustandsgrund: „Nur Teamleitung“ ist die wichtigere Auskunft.
+- „Kennen muss“ gilt für bestimmte Rollen (die Werkstatt fragt Terminverschiebungen an), nicht für alle ohne Recht.
+- Welche Schritte ein Zustand überhaupt anbietet, regelt S-05; diese Regel sagt nur, wie ein angebotener, aber gerade unmöglicher Schritt aussieht.
 
 ## Gut / Schlecht
 
@@ -30,5 +32,5 @@ Eine Werkstatt, die nie löscht, braucht keinen Löschen-Knopf – er wäre nur 
 
 ## Übertragen
 
-- Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt); `->canRun(fn ($request, $model) => …)` sperrt (Zustand); für „kennen muss“ die Action sichtbar lassen und in `handle()` mit `Action::danger('Nur Teamleitung …')` antworten.
-- Laravel: die gleiche Unterscheidung in der Policy – `before()` für Rollen, die Methode für den Zustand, und `Response::deny('Grund')` statt `false`.
+- Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt). `->canRun()` lässt die Action sichtbar und lehnt erst beim Ausführen ab – einen Grund zeigt Nova dabei nicht; für Zustand und „kennen muss“ darum in `handle()` mit `Action::danger('Zuerst alle Laufzettel abschliessen.')` antworten.
+- Laravel: in jeder Policy-Methode zuerst die Rolle, dann den Zustand prüfen und `Response::deny('Grund')` statt `false` zurückgeben (`before()` ist für globale Ausnahmen wie Administratoren gedacht).

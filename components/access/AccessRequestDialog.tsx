@@ -18,13 +18,16 @@ export function AccessRequestDialog({ open, what, to, onSend, onClose }: {
     const [reason, setReason] = React.useState("")
     const [missing, setMissing] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
+    const [failed, setFailed] = React.useState(false)
     const field = React.useRef<HTMLTextAreaElement>(null)
     const id = React.useId()
 
     const send = async () => {
         if (!reason.trim()) { setMissing(true); field.current?.focus(); return }
         setBusy(true)
-        try { await onSend(reason.trim()) } finally { setBusy(false) }
+        setFailed(false)
+        // A failed request says so here and keeps what was typed (R-07)
+        try { await onSend(reason.trim()) } catch { setFailed(true) } finally { setBusy(false) }
     }
 
     return (
@@ -48,6 +51,7 @@ export function AccessRequestDialog({ open, what, to, onSend, onClose }: {
                     onChange={(e) => { setReason(e.target.value); if (e.target.value.trim()) setMissing(false) }}
                 />
                 {missing && <p id={`${id}-error`} className="m-0 text-xs text-danger">Bitte kurz sagen, wofür Sie den Zugriff brauchen.</p>}
+                {failed && <p role="alert" className="m-0 text-xs text-danger">Anfrage nicht gesendet. Erneut versuchen.</p>}
             </div>
         </Dialog>
     )

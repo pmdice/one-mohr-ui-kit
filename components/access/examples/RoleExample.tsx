@@ -29,7 +29,8 @@ const ROLES: { value: Role; label: string; person: string }[] = [
 /* The rules of this page, in one place (B-01); a server applies the same ones to every request (B-08). */
 const RULES = {
     edit: { roles: ["buero", "leitung"] } satisfies AccessRule<Ctx>,
-    move: { roles: ["buero", "leitung"], known: "Nur Büro und Teamleitung" } satisfies AccessRule<Ctx>,
+    move: { roles: ["buero", "leitung"], known: { roles: ["werkstatt"], text: "Nur Büro und Teamleitung" } } satisfies AccessRule<Ctx>,
+    impersonate: { roles: ["buero", "leitung"] } satisfies AccessRule<Ctx>,
     archive: { roles: ["buero", "leitung"], when: (c: Ctx) => (c.openSlips > 0 ? `Zuerst alle Laufzettel abschliessen (${c.openSlips} offen).` : null) } satisfies AccessRule<Ctx>,
     remove: { roles: ["leitung"] } satisfies AccessRule<Ctx>,
     prices: { roles: ["buero", "leitung"] } satisfies AccessRule<Ctx>,
@@ -84,8 +85,11 @@ export function RoleExample() {
             {impersonating && <ImpersonationBanner as="S. Keller" role="Werkstatt" onLeave={() => setImpersonating(false)} />}
             <div className="flex flex-col gap-4 p-4">
                 <section aria-label="Simulation" className="flex flex-wrap items-end gap-6 rounded-panel border border-dashed border-border-strong p-3 text-sm">
-                    <RadioGroup label="Angemeldet als" variant="segments" value={role} onChange={(v) => setRole(v as Role)} options={ROLES.map((r) => ({ value: r.value, label: r.label }))} />
-                    <Switch checked={impersonating} onChange={setImpersonating} label="Als S. Keller ansehen" description="Wie der Support die App einer Person sieht." />
+                    <RadioGroup label="Angemeldet als" variant="segments" value={role} disabled={impersonating} onChange={(v) => setRole(v as Role)} options={ROLES.map((r) => ({ value: r.value, label: r.label }))} />
+                    {/* Only who supports others may see the app as them (B-06) */}
+                    {decide(RULES.impersonate, { role, openSlips: 0 }).kind === "allowed" && (
+                        <Switch checked={impersonating} onChange={setImpersonating} label="Als S. Keller ansehen" description="Wie der Support die App einer Person sieht." />
+                    )}
                 </section>
 
                 <section aria-label="Auftrag 26100013" className="flex max-w-4xl flex-col gap-5 rounded-panel border border-border bg-surface p-5">
@@ -152,7 +156,7 @@ export function RoleExample() {
                 </section>
             </div>
 
-            <Dialog open={rights} onClose={() => setRights(false)} title="Was darf ich?" description={`${me.person} · ${me.label}`} size="lg">
+            <Dialog open={rights} onClose={() => setRights(false)} title={impersonating ? "Rechte von S. Keller" : "Was darf ich?"} description={`${me.person} · ${me.label}`} size="lg">
                 <RightsSummary role={me.label} rows={RIGHTS[effective]} />
             </Dialog>
             {request && (

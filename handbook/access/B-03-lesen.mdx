@@ -30,5 +30,5 @@ Ausgegraute Felder sind schwer zu lesen (zu wenig Kontrast), sehen kaputt aus un
 
 ## Übertragen
 
-- Nova: die Detailseite ist bereits Text; Bearbeiten über `authorizedToUpdate()` in der Policy ausblenden statt Felder `->readonly()` zu setzen.
+- Nova: die Detailseite ist bereits Text; den Bearbeiten-Knopf über die Policy-Methode `update()` ausblenden (Nova fragt sie über `authorizedToUpdate()` der Resource ab) statt Felder `->readonly()` zu setzen.
 - Eigene Formulare: Leseansicht als eigene Darstellung, nicht als `disabled` auf jedem Feld.

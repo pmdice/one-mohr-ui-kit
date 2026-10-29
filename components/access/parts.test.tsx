@@ -55,7 +55,7 @@ describe('ImpersonationBanner', () => {
     it('cannot be missed and leads back', async () => {
         const onLeave = vi.fn()
         render(<ImpersonationBanner as="S. Keller" role="Werkstatt" onLeave={onLeave} />)
-        expect(screen.getByRole('alert')).toHaveTextContent('Sie sehen die App als S. Keller (Werkstatt). Änderungen werden mit Ihrem Namen und dem von S. Keller festgehalten.')
+        expect(screen.getByRole('region', { name: 'Ansicht als S. Keller' })).toHaveTextContent('Sie sehen die App als S. Keller (Werkstatt). Änderungen werden mit Ihrem Namen und dem von S. Keller festgehalten.')
         await userEvent.click(screen.getByRole('button', { name: 'Zurück zu meinem Konto' }))
         expect(onLeave).toHaveBeenCalled()
     })

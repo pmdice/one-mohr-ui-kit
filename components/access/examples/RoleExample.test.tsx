@@ -51,8 +51,8 @@ describe('Beispiel: Rechte', () => {
     it('seeing it as someone else shows the band and leads back', async () => {
         render(<RoleExample />)
         await userEvent.click(screen.getByRole('switch', { name: 'Als S. Keller ansehen' }))
-        expect(screen.getByRole('alert')).toHaveTextContent('Sie sehen die App als S. Keller (Werkstatt).')
+        expect(screen.getByRole('region', { name: 'Ansicht als S. Keller' })).toHaveTextContent('Sie sehen die App als S. Keller (Werkstatt).')
         await userEvent.click(screen.getByRole('button', { name: 'Zurück zu meinem Konto' }))
-        expect(screen.queryByRole('alert')).toBeNull()
+        expect(screen.queryByRole('region', { name: 'Ansicht als S. Keller' })).toBeNull()
     })
 })

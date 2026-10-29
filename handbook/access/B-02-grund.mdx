@@ -30,5 +30,5 @@ Ein grauer Knopf ohne Grund ist die häufigste Sackgasse in Firmensoftware: Man 
 
 ## Übertragen
 
-- Nova: gesperrte Actions zeigt Nova ausgegraut ohne Grund – darum lieber sichtbar lassen und den Grund mit `Action::danger()` beim Ausführen nennen, oder den Grund als `->help()` in den Feldern.
+- Nova: mit `canRun` false bleibt eine Action im Menü und wird erst beim Ausführen abgelehnt, ohne Grund – darum den Grund selbst mit `Action::danger()` beim Ausführen nennen, oder als `->help()` in den Feldern der Action.
 - HTML: `aria-disabled="true"` und `aria-describedby` auf den Grund; Klick im Script abfangen.
