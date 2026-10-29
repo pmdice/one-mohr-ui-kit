@@ -21,7 +21,7 @@ export function RunSlip({ number, code, customer, material, pieces, urgency, not
     return (
         <article aria-labelledby={id} className="flex h-full flex-col gap-[3mm] border border-dashed border-black p-[5mm] text-black">
             <div className="flex items-start justify-between gap-[3mm]">
-                <h2 id={id} className="m-0 font-mono text-[9mm] font-bold leading-none tracking-tight">{number}</h2>
+                <h2 id={id} className="m-0 font-mono text-[8mm] font-bold leading-none tracking-tight">{number}</h2>
                 {/* Urgency as a word in a black box: still there on a black-and-white copy (P-01, S-01) */}
                 {urgent && <span className="bg-black px-[2mm] py-[1mm] text-[3.5mm] font-bold tracking-wider text-white">DRINGEND</span>}
             </div>
