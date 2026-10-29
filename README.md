@@ -14,6 +14,7 @@ Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind. Je
 | N | Navigation & App-Rahmen | Pfad, Menü, Zurück, Blättern, Seitenkopf, Suche, Tabs |
 | L | Listen & Tabellen | Kennung, Zahlen, Status, Filter, Sortierung, leer, laden, Tastatur, Auswahl |
 | D | Datensatz-Seite | Inhalt und Eigenschaften, Kennzahlen, leere Werte, Kopieren, Termine, Ändern an Ort und Stelle, Zugehöriges |
+| R | Speichern & Rückmeldung | Speicherstand, Meldungen, sofort mit Rückgängig, doppelt klicken, lange Vorgänge, Fehler in Sätzen, Konflikte, Sitzung, Verbindung |
 | S | Status & Lebenszyklus | Status-Sprache, erlaubte Schritte, Bestätigen, Scan, Sperre, Verlauf |
 | W | Werkstatt-Ansicht | Station, Kamera, grosse Ziele, Rückmeldung, Offline-Warteschlange |
 

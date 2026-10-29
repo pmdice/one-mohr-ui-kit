@@ -3,6 +3,7 @@
 import * as React from "react"
 import { AlertCircle, Check, Loader2 } from "lucide-react"
 import { formatDateTime, formatRelative } from "@/components/status/time"
+import { CopyButton } from "@/components/record/CopyButton"
 import type { Explained } from "./explainError"
 import type { SaveState } from "./useSave"
 
@@ -26,6 +27,7 @@ export function SaveIndicator({ state, savedAt, error, now, onRetry }: {
                 <>
                     <AlertCircle className="h-3.5 w-3.5 text-danger" aria-hidden="true" />
                     <span className="text-danger">Nicht gespeichert – {firstSentence(error?.message ?? "Unerwarteter Fehler.")}</span>
+                    {error?.code && <span className="flex items-center gap-0.5">Code <span className="font-mono">{error.code}</span><CopyButton value={error.code} label="Fehlercode" /></span>}
                     {error?.action === "retry" && (
                         <button type="button" onClick={onRetry} className="rounded-control font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Erneut versuchen</button>
                     )}

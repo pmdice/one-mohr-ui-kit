@@ -19,6 +19,7 @@ export const FOLDERS: Record<string, string> = {
     nav: "Navigation & App-Rahmen",
     table: "Listen & Tabellen",
     record: "Datensatz-Seite",
+    feedback: "Speichern & Rückmeldung",
     status: "Status & Lebenszyklus",
     workshop: "Werkstatt",
 }
@@ -92,6 +93,14 @@ export const CATALOG: CatalogEntry[] = [
     { name: "RecordMeta", path: "components/record/RecordMeta.tsx", purpose: "Wer hat wann angelegt und geändert, mit Link zum Verlauf.", rules: ["D-10"] },
     { name: "RelatedList", path: "components/record/RelatedList.tsx", purpose: "Zugehörige Datensätze mit Anzahl, „Alle N anzeigen“ und Aktion bei leer.", rules: ["D-09"] },
 
+    // Saving & feedback
+    { name: "ConflictDialog", path: "components/feedback/ConflictDialog.tsx", purpose: "Zeigt, wer inzwischen was geändert hat, und lässt wählen.", rules: ["R-08"] },
+    { name: "ConnectionBanner", path: "components/feedback/ConnectionBanner.tsx", purpose: "Sagt, dass die Verbindung fehlt und was wartet.", rules: ["R-10"] },
+    { name: "LongTask", path: "components/feedback/LongTask.tsx", purpose: "Zeigt einen Vorgang ab 1 s mit Text, ab 10 s mit Fortschritt oder Hintergrund.", rules: ["R-06"] },
+    { name: "Notices", path: "components/feedback/Notices.tsx", purpose: "Schwebende Meldungen, die pausieren, solange man sie liest; Fehler bleiben.", rules: ["R-02", "R-03", "R-04"] },
+    { name: "SaveIndicator", path: "components/feedback/SaveIndicator.tsx", purpose: "Der Speicherstand in Worten mit Zeit, Grund und „Erneut versuchen“.", rules: ["R-01", "R-07"] },
+    { name: "SessionDialog", path: "components/feedback/SessionDialog.tsx", purpose: "Neu anmelden über der Seite, ohne Eingaben zu verlieren.", rules: ["R-09"] },
+
     // Status & lifecycle
     { name: "ActivityLog", path: "components/status/ActivityLog.tsx", purpose: "Verlauf in Sätzen, gruppiert und filterbar.", rules: ["S-09", "S-11", "S-12"] },
     { name: "ConfirmDialog", path: "components/status/ConfirmDialog.tsx", purpose: "Rückfrage vor endgültigen Schritten mit Folgen und optionalem Grund.", rules: ["S-06"] },
@@ -100,7 +109,7 @@ export const CATALOG: CatalogEntry[] = [
     { name: "ScanField", path: "components/status/ScanField.tsx", purpose: "Scan-Feld für Hand-Scanner mit eindeutiger Rückmeldung.", rules: ["S-07"] },
     { name: "StatusBadge", path: "components/status/StatusBadge.tsx", purpose: "Status als Wort und Form, mit „seit …“ und Warnung bei zu langer Dauer.", rules: ["S-01", "S-02", "S-03"] },
     { name: "StatusMenu", path: "components/status/StatusMenu.tsx", purpose: "Status als Knopf, dessen Menü nur erlaubte Schritte anbietet.", rules: ["S-05"] },
-    { name: "UndoNotice", path: "components/status/UndoNotice.tsx", purpose: "Meldung mit „Rückgängig“ für ein paar Sekunden.", rules: ["S-06"] },
+    { name: "UndoNotice", path: "components/status/UndoNotice.tsx", purpose: "Meldung mit „Rückgängig“ für ein paar Sekunden, im Aussehen der Meldungen.", rules: ["S-06", "R-04"] },
 
     // Workshop
     { name: "CameraScanner", path: "components/workshop/CameraScanner.tsx", purpose: "Kamera als Seite mit Zielrahmen und Ersatz-Eingabe.", rules: ["W-02", "W-04"] },

@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R08Bad, R08Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-08 Konflikte zeigen statt überschreiben" />
+
+# R-08 · Konflikte zeigen statt überschreiben
+
+## Regel
+
+Hat jemand anderes den Datensatz seit dem Öffnen geändert, zeigt das Speichern einen Dialog: wer, wann, und Feld für Feld beide Werte. Man wählt: die eigenen Änderungen speichern oder die anderen übernehmen. Vorgewählt ist der sichere Weg: zurück zum Formular, Eingaben bleiben.
+
+## Warum
+
+Ohne Prüfung gewinnt, wer zuletzt speichert, und die Arbeit der anderen Person verschwindet spurlos. Das merkt man erst Tage später. Eine Version pro Datensatz erkennt den Fall zuverlässig.
+
+## Details
+
+- Jeder Datensatz trägt eine Version (oder `updated_at`), die beim Speichern mitgeschickt wird.
+- Felder, die nur eine Seite geändert hat, werden ohne Frage zusammengeführt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R08Good />}
+  bad={<R08Bad />}
+  goodCaption="Wer, was, beide Werte, Wahl"
+  badCaption="Still überschrieben"
+/>
+
+## Übertragen
+
+- Nova prüft das von Haus aus: Ändert jemand den Datensatz während der Bearbeitung, meldet Nova „Dieser Datensatz wurde geändert“ (`$trafficCop`) – eingeschaltet lassen. Für eigene Tools: `updated_at` mitsenden und bei Abweichung 409 zurückgeben.
+- Laravel: optimistische Sperre mit Spalte `version` und `where('version', $old)` beim Update.

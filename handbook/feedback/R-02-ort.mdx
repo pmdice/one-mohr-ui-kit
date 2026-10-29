@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R02Bad, R02Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-02 Die Rückmeldung steht dort wo man gehandelt hat" />
+
+# R-02 · Die Rückmeldung steht dort wo man gehandelt hat
+
+## Regel
+
+Antworte dort, wo gehandelt wurde: Fehler am Feld (F-03), Erfolg am Formular (R-01). Eine schwebende Meldung (Toast) nur, wenn der Ort verschwindet – gelöscht und zurück zur Liste – oder die Arbeit im Hintergrund weiterläuft. Eine schwebende Meldung verlangt nie, dass man etwas tut, ausser „Rückgängig“.
+
+## Warum
+
+Ein Toast unten rechts ist weit weg vom Feld, verschwindet von selbst und ist mit Bildschirmlesern leicht zu verpassen. Für einen Fehler, den man beheben muss, ist er der schlechteste Ort. Für „Gelöscht – Rückgängig“ dagegen der richtige: Die Zeile, an der man es tat, gibt es nicht mehr.
+
+## Details
+
+- Prüffehler nie als Toast.
+- Erfolg bei einer Aktion in einer Liste (Status gesetzt): an der Zeile, nicht als Toast.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R02Good />}
+  bad={<R02Bad />}
+  goodCaption="Fehler am Feld, Toast nur fürs Gelöschte"
+  badCaption="Prüffehler als Toast mit Spaltenname"
+/>
+
+## Übertragen
+
+- Nova: Validierungsfehler erscheinen am Feld – gut; `Action::message()` (Toast) nur für Aktionen, deren Zeile verschwindet oder die im Hintergrund laufen; Fehler mit `Action::danger()` mit Satz statt Ausnahme.
+- Laravel: `ValidationException::withMessages()` mit Feldnamen, damit die Meldung am Feld landet.

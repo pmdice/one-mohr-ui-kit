@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R01Bad, R01Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-01 Der Speicherstand ist immer sichtbar" />
+
+# R-01 · Der Speicherstand ist immer sichtbar
+
+## Regel
+
+Sag in Worten, wo das Speichern steht: „Nicht gespeicherte Änderungen“, „Speichert …“, „Gespeichert · vor 2 min“ (genaue Zeit beim Darüberfahren) oder „Nicht gespeichert – Keine Verbindung.“ mit „Erneut versuchen“. Der Stand steht neben dem Speichern-Knopf oder im Seitenkopf, immer an derselben Stelle.
+
+## Warum
+
+Wer nicht sieht, ob gespeichert ist, klickt sicherheitshalber noch einmal, bleibt auf der Seite oder tippt alles erneut. Vercel zeigt bei jedem Deployment den Stand in Worten und Zeit; man muss nie raten.
+
+## Details
+
+- Bei automatischem Speichern genauso: der Stand ersetzt den Knopf.
+- „Gespeichert“ erst, wenn der Server es bestätigt hat, nicht beim Absenden.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R01Good />}
+  bad={<R01Bad />}
+  goodCaption="Stand in Worten mit Zeit und Weg zurück"
+  badCaption="Knopf ohne Antwort"
+/>
+
+## Übertragen
+
+- Nova speichert mit Weiterleitung und Toast; für eigene Tools den Stand neben den Knopf schreiben (Vue: `saving`, `savedAt`, `error`).
+- Livewire: `wire:loading` für „Speichert …“, eine Eigenschaft `savedAt` für „Gespeichert · vor …“.

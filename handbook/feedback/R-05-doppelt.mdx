@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R05Bad, R05Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-05 Doppelt klicken speichert einmal" />
+
+# R-05 · Doppelt klicken speichert einmal
+
+## Regel
+
+Während des Speicherns ist der Knopf beschäftigt: er zeigt ein Zeichen, behält Text und Fokus, und weitere Klicks und Enter tun nichts. Derselbe Stand wird nicht zweimal gesendet. Auf dem Server macht ein Schlüssel pro Absenden doppelte Anfragen unschädlich.
+
+## Warum
+
+Wer nach einer Sekunde keine Antwort sieht, klickt noch einmal. Dann gibt es zwei Aufträge, zwei Rechnungen, zwei Verlaufseinträge. Ein deaktivierter Knopf verliert den Fokus und den Grund; ein beschäftigter nicht.
+
+## Details
+
+- `Button busy` im Kit: bleibt fokussierbar, schluckt Klicks.
+- Für Anlegen: Idempotenz-Schlüssel im Formular (verstecktes Feld), den der Server einmal annimmt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R05Good />}
+  bad={<R05Bad />}
+  goodCaption="Beschäftigt, ein Speichern"
+  badCaption="Dreimal angelegt"
+/>
+
+## Übertragen
+
+- Nova verhindert doppeltes Absenden der eigenen Formulare; bei eigenen Aktionen und Tools selbst sperren.
+- Laravel: Idempotenz-Schlüssel als eindeutige Spalte oder `Cache::lock()` pro Schlüssel.

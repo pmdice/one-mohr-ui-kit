@@ -6,6 +6,7 @@ import { STATUS_RULE_GROUPS } from './status/rules'
 import { WORKSHOP_RULE_GROUPS } from './workshop/rules'
 import { FOUNDATION_RULE_GROUPS } from './foundations/rules'
 import { INPUT_RULE_GROUPS } from './inputs/rules'
+import { FEEDBACK_RULE_GROUPS } from './feedback/rules'
 import { RECORD_RULE_GROUPS } from './records/rules'
 import type { RuleGroup } from './rules.types'
 
@@ -13,6 +14,10 @@ const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.
 const expected = (prefix: string, count = 12) => Array.from({ length: count }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
 
 describe('rule index', () => {
+    it('lists R-01 to R-10 once, in order, linking to saving pages', () => {
+        expect(ids(FEEDBACK_RULE_GROUPS)).toEqual(expected('R', 10))
+        for (const rule of FEEDBACK_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-speichern-r-/)
+    })
     it('lists D-01 to D-10 once, in order, linking to record pages', () => {
         expect(ids(RECORD_RULE_GROUPS)).toEqual(expected('D', 10))
         for (const rule of RECORD_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-datensatz-d-/)

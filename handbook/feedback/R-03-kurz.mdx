@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R03Bad, R03Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-03 Meldungen sind kurz und bleiben solange man sie braucht" />
+
+# R-03 · Meldungen sind kurz und bleiben solange man sie braucht
+
+## Regel
+
+Eine Meldung ist ein Satz im Perfekt (G-10) mit höchstens einer Aktion. Erfolg verschwindet nach 5 Sekunden, mit Rückgängig nach 8; solange der Zeiger oder der Fokus darauf ist, läuft die Zeit nicht, danach nur der Rest. Fehler bleiben, bis man sie schliesst. Höchstens drei gleichzeitig, die neueste unten.
+
+## Warum
+
+Wer liest, braucht Zeit; wer zum „Rückgängig“ greift, darf nicht im letzten Moment ins Leere klicken. Ein Fehler, der von selbst verschwindet, ist ein Fehler, den man nicht gesehen hat. Lange Sätze liest in einer schwebenden Meldung niemand.
+
+## Details
+
+- Erfolg als `role="status"`, Fehler als `role="alert"`.
+- Kein „erfolgreich“ und kein Ausrufezeichen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R03Good />}
+  bad={<R03Bad />}
+  goodCaption="Kurz, mit Rückgängig, Fehler bleibt"
+  badCaption="Lang, Fehler verschwindet von selbst"
+/>
+
+## Übertragen
+
+- Nova: `Action::message('Auftrag archiviert')` kurz halten; Toasts von Nova verschwinden nach Zeit; für Fehler `Action::danger()` mit Satz und nächstem Schritt – und was man beheben muss, gehört ohnehin ins Formular (R-02), nicht in einen Toast.
+- Eigene Toasts: Pause bei `mouseenter`/`focusin`, Restzeit merken.

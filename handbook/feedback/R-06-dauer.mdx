@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R06Bad, R06Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-06 Was dauert zeigt sich" />
+
+# R-06 · Was dauert zeigt sich
+
+## Regel
+
+Unter einer Sekunde zeig nichts – ein Aufblitzen ist schlimmer als warten. Ab einer Sekunde ein Zeichen mit Text, was gerade passiert („Exportiert 1’200 Aufträge …“). Ab zehn Sekunden Fortschritt, wenn bekannt, sonst das Angebot, im Hintergrund weiterzuarbeiten, mit einer Meldung am Ende.
+
+## Warum
+
+Ohne Zeichen glaubt man nach zwei Sekunden, es hänge. Ein Kreisel ohne Text sagt nicht, worauf man wartet. Nach zehn Sekunden will man weiterarbeiten statt zuzuschauen.
+
+## Details
+
+- Laden von Listen: L-08 (Skelett, kein Flackern).
+- Hintergrund: Ergebnis als Meldung mit Link („Export bereit · Herunterladen“).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R06Good />}
+  bad={<R06Bad />}
+  goodCaption="Text ab 1 s, Fortschritt ab 10 s"
+  badCaption="Kreisel ohne Text"
+/>
+
+## Übertragen
+
+- Laravel: lange Vorgänge als Queue-Job; Fortschritt über eine Spalte oder Cache abfragen; Nova: `Action` mit `ShouldQueue` und `Action::message('Export läuft im Hintergrund')`.
+- Benachrichtigung am Ende über Nova Notifications (`NovaNotification`).

@@ -15,17 +15,21 @@ export function useSave<T>(save: (value: T) => Promise<void>, { now = Date.now }
     const [error, setError] = React.useState<Explained | undefined>()
     const busy = React.useRef(false)
     const last = React.useRef<{ value: T } | null>(null)
+    /** What the server has: the same value again is not sent (a quick second click after a fast save). */
+    const saved = React.useRef<string | null>(null)
     const saveRef = React.useRef(save)
     React.useEffect(() => { saveRef.current = save })
 
     const run = React.useCallback(async (value: T) => {
         if (busy.current) return
+        if (saved.current !== null && saved.current === JSON.stringify(value)) { setState("saved"); return }
         busy.current = true
         last.current = { value }
         setState("saving")
         setError(undefined)
         try {
             await saveRef.current(value)
+            saved.current = JSON.stringify(value)
             setSavedAt(now())
             setState("saved")
         } catch (e) {
