@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { P05Bad, P05Good } from './examples'
+
+<Meta title="Handbuch/Druck/P-05 Export nimmt mit was man sieht" />
+
+# P-05 · Export nimmt mit was man sieht
+
+## Regel
+
+Exportier genau, was die Liste zeigt: dieselben Filter (L-05), dieselbe Sortierung (L-06), dieselben Spalten, und zwar alle Seiten, nicht nur die sichtbare. Das Menü sagt vorher, was in der Datei steht: „124 Laufzettel · Station: Guss“.
+
+## Warum
+
+Wer filtert und dann exportiert, erwartet die gefilterte Liste. Bekommt er alle 3’000 Zeilen oder nur die 50 der aktuellen Seite, merkt er es oft erst im Bericht an die Geschäftsleitung.
+
+## Details
+
+- „Alle 300 Laufzettel“, wenn kein Filter aktiv ist – auch das sagt das Menü.
+- Spalten in der Reihenfolge der Liste, Überschriften wie in der Liste.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<P05Good />}
+  bad={<P05Bad />}
+  goodCaption="Menü sagt, was exportiert wird"
+  badCaption="Export ignoriert die Filter"
+/>
+
+## Übertragen
+
+- Nova: `ExportAsCsv::make()` (ab Nova 4) exportiert die gewählten oder gefilterten Zeilen; die Felder mit `->withFormat(fn ($model) => [...])` auf die Spalten der Liste beschränken.
+- Laravel: denselben Query-Builder für Liste und Export verwenden (z. B. eine Scope-Klasse), nicht zwei.

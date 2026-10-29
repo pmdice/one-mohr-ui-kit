@@ -10,6 +10,7 @@ const AREAS = [
     { id: "R", title: "Speichern & Rückmeldung", description: "Speicherstand, Meldungen, Konflikte, Fehler in Sätzen." },
     { id: "S", title: "Status & Lebenszyklus", description: "Status-Sprache, erlaubte Schritte, Scan, Verlauf." },
     { id: "W", title: "Werkstatt-Ansicht", description: "Tablet an der Station: Kamera, Rückmeldung, offline." },
+    { id: "P", title: "Druck & Export", description: "Laufzettel, Barcodes, Export für Excel." },
 ]
 
 export default function Home() {

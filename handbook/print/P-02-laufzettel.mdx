@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { P02Bad, P02Good } from './examples'
+
+<Meta title="Handbuch/Druck/P-02 Der Laufzettel trägt das Nötigste gross" />
+
+# P-02 · Der Laufzettel trägt das Nötigste gross
+
+## Regel
+
+Druck auf den Laufzettel die Nummer sehr gross (9 mm), darunter den Barcode, dann genau das, was die Station auf dem Tablet zeigt (W-05) – Kunde, Material, Stück, Dringlichkeit – in derselben Reihenfolge. Hinweise („Steine nicht mitgiessen“) stehen in einem Kasten. A6, vier auf ein A4-Blatt, mit Schnittlinien.
+
+## Warum
+
+Der Zettel liegt neben dem Werkstück, wird mit Handschuhen angefasst und aus einem Meter gelesen. Was auf dem Tablet und auf dem Papier gleich aufgebaut ist, liest man ohne Umdenken.
+
+## Details
+
+- Dringend als Wort in einem schwarzen Kasten oben rechts.
+- Keine Preise, keine internen IDs, kein Logo auf dem Laufzettel.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<P02Good />}
+  bad={<P02Bad />}
+  goodCaption="Nummer gross, Barcode, vier Angaben"
+  badCaption="Alles, was die Datenbank hat"
+/>
+
+## Übertragen
+
+- Blade-View mit `@page { size: A4 }` und einem Raster 2 × 2 mit festen Massen in mm.
+- Die Reihenfolge der Angaben einmal festlegen und für Tablet (W-05) und Papier gleich verwenden.

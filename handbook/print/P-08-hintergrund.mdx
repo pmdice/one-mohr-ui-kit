@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { P08Bad, P08Good } from './examples'
+
+<Meta title="Handbuch/Druck/P-08 Grosses läuft im Hintergrund" />
+
+# P-08 · Grosses läuft im Hintergrund
+
+## Regel
+
+Exportier grosse Mengen (ab etwa 5’000 Zeilen oder wenn es länger als 10 s dauert) im Hintergrund: Die Arbeit geht weiter, am Ende kommt eine Meldung mit Link zum Herunterladen (R-06). Der Link funktioniert eine Zeit lang, die er nennt.
+
+## Warum
+
+Ein Export, der eine Minute lang die Seite blockiert, endet im Abbruch und einem zweiten Versuch. Im Hintergrund kann man weiterarbeiten, und der Server wird nicht doppelt belastet.
+
+## Details
+
+- Meldung: „Export bereit · Laufzettel_…csv herunterladen“, auch per E-Mail, wenn man die Seite verlassen hat.
+- Abbrechen möglich, solange er läuft.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<P08Good />}
+  bad={<P08Bad />}
+  goodCaption="Hintergrund mit Meldung"
+  badCaption="Seite blockiert eine Minute"
+/>
+
+## Übertragen
+
+- Laravel: Export als Queue-Job, Datei in `storage`, Link mit `URL::temporarySignedRoute()`; Nova: Action mit `ShouldQueue` und `NovaNotification` mit Link am Ende.
+- maatwebsite/excel: `->queue()` statt `->download()`.
