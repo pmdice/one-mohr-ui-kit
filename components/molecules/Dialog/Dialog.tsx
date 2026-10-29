@@ -5,7 +5,7 @@ import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const FOCUSABLE = 'button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+const FOCUSABLE = 'button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), a[href]:not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])'
 
 const SIZES = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-2xl" } as const
 
@@ -14,6 +14,14 @@ const Ancestors = React.createContext<string[]>([])
 
 /** Open dialogs share one scroll lock on the page. */
 let locks = 0
+
+/** Open dialogs; the deepest (last opened among equals) is the one on top. */
+const openDialogs: { id: string; depth: number; panel: () => HTMLElement | null }[] = []
+const isTop = (id: string) => {
+    const top = openDialogs.reduce<(typeof openDialogs)[number] | null>((best, d) => (!best || d.depth >= best.depth ? d : best), null)
+    return top?.id === id
+}
+const focusInto = (panel: HTMLElement | null) => (panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel)?.focus()
 
 /**
  * The one modal for the kit: labelled, focus starts inside and stays there, Escape and the backdrop close it,
@@ -41,12 +49,21 @@ export function Dialog({ open, onClose, title, description, role = "dialog", ini
     const chain = React.useMemo(() => [...ancestors, id], [ancestors, id])
     const panelRef = React.useRef<HTMLDivElement>(null)
     const bodyRef = React.useRef<HTMLDivElement>(null)
+    const backdropRef = React.useRef<HTMLDivElement>(null)
+    const closeRef = React.useRef(onClose)
+    React.useEffect(() => { closeRef.current = onClose })
 
     React.useEffect(() => {
         if (!open) return
         const returnTo = document.activeElement as HTMLElement | null
+        // Portalled to body, the dialog takes the density of the place it was opened from (G-06)
+        const density = returnTo?.closest("[data-density]")?.getAttribute("data-density")
+        if (density) backdropRef.current?.setAttribute("data-density", density)
         const host = returnTo?.closest<HTMLElement>("[data-dialog-chain]")
         // A dialog opened from inside this one already holds the focus
+        // Registered before moving focus, so the dialog below does not pull it back
+        const entry = { id, depth: chain.length, panel: () => panelRef.current }
+        openDialogs.push(entry)
         const nestedHasFocus = host != null && host !== panelRef.current && (host.dataset.dialogChain ?? "").split(" ").includes(id)
         if (!nestedHasFocus) {
             const target = initialFocus?.current ?? bodyRef.current?.querySelector<HTMLElement>(FOCUSABLE) ?? panelRef.current
@@ -54,31 +71,57 @@ export function Dialog({ open, onClose, title, description, role = "dialog", ini
         }
         locks += 1
         document.body.style.overflow = "hidden"
+
+        // Focus that left the dialog (an element removed, a click outside) is brought back on the next move
+        const onFocusIn = (e: FocusEvent) => {
+            const target = e.target as HTMLElement
+            if (!isTop(id) || panelRef.current?.contains(target) || target.closest?.("[data-floating]")) return
+            focusInto(panelRef.current)
+        }
+        // Escape with focus outside every dialog (e.g. on body) still closes the top one
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && !e.defaultPrevented && isTop(id)) { e.preventDefault(); closeRef.current() }
+        }
+        document.addEventListener("focusin", onFocusIn)
+        document.addEventListener("keydown", onKey)
         return () => {
+            document.removeEventListener("focusin", onFocusIn)
+            document.removeEventListener("keydown", onKey)
+            openDialogs.splice(openDialogs.indexOf(entry), 1)
             locks -= 1
             if (locks === 0) document.body.style.overflow = ""
-            if (!nestedHasFocus && returnTo?.isConnected) returnTo.focus()
+            if (nestedHasFocus) return
+            if (returnTo?.isConnected) { returnTo.focus(); return }
+            // The trigger is gone: fall back to the dialog this one was opened from, if it is still open
+            const parent = openDialogs.filter((d) => ancestors.includes(d.id)).pop()
+            focusInto(parent?.panel() ?? null)
         }
-    }, [open, id, initialFocus])
+    }, [open, id, initialFocus, chain, ancestors])
 
     if (!open || typeof document === "undefined") return null
     const hasBody = children !== undefined && children !== null && children !== false && children !== ""
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         // React events bubble through portals: the innermost open dialog answers and stops here
-        if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); onClose(); return }
+        if (e.key === "Escape") {
+            // Handled inside already (an open list, a calendar): that is all Escape should do
+            if (e.defaultPrevented) return
+            e.preventDefault(); e.stopPropagation(); onClose(); return
+        }
         if (e.key !== "Tab") return
         e.stopPropagation()
         const els = Array.from(panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [])
         if (els.length === 0) { e.preventDefault(); return }
         const first = els[0], last = els[els.length - 1]
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+        const active = document.activeElement
+        if (e.shiftKey && (active === first || active === panelRef.current)) { e.preventDefault(); last.focus() }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
     }
 
     return createPortal(
         <Ancestors.Provider value={chain}>
             <div
+                ref={backdropRef}
                 data-testid="dialog-backdrop"
                 onKeyDown={onKeyDown}
                 onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}

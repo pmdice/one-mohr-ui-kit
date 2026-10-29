@@ -23,6 +23,12 @@ function Harness({ onConfirm = vi.fn(), reason }: { onConfirm?: (r?: string) => 
 }
 
 describe('ConfirmDialog', () => {
+    it('buttons follow the density (W-03 targets on the tablet)', async () => {
+        render(<Harness />)
+        await userEvent.click(screen.getByRole('button', { name: 'Stornieren …' }))
+        for (const name of ['Abbrechen', 'Stornieren']) expect(screen.getByRole('button', { name }).className).toMatch(/\bh-control\b/)
+    })
+
     it('names the consequences and starts on Abbrechen', async () => {
         render(<Harness />)
         await userEvent.click(screen.getByRole('button', { name: 'Stornieren …' }))

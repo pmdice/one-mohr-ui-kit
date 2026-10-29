@@ -4,7 +4,8 @@
  * Components consume them through the Tailwind utilities mapped in globals.css.
  */
 
-:root {
+:root,
+.light {
   /* Surfaces */
   --surface: #ffffff;
   --surface-sunken: #f6f6f7;

@@ -1,18 +1,9 @@
 import * as React from "react"
 import { Unstyled } from "@storybook/addon-docs/blocks"
 import { ALL_RULE_GROUPS } from "./allRules"
-import { CATALOG } from "./catalog"
+import { CATALOG, FOLDERS } from "./catalog"
 import { docsHref } from "./RuleIndex"
 
-const FOLDERS: Record<string, string> = {
-    atoms: "Grundbausteine",
-    molecules: "Zusammengesetzte Bausteine",
-    forms: "Formulare",
-    nav: "Navigation & App-Rahmen",
-    table: "Listen & Tabellen",
-    status: "Status & Lebenszyklus",
-    workshop: "Werkstatt",
-}
 
 const RULES = new Map(ALL_RULE_GROUPS.flatMap((g) => g.rules.map((r) => [r.id, r] as const)))
 
@@ -38,17 +29,21 @@ export function Catalog() {
                                         <span className="mt-0.5 block font-mono text-xs text-fg-subtle">{entry.path}</span>
                                     </span>
                                     <span className="flex shrink-0 flex-wrap gap-1">
-                                        {entry.rules.map((id) => (
+                                        {entry.rules.map((id) => {
+                                            const rule = RULES.get(id)
+                                            if (!rule) return <span key={id} className="px-1.5 py-0.5 font-mono text-xs text-fg-subtle">{id}</span>
+                                            return (
                                             <a
                                                 key={id}
-                                                href={docsHref(RULES.get(id)!.docsId)}
+                                                href={docsHref(rule.docsId)}
                                                 target="_top"
-                                                title={RULES.get(id)!.title}
+                                                title={rule.title}
                                                 className="rounded-control border border-border px-1.5 py-0.5 font-mono text-xs text-fg-muted no-underline hover:border-border-strong hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
                                             >
                                                 {id}
                                             </a>
-                                        ))}
+                                            )
+                                        })}
                                     </span>
                                 </li>
                             ))}

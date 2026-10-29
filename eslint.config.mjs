@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Generated Storybook build
     "storybook-static/**",
+    // Parallel feature work in git worktrees
+    ".worktrees/**",
   ]),
 ]);
 

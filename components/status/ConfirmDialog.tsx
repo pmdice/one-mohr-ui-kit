@@ -57,8 +57,8 @@ export function ConfirmDialog({ open, title, consequences, confirmLabel, reason,
             }
             footer={
                 <>
-                    <Button ref={cancelRef} variant="outline" size="sm" onClick={onCancel}>Abbrechen</Button>
-                    <Button variant={tone === "danger" ? "destructive" : "default"} size="sm" onClick={confirm}>{confirmLabel}</Button>
+                    <Button ref={cancelRef} variant="outline" onClick={onCancel}>Abbrechen</Button>
+                    <Button variant={tone === "danger" ? "destructive" : "default"} onClick={confirm}>{confirmLabel}</Button>
                 </>
             }
         >

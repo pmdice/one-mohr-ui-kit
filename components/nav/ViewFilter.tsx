@@ -18,7 +18,7 @@ export function ViewFilter({ views, current, label, className }: { views: View[]
                         className={cn(
                             "flex items-center gap-1.5 rounded-[calc(var(--r-control)-2px)] px-2.5 py-1 text-xs whitespace-nowrap transition-colors",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                            active ? "bg-surface font-medium text-fg shadow-sm" : "text-fg-muted hover:text-fg"
+                            active ? "bg-surface font-medium text-fg shadow-sm" : "text-fg-muted hover:text-fg" // token-guard: allow — the chosen segment sits on its track
                         )}
                     >
                         {view.label}

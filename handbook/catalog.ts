@@ -10,6 +10,17 @@ export interface CatalogEntry {
     note?: string
 }
 
+/** Top-level folders under components/ with the heading they get on the page. */
+export const FOLDERS: Record<string, string> = {
+    atoms: "Grundbausteine",
+    molecules: "Zusammengesetzte Bausteine",
+    forms: "Formulare",
+    nav: "Navigation & App-Rahmen",
+    table: "Listen & Tabellen",
+    status: "Status & Lebenszyklus",
+    workshop: "Werkstatt",
+}
+
 export const CATALOG: CatalogEntry[] = [
     // Atoms
     { name: "Badge", path: "components/atoms/Badge/Badge.tsx", purpose: "Kurzes Etikett mit Bedeutungsfarbe.", rules: ["G-01"] },

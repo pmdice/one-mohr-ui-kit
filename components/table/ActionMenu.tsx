@@ -106,6 +106,7 @@ export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = labe
                     ref={menuRef}
                     id={menuId}
                     role="menu"
+                    data-floating=""
                     aria-label={menuLabel}
                     onKeyDown={onMenuKeyDown}
                     style={position}
