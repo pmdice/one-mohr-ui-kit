@@ -3,10 +3,11 @@ import { FORM_RULE_GROUPS } from './forms/rules'
 import { NAV_RULE_GROUPS } from './navigation/rules'
 import { LIST_RULE_GROUPS } from './lists/rules'
 import { STATUS_RULE_GROUPS } from './status/rules'
+import { WORKSHOP_RULE_GROUPS } from './workshop/rules'
 import type { RuleGroup } from './rules.types'
 
 const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.id))
-const expected = (prefix: string) => Array.from({ length: 12 }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
+const expected = (prefix: string, count = 12) => Array.from({ length: count }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
 
 describe('rule index', () => {
     it('lists N-01 to N-12 once, in order, linking to navigation pages', () => {
@@ -27,5 +28,10 @@ describe('rule index', () => {
     it('lists S-01 to S-12 once, in order, linking to status pages', () => {
         expect(ids(STATUS_RULE_GROUPS)).toEqual(expected('S'))
         for (const rule of STATUS_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-status-s-/)
+    })
+
+    it('lists W-01 to W-08 once, in order, linking to workshop pages', () => {
+        expect(ids(WORKSHOP_RULE_GROUPS)).toEqual(expected('W', 8))
+        for (const rule of WORKSHOP_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-werkstatt-w-/)
     })
 })

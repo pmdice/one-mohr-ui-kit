@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W07Bad, W07Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-07 Kein Scan geht verloren" />
+
+# W-07 · Kein Scan geht verloren
+
+## Regel
+
+Speichere einen Scan ohne Verbindung sofort auf dem Gerät, bestätige ihn als „gespeichert, wird gesendet“, zeig dauernd, wie viele warten, und sende sie später in Reihenfolge mit ihrer ursprünglichen Zeit.
+
+## Warum
+
+Ein verlorener Scan ist ein Zettel, der digital an der falschen Station steht – und das merkt man erst, wenn er gesucht wird.
+
+## Details
+
+- Ein Scan, den der Server ablehnt, bleibt sichtbar in der Liste und wird nicht stillschweigend verworfen.
+- Ein Netzfehler bricht den Versand ab; der nächste Versuch sendet jeden Scan genau einmal.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W07Good />}
+  bad={<W07Bad />}
+  goodCaption="Gespeichert, Anzeige „3 warten“"
+  badCaption="„Netzwerkfehler. Bitte erneut scannen.“"
+/>
+
+## Übertragen
+
+- Warteschlange in `localStorage` oder IndexedDB; jeder Scan hat eine ID vom Gerät, und das Backend ignoriert bereits gespeicherte IDs – so zählt ein doppelt gesendeter Scan nicht doppelt.
+- Die Zeit des Scans kommt vom Gerät, nicht vom Eingang beim Server.
+- Gesendet wird beim Laden der Seite, wenn der Browser das Netz zurückmeldet, und zusätzlich alle 30 Sekunden – `navigator.onLine` allein ist unzuverlässig.
+- Abgelehnte Scans stehen in einer eigenen Liste mit Grund, getrennt von den wartenden.

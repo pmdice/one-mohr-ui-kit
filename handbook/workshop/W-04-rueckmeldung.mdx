@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W04Bad, W04Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-04 Die Rückmeldung ist für Augen und Ohren" />
+
+# W-04 · Die Rückmeldung ist für Augen und Ohren
+
+## Regel
+
+Zeig jeden Scan über die ganze Breite mit dem grossen Wort EIN oder AUS, Icon, Farbe und einem Satz, spiel einen kurzen Ton (abschaltbar) und lass die Rückmeldung bis zum nächsten Scan stehen.
+
+## Warum
+
+Der Blick ist beim Werkstück. Ton und Grösse sagen aus dem Augenwinkel, ob es geklappt hat.
+
+## Details
+
+- Ein heller Ton für ein, zwei für aus, ein tiefer für Fehler; wo möglich zusätzlich Vibration.
+- Ein doppelt gelesener Code: „SCHON ERFASST“, ohne Ton.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W04Good />}
+  bad={<W04Bad />}
+  goodCaption="Grosses Wort, Satz, Ton"
+  badCaption="Kleiner Toast „OK“"
+/>
+
+## Übertragen
+
+- Töne über Web Audio brauchen nach jedem Laden der Seite eine erste Berührung (Autoplay-Regeln der Browser). Die Referenz schaltet den Ton bei der ersten Berührung irgendwo auf der Seite frei; die Kamera startet unabhängig davon von selbst (W-02).
+- `navigator.vibrate` gibt es auf Android, nicht auf iOS – der Ton muss allein reichen.

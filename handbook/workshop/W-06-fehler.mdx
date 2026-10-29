@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W06Bad, W06Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-06 Fehler sagen was jetzt zu tun ist" />
+
+# W-06 · Fehler sagen was jetzt zu tun ist
+
+## Regel
+
+Lass jede Fehlermeldung den nächsten Schritt nennen und einen versehentlichen Scan 10 Sekunden lang mit einem grossen Knopf zurücknehmen.
+
+## Warum
+
+In der Werkstatt gibt es niemanden, der fragt „und jetzt?“. Ein Fehler ohne nächsten Schritt führt zu einem Zettel, der liegen bleibt.
+
+## Details
+
+- „Code nicht erkannt. Nummer unten eintippen oder Zettel ins Büro bringen.“
+- „26100013 – 2/4 ist fertig. Kein Scan möglich. Zettel ins Büro bringen.“
+- Zurücknehmen: noch nicht gesendet → verworfen; schon gesendet → ausdrückliche Rücknahme dieses Scans, die der Verlauf festhält (S-09).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W06Good />}
+  bad={<W06Bad />}
+  goodCaption="Fehler mit nächstem Schritt"
+  badCaption="Fehlercode ohne Hilfe"
+/>
+
+## Übertragen
+
+- Das Backend antwortet bei Ablehnungen mit einem Satz für den Menschen, nicht nur mit einem Status-Code.
+- Eine Rücknahme ist ein eigener Befehl (`revoke(scanId)`), kein zweiter Scan desselben Codes – der würde von der Doppel-Sperre (S-07) abgelehnt.

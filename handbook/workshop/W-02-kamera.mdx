@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W02Bad, W02Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-02 Die Kamera ist die Seite" />
+
+# W-02 · Die Kamera ist die Seite
+
+## Regel
+
+Lass das Kamerabild den grössten Teil des Bildschirms füllen und von selbst starten, zeig mit einem Rahmen, wohin der Code gehört, und biete darunter immer eine Eingabe für Hand-Scanner oder Nummer.
+
+## Warum
+
+Am Tablet gibt es nichts anderes zu tun als zu scannen – und wenn die Kamera streikt, muss die Arbeit trotzdem weitergehen.
+
+## Details
+
+- Kamera verweigert: ein Satz, wie man sie erlaubt; keine Kamera oder keine Code-Erkennung: Hinweis auf die Eingabe.
+- Ein Code, der im Bild bleibt, zählt einmal – erst wenn er eine Sekunde weg war, wieder.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W02Good />}
+  bad={<W02Bad />}
+  goodCaption="Kamera gross, Eingabe darunter"
+  badCaption="Leere graue Fläche, wenn die Kamera fehlt"
+/>
+
+## Übertragen
+
+- `getUserMedia` braucht HTTPS. `BarcodeDetector` gibt es in Chrome auf Android, ChromeOS und macOS – nicht in Safari, Firefox, Chrome auf Windows/Linux und auf keinem iPad (alle iPad-Browser nutzen WebKit). Für Werkstatt-Tablets heisst das meist: eine Bibliothek wie ZXing einsetzen oder Android-Tablets wählen.
+- In Nova als eigenes Tool mit eigenem Layout oder als eigene Seite ausserhalb von Nova – nicht als Formular-Feld.

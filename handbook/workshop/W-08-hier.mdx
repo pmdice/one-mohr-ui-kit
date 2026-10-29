@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W08Bad, W08Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-08 Was hier liegt ist sichtbar" />
+
+# W-08 · Was hier liegt ist sichtbar
+
+## Regel
+
+Zeig neben der Kamera die Liste der Zettel, die an dieser Station eingescannt sind – die längsten zuerst, mit Dauer und Richtzeit-Warnung.
+
+## Warum
+
+Die Station sieht so, was liegen geblieben ist, und der Tisch stimmt mit dem Bildschirm überein.
+
+## Details
+
+- „Jetzt an Guss (5)“; ein Tippen zeigt die Karte des Zettels (W-05).
+- Richtzeit wie in S-03.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W08Good />}
+  bad={<W08Bad />}
+  goodCaption="Liste „Jetzt an Guss“"
+  badCaption="Nur am Arbeitsplatz sichtbar"
+/>
+
+## Übertragen
+
+- Die Liste per Polling (z. B. alle 30 s) oder Broadcasting (Laravel Echo) aktuell halten, damit Scans anderer Geräte erscheinen.

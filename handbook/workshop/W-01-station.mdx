@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { W01Bad, W01Good } from './examples'
+
+<Meta title="Handbuch/Werkstatt/W-01 Ein Gerät gehört zu einer Station" />
+
+# W-01 · Ein Gerät gehört zu einer Station
+
+## Regel
+
+Ordne das Tablet einmal einer Station zu, zeig sie gross auf jeder Werkstatt-Seite und mach den Wechsel bewusst – weit weg vom Scan und mit Bestätigung.
+
+## Warum
+
+Jeder Scan zählt an der Station des Geräts. Steht es auf der falschen, landet jeder Zettel falsch – und niemand merkt es.
+
+## Details
+
+- Ohne Station fragt das Gerät zuerst; gescannt wird erst danach.
+- Das Gerät merkt sich die Station; wartende Scans behalten ihre Station auch nach einem Wechsel.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<W01Good />}
+  bad={<W01Bad />}
+  goodCaption="Station gross, Wechsel bestätigt"
+  badCaption="Auswahlfeld neben dem Scan"
+/>
+
+## Übertragen
+
+- Die Station gehört zum Gerät (z. B. Geräte-Token mit `station_id`), nicht in jeden Request als frei wählbares Feld.
+- Der Server speichert jeden Scan mit der Station des Geräts.
