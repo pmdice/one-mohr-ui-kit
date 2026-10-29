@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B04Bad, B04Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-04 Was man nicht sehen darf hinterlässt keine Lücke" />
+
+# B-04 · Was man nicht sehen darf hinterlässt keine Lücke
+
+## Regel
+
+Felder, Spalten und Summen, die eine Rolle nicht sehen darf, sind nicht da – nicht leer, nicht „***“, nicht „—“. Auch Summen und Kennzahlen, aus denen sich der Wert ableiten liesse, fehlen.
+
+## Warum
+
+Eine leere Preisspalte sagt „hier gäbe es Preise“ und lädt zum Nachfragen ein; Sterne wirken wie ein Fehler. Eine Summe neben ausgeblendeten Einzelpreisen verrät sie trotzdem. Was nicht sichtbar sein soll, ist am sichersten gar nicht im Seitenquelltext.
+
+## Details
+
+- Nicht per CSS verstecken: was nicht gesehen werden darf, wird nicht geschickt.
+- Exporte (P-05) und Drucke folgen denselben Rechten.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B04Good />}
+  bad={<B04Bad />}
+  goodCaption="Keine Preisspalte für die Werkstatt"
+  badCaption="Spalte voller Sterne"
+/>
+
+## Übertragen
+
+- Nova: Felder mit `->canSee(fn ($request) => $request->user()->can('viewPrices'))` – Nova schickt sie dann gar nicht an den Browser; Metrics ebenso mit `->canSee()`.
+- API-Resources: `$this->when($request->user()->can(...), …)` statt `null`.

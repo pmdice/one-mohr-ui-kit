@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B06Bad, B06Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-06 Als jemand anderes ansehen ist unübersehbar" />
+
+# B-06 · Als jemand anderes ansehen ist unübersehbar
+
+## Regel
+
+Wer die App als andere Person sieht (Support, Einrichten), sieht oben ein unübersehbares Band: „Sie sehen die App als S. Keller (Werkstatt).“ mit „Zurück zu meinem Konto“. Alles, was dabei geändert wird, steht im Verlauf mit beiden Namen (S-09).
+
+## Warum
+
+Ohne Band vergisst man nach fünf Minuten, als wer man gerade arbeitet – und ändert in fremdem Namen. Der Verlauf mit beiden Namen schützt die Person, deren Konto benutzt wurde.
+
+## Details
+
+- Das Band liegt über allem und lässt sich nicht schliessen, nur verlassen.
+- Sicherheitskritisches (Passwort, Rechte) ist dabei gesperrt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B06Good />}
+  bad={<B06Bad />}
+  goodCaption="Band mit Weg zurück"
+  badCaption="Unsichtbar als andere Person"
+/>
+
+## Übertragen
+
+- Nova: Trait `Laravel\Nova\Auth\Impersonatable` am User mit `canImpersonate()`/`canBeImpersonated()`; Nova bietet „Stop Impersonating“ im Benutzermenü – das Band nach dieser Regel im eigenen Layout ergänzen; in den Events `StartedImpersonating`/`StoppedImpersonating` den Wechsel und im Audit-Log `impersonator_id` festhalten.
+- Laravel: lab404/laravel-impersonate mit eigenem Band im Layout.

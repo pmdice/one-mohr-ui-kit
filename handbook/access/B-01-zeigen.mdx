@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B01Bad, B01Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-01 Ausblenden sperren oder erklären" />
+
+# B-01 · Ausblenden sperren oder erklären
+
+## Regel
+
+Entscheide für jede Aktion und jedes Feld zwischen drei Möglichkeiten. Was eine Rolle nie darf, ist nicht da (N-10). Was sie grundsätzlich darf, aber gerade nicht (Zustand, S-05), ist sichtbar und gesperrt mit Grund. Was sie nicht darf, aber kennen muss, weil sie es anstossen soll, ist sichtbar mit „Nur Büro und Teamleitung“ und „Zugriff anfragen“ (B-07).
+
+## Warum
+
+Eine Werkstatt, die nie löscht, braucht keinen Löschen-Knopf – er wäre nur Lärm. Wer aber einen Liefertermin verschieben lassen muss, sucht den Knopf; findet er ihn nicht, fragt er sich, ob die Funktion fehlt. Die drei Fälle sauber zu trennen, macht die Oberfläche ruhig und trotzdem vollständig.
+
+## Details
+
+- Die Entscheidung als eine Regel pro Aktion an einer Stelle (`decide`), nicht verstreut in Templates.
+- Fehlt die Rolle, gewinnt das vor einem Zustandsgrund: „Nur Teamleitung“ ist die wichtigere Auskunft.
+- „Kennen muss“ gilt für bestimmte Rollen (die Werkstatt fragt Terminverschiebungen an), nicht für alle ohne Recht.
+- Welche Schritte ein Zustand überhaupt anbietet, regelt S-05; diese Regel sagt nur, wie ein angebotener, aber gerade unmöglicher Schritt aussieht.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B01Good />}
+  bad={<B01Bad />}
+  goodCaption="Löschen fehlt, Verschieben erklärt"
+  badCaption="Alles da, die Hälfte grau"
+/>
+
+## Übertragen
+
+- Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt). `->canRun()` lässt die Action sichtbar und lehnt erst beim Ausführen ab – einen Grund zeigt Nova dabei nicht; für Zustand und „kennen muss“ darum in `handle()` mit `Action::danger('Zuerst alle Laufzettel abschliessen.')` antworten.
+- Laravel: in jeder Policy-Methode zuerst die Rolle, dann den Zustand prüfen und `Response::deny('Grund')` statt `false` zurückgeben (`before()` ist für globale Ausnahmen wie Administratoren gedacht).

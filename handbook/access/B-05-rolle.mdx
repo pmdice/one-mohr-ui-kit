@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B05Bad, B05Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-05 Die Rolle ist sichtbar" />
+
+# B-05 · Die Rolle ist sichtbar
+
+## Regel
+
+Zeig im Benutzermenü Name und Rolle („S. Keller · Werkstatt“) und eine Seite oder einen Dialog „Was darf ich?“ mit einer Übersicht nach Bereichen: lesen, ändern, löschen – in Worten, nicht nur mit Haken.
+
+## Warum
+
+Wer weiss, als was er angemeldet ist, versteht, warum etwas fehlt, und fragt gezielt. Linear und Vercel zeigen die Rolle offen in den Einstellungen; in Firmensoftware mit vielen Rollen ist das noch wichtiger.
+
+## Details
+
+- Die Übersicht kommt aus denselben Regeln wie die Oberfläche (B-08), nicht aus einem gepflegten Text.
+- Bei mehreren Rollen alle nennen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B05Good />}
+  bad={<B05Bad />}
+  goodCaption="Rolle sichtbar, Übersicht in Worten"
+  badCaption="Keine Ahnung, als was man angemeldet ist"
+/>
+
+## Übertragen
+
+- Nova: `Nova::userMenu()` um Rolle und einen Menüpunkt „Was darf ich?“ (eigenes Tool) ergänzen.
+- Spatie Permission: `$user->getRoleNames()` und `getAllPermissions()` für die Übersicht.

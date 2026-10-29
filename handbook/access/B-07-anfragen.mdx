@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B07Bad, B07Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-07 Zugriff anfragen statt Sackgasse" />
+
+# B-07 · Zugriff anfragen statt Sackgasse
+
+## Regel
+
+Wo Rechte fehlen, gibt es „Zugriff anfragen“: ein kurzer Dialog mit dem Grund (Pflicht), der an die zuständige Person geht – mit einem Link auf genau diese Stelle. Danach sagt die Seite, dass die Anfrage gesendet ist.
+
+## Warum
+
+Eine Fehlerseite „403 – Keine Berechtigung“ ist eine Sackgasse: Man weiss nicht, wen man fragen soll, und wie man die Stelle wiederfindet. Mit Grund und Link kann die zuständige Person in Sekunden entscheiden.
+
+## Details
+
+- Der Grund ist Pflicht, kurz (eine Zeile reicht).
+- Die Anfrage nennt Person, Rolle, Stelle und Grund.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B07Good />}
+  bad={<B07Bad />}
+  goodCaption="Anfragen mit Grund und Link"
+  badCaption="„403 Forbidden“"
+/>
+
+## Übertragen
+
+- Laravel: Anfrage als Notification an die Rolle „Teamleitung“ (`Notification::send(...)`), mit `url()->previous()` als Link; in Nova als `NovaNotification` mit `->action('Öffnen', $url)`.
+- Die 403-Seite selbst bekommt denselben Knopf.

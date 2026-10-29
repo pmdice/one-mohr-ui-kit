@@ -7,6 +7,7 @@ import { WORKSHOP_RULE_GROUPS } from './workshop/rules'
 import { FOUNDATION_RULE_GROUPS } from './foundations/rules'
 import { INPUT_RULE_GROUPS } from './inputs/rules'
 import { PRINT_RULE_GROUPS } from './print/rules'
+import { ACCESS_RULE_GROUPS } from './access/rules'
 import { FEEDBACK_RULE_GROUPS } from './feedback/rules'
 import { RECORD_RULE_GROUPS } from './records/rules'
 import type { RuleGroup } from './rules.types'
@@ -15,6 +16,10 @@ const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.
 const expected = (prefix: string, count = 12) => Array.from({ length: count }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
 
 describe('rule index', () => {
+    it('lists B-01 to B-08 once, in order, linking to rights pages', () => {
+        expect(ids(ACCESS_RULE_GROUPS)).toEqual(expected('B', 8))
+        for (const rule of ACCESS_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-rechte-b-/)
+    })
     it('lists P-01 to P-08 once, in order, linking to print pages', () => {
         expect(ids(PRINT_RULE_GROUPS)).toEqual(expected('P', 8))
         for (const rule of PRINT_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-druck-p-/)
