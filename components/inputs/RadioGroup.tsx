@@ -32,6 +32,7 @@ export function RadioGroup({ value, onChange, options, label, variant = "list", 
         refs.current[next]?.focus()
     }
     const onKeyDown = (index: number) => (e: React.KeyboardEvent) => {
+        if (disabled) return
         if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); move(index, 1) }
         if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); move(index, -1) }
         if (e.key === " ") { e.preventDefault(); onChange(options[index].value) }
@@ -53,7 +54,8 @@ export function RadioGroup({ value, onChange, options, label, variant = "list", 
                         role: "radio",
                         "aria-checked": checked,
                         "aria-describedby": option.description ? `${id}-${index}-description` : undefined,
-                        tabIndex: index === current ? 0 : -1,
+                        tabIndex: index === current && !disabled ? 0 : -1,
+                        "aria-disabled": disabled || undefined,
                         onClick: () => !disabled && onChange(option.value),
                         onKeyDown: onKeyDown(index),
                     } as const

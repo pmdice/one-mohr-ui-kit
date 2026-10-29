@@ -53,6 +53,7 @@ export function PositionEntry({ today }: { today?: string }) {
     const [slip, setSlip] = React.useState(true)
     const [note, setNote] = React.useState("")
     const [files, setFiles] = React.useState<UploadedFile[]>([])
+    const [uploading, setUploading] = React.useState(false)
     const [stored, setStored] = React.useState<Stored | null>(null)
 
     const options = [...created, ...CUSTOMERS]
@@ -110,11 +111,12 @@ export function PositionEntry({ today }: { today?: string }) {
 
                 <div role="group" aria-labelledby="position-photos" className="flex flex-col gap-1">
                     <span id="position-photos" className="text-sm font-medium">Fotos</span>
-                    <FileDrop upload={simulateUpload} accept="image/*,.pdf" acceptLabel="Bilder oder PDF" maxBytes={10 * 1024 * 1024} capture="environment" onChange={setFiles} />
+                    <FileDrop upload={simulateUpload} accept="image/*,.pdf" acceptLabel="Bilder oder PDF" maxBytes={10 * 1024 * 1024} capture="environment" onChange={setFiles} onBusyChange={setUploading} />
                 </div>
 
-                <div className="flex justify-end border-t border-border pt-4">
-                    <Button type="submit">Position speichern</Button>
+                <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+                    {uploading && <span role="status" className="text-xs text-fg-muted">Fotos werden noch hochgeladen …</span>}
+                    <Button type="submit" disabled={uploading}>Position speichern</Button>
                 </div>
             </form>
 

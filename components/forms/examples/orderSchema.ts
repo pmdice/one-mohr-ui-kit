@@ -71,6 +71,8 @@ export const orderSchema = z
     })
     // Run even when other fields are invalid, so all missing fields show up at once
     .superRefine((order, ctx) => {
+        // A date field that could not read its text hands up "!<reason>" (E-04): saving stops with that reason
+        if (order.dueDate?.startsWith("!")) ctx.addIssue({ code: "custom", path: ["dueDate"], message: order.dueDate.slice(1) })
         order.positions?.forEach((p, i) => {
             if (p?.typ === "vorlage" && !p.articleId?.trim()) {
                 ctx.addIssue({ code: "custom", path: ["positions", i, "articleId"], message: "Bestehenden Artikel wählen" })

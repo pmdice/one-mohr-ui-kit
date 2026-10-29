@@ -5,14 +5,26 @@ import { AlertCircle, Check, FileText, RotateCcw, Upload as UploadIcon, X } from
 import { cn } from "@/lib/utils"
 import { formatBytes } from "./parse"
 
-/** Sends one file; reports progress from 0 to 1 and stops when the signal aborts. */
-export type Upload = (file: File, onProgress: (share: number) => void, signal: AbortSignal) => Promise<void>
+/** Sends one file; reports progress from 0 to 1, stops when the signal aborts, resolves to the server's reference. */
+export type Upload = (file: File, onProgress: (share: number) => void, signal: AbortSignal) => Promise<string | void>
 
-export interface UploadedFile { id: string; name: string; size: number; type: string }
+export interface UploadedFile {
+    id: string
+    name: string
+    size: number
+    type: string
+    /** What the server knows the file by; this is what a form saves. */
+    ref?: string
+}
 
 type Item = {
     id: string
-    file: File
+    name: string
+    size: number
+    type: string
+    /** Missing for files that were already uploaded before (`initial`). */
+    file?: File
+    ref?: string
     status: "uploading" | "done" | "rejected" | "failed"
     progress: number
     reason?: string
@@ -36,7 +48,7 @@ const nextId = () => `file-${++counter}`
  * Drop or choose files (E-10). Each file shows name, size, a preview for images and its progress; a refused file
  * says why at that very file while the others go on. Removing a file that is still uploading stops it.
  */
-export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = true, capture, onChange, className }: {
+export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = true, capture, onChange, onBusyChange, initial, className }: {
     upload: Upload
     /** As on <input type=file>, e.g. "image/*,.pdf". */
     accept?: string
@@ -46,15 +58,24 @@ export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = tru
     multiple?: boolean
     /** "environment" opens the back camera on a tablet. */
     capture?: "environment" | "user"
+    /** All finished files, the ones from `initial` included. */
     onChange: (files: UploadedFile[]) => void
+    /** True while any file is still uploading: a form should not save then. */
+    onBusyChange?: (busy: boolean) => void
+    /** Files that are already uploaded (e.g. the saved state of a form). */
+    initial?: UploadedFile[]
     className?: string
 }) {
-    const [items, setItems] = React.useState<Item[]>([])
+    const [items, setItems] = React.useState<Item[]>(() => (initial ?? []).map((f) => ({ ...f, status: "done" as const, progress: 1 })))
     const [over, setOver] = React.useState(false)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const hintId = React.useId()
 
-    const done = React.useMemo(() => items.filter((i) => i.status === "done").map((i) => ({ id: i.id, name: i.file.name, size: i.file.size, type: i.file.type })), [items])
+    const done = React.useMemo(() => items.filter((i) => i.status === "done").map((i) => ({ id: i.id, name: i.name, size: i.size, type: i.type, ...(i.ref ? { ref: i.ref } : {}) })), [items])
+    const busy = items.some((i) => i.status === "uploading")
+    const busyRef = React.useRef(onBusyChange)
+    React.useEffect(() => { busyRef.current = onBusyChange })
+    React.useEffect(() => { busyRef.current?.(busy) }, [busy])
     const doneKey = done.map((d) => d.id).join(",")
     const onChangeRef = React.useRef(onChange)
     React.useEffect(() => { onChangeRef.current = onChange })
@@ -76,7 +97,7 @@ export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = tru
         const controller = new AbortController()
         patch(id, { status: "uploading", progress: 0, reason: undefined, controller })
         upload(file, (share) => { if (!controller.signal.aborted) patch(id, { progress: share }) }, controller.signal).then(
-            () => { if (!controller.signal.aborted) patch(id, { status: "done", progress: 1 }) },
+            (ref) => { if (!controller.signal.aborted) patch(id, { status: "done", progress: 1, ...(ref ? { ref } : {}) }) },
             () => { if (!controller.signal.aborted) patch(id, { status: "failed", reason: "Hochladen fehlgeschlagen" }) }
         )
     }
@@ -84,13 +105,14 @@ export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = tru
     const add = (files: File[]) => {
         const added: Item[] = files.map((file) => {
             const id = nextId()
-            if (!accepts(file, accept)) return { id, file, status: "rejected", progress: 0, reason: `Dateityp nicht erlaubt. Erlaubt: ${acceptLabel}` }
-            if (file.size > maxBytes) return { id, file, status: "rejected", progress: 0, reason: `Zu gross: ${formatBytes(file.size)}, erlaubt ${formatBytes(maxBytes)}` }
+            const base = { id, file, name: file.name, size: file.size, type: file.type, progress: 0 }
+            if (!accepts(file, accept)) return { ...base, status: "rejected", reason: `Dateityp nicht erlaubt. Erlaubt: ${acceptLabel}` }
+            if (file.size > maxBytes) return { ...base, status: "rejected", reason: `Zu gross: ${formatBytes(file.size)}, erlaubt ${formatBytes(maxBytes)}` }
             const preview = file.type.startsWith("image/") && typeof URL.createObjectURL === "function" ? URL.createObjectURL(file) : undefined
-            return { id, file, status: "uploading", progress: 0, preview }
+            return { ...base, status: "uploading", preview }
         })
         setItems((list) => [...list, ...added])
-        added.filter((i) => i.status === "uploading").forEach((i) => start(i.id, i.file))
+        added.filter((i) => i.status === "uploading").forEach((i) => start(i.id, i.file!))
     }
 
     const remove = (item: Item) => {
@@ -137,7 +159,7 @@ export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = tru
             </div>
             {items.length > 0 && (
                 <ul className="m-0 flex list-none flex-col divide-y divide-border rounded-panel border border-border bg-surface p-0">
-                    {items.map((item) => <FileRow key={item.id} item={item} onRemove={() => remove(item)} onRetry={() => start(item.id, item.file)} />)}
+                    {items.map((item) => <FileRow key={item.id} item={item} onRemove={() => remove(item)} onRetry={() => item.file && start(item.id, item.file)} />)}
                 </ul>
             )}
         </div>
@@ -146,7 +168,7 @@ export function FileDrop({ upload, accept, acceptLabel, maxBytes, multiple = tru
 
 function FileRow({ item, onRemove, onRetry }: { item: Item; onRemove: () => void; onRetry: () => void }) {
     const nameId = React.useId()
-    const name = item.file.name
+    const name = item.name
     const bad = item.status === "rejected" || item.status === "failed"
     return (
         <li aria-labelledby={nameId} className="flex items-center gap-3 px-3 py-2">
@@ -157,7 +179,7 @@ function FileRow({ item, onRemove, onRetry }: { item: Item; onRemove: () => void
             <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="flex items-baseline gap-2">
                     <span id={nameId} className="truncate text-sm text-fg">{name}</span>
-                    <span className="shrink-0 font-mono text-xs tabular-nums text-fg-subtle">{formatBytes(item.file.size)}</span>
+                    <span className="shrink-0 font-mono text-xs tabular-nums text-fg-subtle">{formatBytes(item.size)}</span>
                 </span>
                 {item.status === "uploading" && (
                     <span

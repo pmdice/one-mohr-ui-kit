@@ -24,27 +24,31 @@ export const fieldShell = cn(
  * A text field that reads generously and writes strictly (E-04): the text is read when leaving or on Enter,
  * then shown in its canonical form. While the field has focus, a value from outside never overwrites the typing.
  */
-export function useReadField<T>({ value, read, write, onChange, onInvalid, step }: {
+export function useReadField<T>({ value, read, write, onChange, onInvalid, step, handlers = {} }: {
     value: T | null
     read: (text: string) => Outcome<T>
     write: (value: T | null) => string
     onChange: (value: T | null) => void
     onInvalid?: (reason: string | null) => void
     step?: (current: T | null, direction: 1 | -1) => T | null
+    /** The caller's own handlers; they run after the field's. */
+    handlers?: Pick<React.InputHTMLAttributes<HTMLInputElement>, "onFocus" | "onBlur" | "onKeyDown" | "onChange">
 }) {
+    // Only typing creates a draft; without one the field always shows the current value
     const [draft, setDraft] = React.useState<string | null>(null)
     const [reason, setReason] = React.useState<string | null>(null)
     const text = draft ?? write(value)
 
     const fail = (why: string) => { setReason(why); onInvalid?.(why) }
-    /** Reads the text; on success hands the value up and shows it canonically (kept as draft while focused). */
-    const commit = (next: string, stayFocused: boolean) => {
+    const clear = () => { if (reason) onInvalid?.(null); setReason(null) }
+    /** Reads the typed text; on success hands the value up, after which the field shows it canonically. */
+    const commit = (next: string) => {
         const result = read(next)
-        if (!result.ok) { fail(result.reason); return }
-        if (reason) onInvalid?.(null)
-        setReason(null)
-        setDraft(stayFocused ? write(result.value) : null)
+        if (!result.ok) { fail(result.reason); return false }
+        clear()
+        setDraft(null)
         onChange(result.value)
+        return true
     }
 
     return {
@@ -52,38 +56,41 @@ export function useReadField<T>({ value, read, write, onChange, onInvalid, step 
         reason,
         /** Sets a value chosen elsewhere (e.g. in a calendar) as if it had been typed. */
         pick: (next: T | null) => {
-            if (reason) onInvalid?.(null)
-            setReason(null)
-            setDraft(write(next))
+            clear()
+            setDraft(null)
             onChange(next)
         },
         inputProps: {
             value: text,
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDraft(e.target.value),
-            onFocus: () => setDraft((d) => d ?? write(value)),
-            onBlur: () => {
-                if (draft === null) return
-                // Untouched text needs no reading; an unreadable one stays as typed
-                if (draft === write(value) && !reason) { setDraft(null); return }
-                commit(draft, false)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => { setDraft(e.target.value); handlers.onChange?.(e) },
+            onFocus: (e: React.FocusEvent<HTMLInputElement>) => handlers.onFocus?.(e),
+            onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+                if (draft !== null) commit(draft)
+                handlers.onBlur?.(e)
             },
             onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter" && draft !== null) { commit(draft, true); return }
-                if (step && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+                if (e.key === "Enter" && draft !== null) {
+                    // Unreadable text must not submit the form with the old value
+                    if (!commit(draft)) e.preventDefault()
+                } else if (step && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
                     e.preventDefault()
                     const current = read(text)
-                    if (!current.ok) { fail(current.reason); return }
-                    const next = step(current.value, e.key === "ArrowUp" ? 1 : -1)
-                    setReason(null)
-                    onChange(next)
-                    setDraft(write(next))
+                    if (!current.ok) fail(current.reason)
+                    else {
+                        clear()
+                        setDraft(null)
+                        onChange(step(current.value, e.key === "ArrowUp" ? 1 : -1))
+                    }
                 }
+                handlers.onKeyDown?.(e)
             },
         },
     }
 }
 
-export function Shell({ unit, reason, input, className, describedBy, id, after }: {
+export function Shell({ unit, reason, input, className, describedBy, id, after, outsideError }: {
+    /** An error shown by a surrounding form field; the field then only marks itself invalid. */
+    outsideError?: boolean
     unit?: string
     /** Inside the field after the unit, e.g. a calendar button. */
     after?: React.ReactNode
@@ -95,7 +102,8 @@ export function Shell({ unit, reason, input, className, describedBy, id, after }
 }) {
     const unitId = `${id}-unit`
     const reasonId = `${id}-reason`
-    const described = [describedBy, unit ? unitId : null, reason ? reasonId : null].filter(Boolean).join(" ") || undefined
+    const ownReason = reason && !outsideError ? reason : null
+    const described = [describedBy, unit ? unitId : null, ownReason ? reasonId : null].filter(Boolean).join(" ") || undefined
     return (
         <div className="flex w-full flex-col gap-1">
             <div className={cn(fieldShell, className)}>
@@ -103,7 +111,7 @@ export function Shell({ unit, reason, input, className, describedBy, id, after }
                 {unit && <span id={unitId} className="shrink-0 pr-control pl-1 text-fg-muted">{unit}</span>}
                 {after}
             </div>
-            {reason && <p id={reasonId} role="alert" className="m-0 text-xs text-danger">{reason}</p>}
+            {ownReason && <p id={reasonId} role="alert" className="m-0 text-xs text-danger">{ownReason}</p>}
         </div>
     )
 }

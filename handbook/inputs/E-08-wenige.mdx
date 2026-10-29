@@ -30,5 +30,5 @@ Eine Auswahlliste versteckt die Möglichkeiten hinter einem Klick, und man vergl
 
 ## Übertragen
 
-- Nova: für 2–5 Optionen ein Radio-Feld (Paket) oder `BooleanGroup`, nicht `Select`.
+- Nova: für 2–5 Optionen ein Radio-Feld aus einem Paket; `BooleanGroup` ist keine Alternative – das sind unabhängige Checkboxen für mehrere Antworten. Bleibt nur `Select`, dann mit `->displayUsingLabels()` und einer Hilfe, die die Optionen nennt.
 - HTML: `fieldset` mit `legend` und `input type=radio` – die Tastatur-Logik kommt vom Browser.

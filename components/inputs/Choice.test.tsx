@@ -79,3 +79,21 @@ describe('RadioGroup', () => {
         expect(screen.getByRole('radio', { name: 'Warten' })).toBeChecked()
     })
 })
+
+describe('review fixes: choice', () => {
+    it('a disabled radio group cannot be changed by keyboard', async () => {
+        const onChange = vi.fn()
+        render(<RadioGroup label="Art" disabled value="a" onChange={onChange} options={[{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }]} />)
+        await userEvent.tab()
+        await userEvent.keyboard('{ArrowDown}')
+        expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('stays indeterminate when the parent keeps it mixed after a click', async () => {
+        render(<Checkbox checked="mixed" onChange={() => {}} aria-label="Alle" />)
+        const box = screen.getByRole('checkbox', { name: 'Alle' }) as HTMLInputElement
+        await userEvent.click(box)
+        expect(box.indeterminate).toBe(true)
+        expect(box).not.toHaveAttribute('aria-checked')
+    })
+})

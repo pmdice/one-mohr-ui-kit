@@ -31,5 +31,5 @@ Das Feld sagt, welche Art Antwort erwartet wird, bevor man liest. Ein freies Tex
 
 ## Übertragen
 
-- Nova: `Number::make()` mit `->step()` und `->displayUsing()`, `Date::make()` mit `->displayUsing()` für TT.MM.JJJJ, `Select` erst ab sechs Optionen, sonst `Boolean`/`BooleanGroup` oder ein Radio-Feld (z. B. ein Paket für Radio-Buttons), `BelongsTo` mit `->searchable()` für Datensätze.
+- Nova: `Number::make()` mit `->step()` und `->displayUsing()`, `Date::make()` mit `->displayUsing()` für TT.MM.JJJJ, `Select` erst ab sechs Optionen, darunter ein Radio-Feld aus einem Paket (`BooleanGroup` ist für mehrere Antworten, nicht für eine aus wenigen), `BelongsTo` mit `->searchable()` für Datensätze.
 - In Blade/Livewire: dieselbe Zuordnung, mit `inputmode` statt `type=number`.

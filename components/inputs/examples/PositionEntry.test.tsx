@@ -31,3 +31,12 @@ describe('Beispiel: Position erfassen', () => {
         expect(screen.getByLabelText('Dateien auswählen', { selector: 'input' })).toBeInTheDocument()
     })
 })
+
+describe('review fixes: position entry', () => {
+    it('does not save while photos are still uploading and says why', async () => {
+        render(<PositionEntry today="2026-10-29" />)
+        await userEvent.upload(screen.getByLabelText('Dateien auswählen', { selector: 'input' }), new File([new Uint8Array(10)], 'ring.jpg', { type: 'image/jpeg' }))
+        expect(screen.getByRole('button', { name: 'Position speichern' })).toBeDisabled()
+        expect(screen.getByText('Fotos werden noch hochgeladen …')).toBeInTheDocument()
+    })
+})

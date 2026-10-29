@@ -35,7 +35,7 @@ export function Switch({ checked, onChange, label, description, disabled, classN
                 <span
                     aria-hidden="true"
                     className={cn(
-                        "absolute h-3.5 w-3.5 rounded-[3px] shadow-overlay transition-[left] duration-fast ease-out-soft",
+                        "absolute h-3.5 w-3.5 rounded-[3px] ring-1 ring-border-strong transition-[left] duration-fast ease-out-soft",
                         checked ? "left-[1.125rem] bg-accent-fg" : "left-0.5 bg-surface"
                     )}
                 />

@@ -145,7 +145,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
             case "ArrowDown":
                 e.preventDefault()
                 if (!showList) { setOpen(true); setHighlight(0) }
-                else setHighlight(h => Math.min(h + 1, count - 1))
+                else setHighlight(h => Math.max(0, Math.min(h + 1, count - 1)))
                 break
             case "ArrowUp":
                 e.preventDefault()
@@ -183,7 +183,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                 aria-autocomplete="list"
                 aria-expanded={showList}
                 aria-controls={listId}
-                aria-activedescendant={showList && highlight < count ? optionId(highlight) : undefined}
+                aria-activedescendant={showList && highlight >= 0 && highlight < count ? optionId(highlight) : undefined}
                 disabled={disabled}
                 placeholder={placeholder}
                 value={query}
