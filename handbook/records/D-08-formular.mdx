@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D08Bad, D08Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-08 Viele Angaben zusammen im Formular" />
+
+# D-08 · Viele Angaben zusammen im Formular
+
+## Regel
+
+Was nur zusammen stimmt (eine Adresse, alle Positionen) oder beim Anlegen, ändert man in einem Formular nach den F-Regeln. Die Seite bietet dafür einen Knopf „Bearbeiten“ bei genau dieser Gruppe, nicht für jede einzelne Angabe und nicht für alles auf einmal.
+
+## Warum
+
+Strasse, PLZ und Ort einzeln zu speichern, lässt Zwischenstände entstehen, die es nie geben dürfte („2502 Nidau“). Ein Formular prüft die Gruppe zusammen (F-02) und speichert sie zusammen. Die Grenze zu D-07: Muss es mit etwas anderem zusammen stimmen?
+
+## Details
+
+- Das Formular öffnet als Dialog über der Seite, wenn es kurz ist, sonst als eigene Seite mit Zurück (N-03).
+- Ungespeicherte Änderungen werden nicht still verworfen (F-12).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D08Good />}
+  bad={<D08Bad />}
+  goodCaption="Adresse als Gruppe bearbeiten"
+  badCaption="Jedes Adressfeld einzeln gespeichert"
+/>
+
+## Übertragen
+
+- Nova: die Gruppe in ein `Panel` legen; für die Bearbeitung der Gruppe eine Action mit `fields()` (öffnet als Dialog) statt der ganzen Bearbeitungsseite.
+- Validierung der Gruppe in einer Form Request, nicht pro Feld.

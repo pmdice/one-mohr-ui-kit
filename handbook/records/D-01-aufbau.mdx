@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D01Bad, D01Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-01 Inhalt links und Eigenschaften rechts" />
+
+# D-01 · Inhalt links und Eigenschaften rechts
+
+## Regel
+
+Zeig in der Hauptspalte, woran gearbeitet wird: Beschreibung, Positionen, Zugehöriges, Verlauf. Die Eigenschaften stehen als Liste in einer schmalen Seitenspalte (etwa 18 rem). Unter 1024 px kommen die Eigenschaften direkt nach dem Kopf, vor dem Inhalt.
+
+## Warum
+
+Eigenschaften liest man nachschlagend, Inhalt lesend. Nebeneinander sieht man beides, ohne zu scrollen oder Tabs zu wechseln – so arbeitet Linear mit Vorgängen. Auf dem Telefon kommen die Eckdaten zuerst, weil man dort meist nur nachschaut.
+
+## Details
+
+- Keine Tabs für Teile desselben Datensatzes, die man zusammen braucht (N-11 gilt für echte Unterseiten).
+- Die Seitenspalte scrollt mit der Seite; sie ist keine zweite Navigation.
+- Im Quelltext stehen die Eigenschaften vor dem Inhalt, damit sie schmal zuerst kommen; Screenreader und Tab lesen sie darum auch breit zuerst – gewollt, denn sie sind die Zusammenfassung.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D01Good />}
+  bad={<D01Bad />}
+  goodCaption="Inhalt links, Eigenschaften rechts"
+  badCaption="Alles untereinander, Zugehöriges in Tabs"
+/>
+
+## Übertragen
+
+- Nova: Detailseite mit `Panel`s für Inhalt; die Eigenschaften als erstes Panel oder als eigenes Tool mit zwei Spalten. Beziehungen (`HasMany`) erscheinen unter dem Datensatz – passt zur Hauptspalte.
+- Blade: CSS-Raster `grid-template-columns: minmax(0,1fr) 18rem` ab 1024 px, darunter Seitenspalte zuerst (`order`).

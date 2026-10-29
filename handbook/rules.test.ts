@@ -6,12 +6,17 @@ import { STATUS_RULE_GROUPS } from './status/rules'
 import { WORKSHOP_RULE_GROUPS } from './workshop/rules'
 import { FOUNDATION_RULE_GROUPS } from './foundations/rules'
 import { INPUT_RULE_GROUPS } from './inputs/rules'
+import { RECORD_RULE_GROUPS } from './records/rules'
 import type { RuleGroup } from './rules.types'
 
 const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.id))
 const expected = (prefix: string, count = 12) => Array.from({ length: count }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
 
 describe('rule index', () => {
+    it('lists D-01 to D-10 once, in order, linking to record pages', () => {
+        expect(ids(RECORD_RULE_GROUPS)).toEqual(expected('D', 10))
+        for (const rule of RECORD_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-datensatz-d-/)
+    })
     it('lists E-01 to E-10 once, in order, linking to input pages', () => {
         expect(ids(INPUT_RULE_GROUPS)).toEqual(expected('E', 10))
         for (const rule of INPUT_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-eingaben-e-/)

@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D02Bad, D02Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-02 Das Wichtigste auf einen Blick" />
+
+# D-02 · Das Wichtigste auf einen Blick
+
+## Regel
+
+Stell unter den Kopf höchstens vier Kennzahlen, die für die Arbeit an diesem Datensatz zählen: Termin, Menge, Fortschritt, Wert. Jede bekommt ein Wort Einordnung („in 15 Tagen“, „Positionen fertig“). Eine Warnung färbt nur die betroffene Zahl.
+
+## Warum
+
+Vier Zahlen liest man mit einem Blick, sieben nicht. Ohne Einordnung muss man rechnen („13.11. – heute?“). Eine farbige Kachel für jede Zahl sagt „alles ist wichtig“ und damit nichts (G-01).
+
+## Details
+
+- Nur Zahlen, auf die man reagiert; die interne ID gehört nicht dazu (D-10).
+- Zahlen in Ziffern gleicher Breite (L-02).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D02Good />}
+  bad={<D02Bad />}
+  goodCaption="Drei Zahlen mit Einordnung"
+  badCaption="Sieben bunte Kacheln ohne Einordnung"
+/>
+
+## Übertragen
+
+- Nova: Metrics (`Value`, `Progress`) auf der Detailseite mit `->onlyOnDetail()`, höchstens vier, mit Beschriftung statt Rohwert.
+- Den relativen Teil (`in 15 Tagen`) aus `formatDue` übernehmen.

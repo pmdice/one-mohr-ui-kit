@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D03Bad, D03Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-03 Eigenschaften in fester Reihenfolge" />
+
+# D-03 · Eigenschaften in fester Reihenfolge
+
+## Regel
+
+Zeig Eigenschaften als Paare aus Beschriftung (links, klein) und Wert (rechts). Die Reihenfolge ist bei allen Datensätzen dieser Art gleich, das Häufigste steht oben. Werte, die auf einen anderen Datensatz zeigen, sind Links (N-08).
+
+## Warum
+
+Wer zehn Aufträge hintereinander prüft, sucht den Liefertermin an derselben Stelle. Eine feste Reihenfolge macht aus Lesen ein Wiederfinden. Feldnamen aus der Datenbank sind für Entwickler, nicht für die Arbeit (G-10).
+
+## Details
+
+- Beschriftungen aus der Begriffsliste, nicht aus den Spaltennamen.
+- Leere Eigenschaften behalten ihren Platz (D-04), damit die Reihenfolge stimmt.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D03Good />}
+  bad={<D03Bad />}
+  goodCaption="Feste Reihenfolge, Wörter, Links"
+  badCaption="Spaltennamen, Rohwerte, zufällige Reihenfolge"
+/>
+
+## Übertragen
+
+- Nova: die Reihenfolge in `fields()` ist die Reihenfolge der Detailseite – einmal festlegen, nach Häufigkeit; `BelongsTo` wird automatisch ein Link.
+- `->displayUsing()` für Rohwerte (Prio 2 → „Normal“).
