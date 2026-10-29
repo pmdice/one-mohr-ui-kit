@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R09Bad, R09Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-09 Eine abgelaufene Sitzung verliert nichts" />
+
+# R-09 · Eine abgelaufene Sitzung verliert nichts
+
+## Regel
+
+Läuft die Sitzung während der Arbeit ab, erscheint die Anmeldung als Dialog über der Seite. Nach dem Anmelden läuft das unterbrochene Speichern genau einmal erneut. Eingaben werden laufend als Entwurf im Browser gehalten, damit auch ein Neuladen nichts verliert.
+
+## Warum
+
+Wer eine halbe Stunde an einem Auftrag schreibt und beim Speichern auf „419 Page Expired“ stösst, verliert alles – und das Vertrauen in die Software. Anmelden über der Seite kostet zehn Sekunden.
+
+## Details
+
+- Entwurf nach dem Speichern löschen; beim Öffnen anbieten („Ungespeicherten Entwurf wiederherstellen?“).
+- Sensibles (Passwörter) nie in den Entwurf.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R09Good />}
+  bad={<R09Bad />}
+  goodCaption="Anmelden über der Seite"
+  badCaption="419 und alles weg"
+/>
+
+## Übertragen
+
+- Laravel: `session.lifetime` passend lang; 419 (CSRF) im Frontend abfangen, Token erneuern, Anfrage wiederholen. Nova schickt bei abgelaufener Sitzung zur Anmeldung – vorher Entwurf sichern; in eigenen Tools ein `axios`-Interceptor, der 401/419 abfängt, den Dialog zeigt und die Anfrage wiederholt.
+- Entwurf: `localStorage` pro Datensatz-Schlüssel.

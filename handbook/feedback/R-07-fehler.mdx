@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { R07Bad, R07Good } from './examples'
+
+<Meta title="Handbuch/Speichern/R-07 Fehler in Sätzen mit nächstem Schritt" />
+
+# R-07 · Fehler in Sätzen mit nächstem Schritt
+
+## Regel
+
+Übersetz jeden Fehler in einen Satz: was passiert ist und was jetzt zu tun ist. Keine Verbindung → Eingaben bleiben, erneut versuchen. Sitzung abgelaufen → anmelden (R-09). Keine Berechtigung → wer es darf. Prüffehler → an die Felder. Unerwartetes → „Unerwarteter Fehler“ und ein kurzer Code zum Kopieren für den Support.
+
+## Warum
+
+Ein Code wie 422 oder eine Ausnahme sagt den Menschen vor dem Bildschirm nichts und macht Angst. „Ein Fehler ist aufgetreten“ sagt nichts. Ein Satz mit nächstem Schritt lässt sie weiterarbeiten; der Code lässt den Support den Fall im Log finden.
+
+## Details
+
+- Die Übersetzung ist eine Funktion an einer Stelle (`explainError`), nicht in jedem Formular neu.
+- Der Code steht im Log beim Fehler, damit der Support ihn findet.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<R07Good />}
+  bad={<R07Bad />}
+  goodCaption="Sätze mit nächstem Schritt, Code für Support"
+  badCaption="Status-Codes, Ausnahmen, leere Sätze"
+/>
+
+## Übertragen
+
+- Laravel: in `bootstrap/app.php` (`withExceptions`) Ausnahmen in JSON mit `message` (Satz) und `code` (kurz, auch geloggt) umwandeln; Texte in `lang/de`.
+- Nova: Fehler in Aktionen mit `Action::danger('…')` als Satz; nie `$e->getMessage()` zeigen.
