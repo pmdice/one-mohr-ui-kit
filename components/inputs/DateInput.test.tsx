@@ -88,3 +88,13 @@ describe('DateInput', () => {
         expect(onChange).not.toHaveBeenCalled()
     })
 })
+
+describe('DateInput review fixes', () => {
+    it('arrow steps stay within min and max', async () => {
+        const onChange = vi.fn()
+        render(<Due initial="2026-10-29" min="2026-10-29" onChange={onChange} />)
+        await userEvent.click(screen.getByRole('textbox', { name: 'Liefertermin' }))
+        await userEvent.keyboard('{ArrowDown}')
+        expect(onChange).not.toHaveBeenCalledWith('2026-10-28')
+    })
+})

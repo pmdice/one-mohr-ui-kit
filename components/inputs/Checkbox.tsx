@@ -19,21 +19,26 @@ export const Checkbox = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLA
     const boxId = id ?? generated
     const ref = React.useRef<HTMLInputElement>(null)
     React.useImperativeHandle(forwarded, () => ref.current as HTMLInputElement)
+    // Every render: a click resets the native flag even when the parent keeps "mixed"
     React.useEffect(() => {
         if (ref.current) ref.current.indeterminate = checked === "mixed"
-    }, [checked])
+    })
 
     const box = (
         <span className="relative inline-flex h-4 w-4 shrink-0 items-center justify-center">
             <input
+                {...props}
                 ref={ref}
                 id={boxId}
                 type="checkbox"
                 checked={checked === true}
-                aria-checked={checked === "mixed" ? "mixed" : undefined}
-                aria-describedby={description ? `${boxId}-description` : undefined}
+                aria-describedby={[props["aria-describedby"], description ? `${boxId}-description` : null].filter(Boolean).join(" ") || undefined}
                 disabled={disabled}
-                onChange={(e) => onChange(checked === "mixed" ? true : e.target.checked)}
+                onChange={(e) => {
+                    // The click cleared the native flag; it holds until the parent decides otherwise
+                    e.target.indeterminate = checked === "mixed"
+                    onChange(checked === "mixed" ? true : e.target.checked)
+                }}
                 className={cn(
                     "peer h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-border-strong bg-surface transition-colors duration-fast",
                     "checked:border-accent checked:bg-accent indeterminate:border-accent indeterminate:bg-accent",
@@ -41,7 +46,6 @@ export const Checkbox = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLA
                     "disabled:cursor-not-allowed disabled:opacity-50",
                     !label && className
                 )}
-                {...props}
             />
             {checked === "mixed"
                 ? <Minus className="pointer-events-none absolute h-3 w-3 text-accent-fg" aria-hidden="true" />

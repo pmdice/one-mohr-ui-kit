@@ -139,7 +139,7 @@ function PositionFields({ index }: { index: number }) {
                     render={({ field }) => (
                         <div role="group" aria-labelledby={`${field.name}-label`} className="flex flex-col gap-1">
                             <span id={`${field.name}-label`} className="text-sm font-medium text-fg">Fotos</span>
-                            <FileDrop upload={simulateUpload} accept="image/*" acceptLabel="Bilder" maxBytes={10 * 1024 * 1024} capture="environment" onChange={field.onChange} />
+                            <FileDrop upload={simulateUpload} accept="image/*" acceptLabel="Bilder" maxBytes={10 * 1024 * 1024} capture="environment" initial={field.value} onChange={field.onChange} />
                         </div>
                     )}
                 />
@@ -199,7 +199,7 @@ export function OrderForm({ defaultValues = EMPTY_ORDER, onSubmit }: OrderFormPr
                         name="dueDate"
                         render={({ field }) => (
                             <Field name="dueDate" label="Liefertermin" required hint="z. B. 14.11., morgen, +10">
-                                <DateInput ref={field.ref} name={field.name} value={field.value || null} onChange={(v) => field.onChange(v ?? "")} onBlur={field.onBlur} />
+                                <DateInput ref={field.ref} name={field.name} value={field.value || null} onChange={(v) => field.onChange(v ?? "")} onInvalid={(reason) => { if (reason) field.onChange(`!${reason}`) }} onBlur={field.onBlur} />
                             </Field>
                         )}
                     />

@@ -127,3 +127,35 @@ describe('FileDrop', () => {
         expect(calls).toHaveLength(2)
     })
 })
+
+describe('review fixes: linking', () => {
+    it('ArrowDown with no results never points at a missing option', async () => {
+        render(<Combobox aria-label="Kunde" options={CUSTOMERS} value={null} onChange={() => {}} />)
+        const box = screen.getByRole('combobox', { name: 'Kunde' })
+        await userEvent.type(box, 'zzz{ArrowDown}')
+        const active = box.getAttribute('aria-activedescendant')
+        if (active) expect(document.getElementById(active)).not.toBeNull()
+    })
+
+    it('upload hands up the server reference and reports while files are still uploading', async () => {
+        const calls: (() => void)[] = []
+        const upload: Upload = () => new Promise((resolve) => { calls.push(() => resolve('srv-77')) })
+        const onChange = vi.fn(), onBusyChange = vi.fn()
+        render(<FileDrop upload={upload} accept="application/pdf" acceptLabel="PDF" maxBytes={1024} onChange={onChange} onBusyChange={onBusyChange} />)
+        await userEvent.upload(screen.getByLabelText('Dateien auswählen', { selector: 'input' }), file('a.pdf', 10, 'application/pdf'))
+        expect(onBusyChange).toHaveBeenLastCalledWith(true)
+        await act(async () => calls[0]())
+        expect(onBusyChange).toHaveBeenLastCalledWith(false)
+        expect(onChange).toHaveBeenLastCalledWith([expect.objectContaining({ name: 'a.pdf', ref: 'srv-77' })])
+    })
+
+    it('shows files that are already there and keeps them when adding more', async () => {
+        const { upload, calls } = controlledUpload()
+        const onChange = vi.fn()
+        render(<FileDrop upload={upload} accept="application/pdf" acceptLabel="PDF" maxBytes={1024} onChange={onChange} initial={[{ id: 'x', name: 'alt.pdf', size: 20, type: 'application/pdf', ref: 'srv-1' }]} />)
+        expect(screen.getByRole('listitem', { name: /alt\.pdf/ })).toHaveTextContent('Hochgeladen')
+        await userEvent.upload(screen.getByLabelText('Dateien auswählen', { selector: 'input' }), file('neu.pdf', 10, 'application/pdf'))
+        await act(async () => calls[0].resolve())
+        expect(onChange).toHaveBeenLastCalledWith([expect.objectContaining({ name: 'alt.pdf' }), expect.objectContaining({ name: 'neu.pdf' })])
+    })
+})

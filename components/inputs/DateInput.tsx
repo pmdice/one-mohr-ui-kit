@@ -32,8 +32,10 @@ export const DateInput = React.forwardRef<HTMLInputElement, ShellProps & {
     today?: string
     min?: string
     max?: string
-}>(function DateInput({ value, onChange, today: givenToday, min, max, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, ...props }, forwarded) {
+}>(function DateInput({ value, onChange, today: givenToday, min, max, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, onFocus, onBlur, onKeyDown, ...props }, forwarded) {
     const generated = React.useId()
+    // Anything that is not an ISO date (e.g. a form's marker for unreadable text) counts as no date here
+    if (value !== null && !/^\d{4}-\d{2}-\d{2}$/.test(value)) value = null
     const [fallbackToday] = React.useState(todayIso)
     const today = givenToday ?? fallbackToday
     const inputRef = React.useRef<HTMLInputElement>(null)
@@ -45,6 +47,7 @@ export const DateInput = React.forwardRef<HTMLInputElement, ShellProps & {
         value,
         onChange,
         onInvalid,
+        handlers: { onFocus, onBlur, onKeyDown },
         write: formatDate,
         read: (text) => {
             const r = parseDate(text, today)
@@ -53,7 +56,12 @@ export const DateInput = React.forwardRef<HTMLInputElement, ShellProps & {
             if (max && r.value > max) return { ok: false, reason: `Spätestens ${formatDate(max)}` }
             return r
         },
-        step: (current, direction) => addDays(current ?? today, direction),
+        step: (current, direction) => {
+            const next = addDays(current ?? today, direction)
+            if (min && next < min) return min
+            if (max && next > max) return max
+            return next
+        },
     })
 
     // A click elsewhere closes the calendar
@@ -69,6 +77,7 @@ export const DateInput = React.forwardRef<HTMLInputElement, ShellProps & {
     return (
         <div ref={wrapper} className="relative w-full">
             <Shell
+                outsideError={Boolean(invalidFromOutside)}
                 id={id ?? generated}
                 unit={value && !field.reason ? weekday(value) : undefined}
                 reason={field.reason}

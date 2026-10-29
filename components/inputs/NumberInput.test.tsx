@@ -117,3 +117,63 @@ describe('Textarea counter', () => {
         expect(screen.getByText('8 / 10')).toBeInTheDocument()
     })
 })
+
+describe('review fixes', () => {
+    it('leaving without typing does not send back a value that changed meanwhile', async () => {
+        const seen: (number | null)[] = []
+        function Outside() {
+            const [value, setValue] = React.useState<number | null>(5)
+            return (
+                <>
+                    <NumberInput aria-label="Menge" value={value} onChange={(v) => { seen.push(v); setValue(v) }} />
+                    <button onClick={() => setValue(7)}>Fremd</button>
+                </>
+            )
+        }
+        render(<Outside />)
+        const field = screen.getByRole('textbox', { name: 'Menge' })
+        await userEvent.click(field)
+        screen.getByRole('button', { name: 'Fremd' }).click()
+        await userEvent.tab()
+        expect(seen).toEqual([])
+        expect(field).toHaveValue('7')
+    })
+
+    it('calls the caller’s own handlers as well', async () => {
+        const onBlur = vi.fn(), onFocus = vi.fn(), onKeyDown = vi.fn()
+        render(<NumberInput aria-label="Menge" value={1} onChange={() => {}} onBlur={onBlur} onFocus={onFocus} onKeyDown={onKeyDown} />)
+        await userEvent.click(screen.getByRole('textbox', { name: 'Menge' }))
+        await userEvent.keyboard('2')
+        await userEvent.tab()
+        expect(onFocus).toHaveBeenCalled()
+        expect(onKeyDown).toHaveBeenCalled()
+        expect(onBlur).toHaveBeenCalled()
+    })
+
+    it('arrow steps with decimals hand up exact values', async () => {
+        const onChange = vi.fn()
+        render(<NumberInput aria-label="Preis" decimals={2} value={0.56} onChange={onChange} />)
+        await userEvent.click(screen.getByRole('textbox', { name: 'Preis' }))
+        await userEvent.keyboard('{ArrowUp}')
+        expect(onChange).toHaveBeenLastCalledWith(0.57)
+    })
+
+    it('Enter on unreadable text does not submit the form', async () => {
+        const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault())
+        render(<form onSubmit={onSubmit}><NumberInput aria-label="Menge" value={1} onChange={() => {}} /></form>)
+        const field = screen.getByRole('textbox', { name: 'Menge' })
+        await userEvent.clear(field)
+        await userEvent.type(field, '1,2,3{Enter}')
+        expect(onSubmit).not.toHaveBeenCalled()
+    })
+
+    it('an error from outside replaces the field’s own message', async () => {
+        render(<NumberInput aria-label="Menge" value={1} onChange={() => {}} aria-invalid />)
+        const field = screen.getByRole('textbox', { name: 'Menge' })
+        await userEvent.clear(field)
+        await userEvent.type(field, 'x')
+        await userEvent.tab()
+        expect(field).toHaveAttribute('aria-invalid', 'true')
+        expect(screen.queryByRole('alert')).toBeNull()
+    })
+})

@@ -12,13 +12,14 @@ export const NumberInput = React.forwardRef<HTMLInputElement, ShellProps & {
     decimals?: number
     min?: number
     max?: number
-}>(function NumberInput({ value, onChange, decimals, min, max, unit, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, ...props }, ref) {
+}>(function NumberInput({ value, onChange, decimals, min, max, unit, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, onFocus, onBlur, onKeyDown, ...props }, ref) {
     const generated = React.useId()
     const range = min !== undefined && max !== undefined ? `Erlaubt: ${formatNumber(min)} bis ${formatNumber(max)}` : min !== undefined ? `Mindestens ${formatNumber(min)}` : `Höchstens ${formatNumber(max ?? 0)}`
     const field = useReadField<number>({
         value,
         onChange,
         onInvalid,
+        handlers: { onFocus, onBlur, onKeyDown },
         write: (v) => formatNumber(v, { decimals }),
         read: (text) => {
             const r = parseNumber(text, { decimals })
@@ -27,13 +28,15 @@ export const NumberInput = React.forwardRef<HTMLInputElement, ShellProps & {
             return r
         },
         step: (current, direction) => {
-            const size = decimals ? 10 ** -decimals : 1
-            const next = Math.round(((current ?? 0) + direction * size) / size) * size
+            // Step in whole units of the last place, so no floating point drift reaches the value
+            const factor = 10 ** (decimals ?? 0)
+            const next = (Math.round((current ?? 0) * factor) + direction) / factor
             return Math.min(max ?? Infinity, Math.max(min ?? -Infinity, next))
         },
     })
     return (
         <Shell
+            outsideError={Boolean(invalidFromOutside)}
             id={id ?? generated}
             unit={unit}
             reason={field.reason}
@@ -61,12 +64,13 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, ShellProps & {
     cents: number | null
     onChange: (cents: number | null) => void
     currency?: string
-}>(function MoneyInput({ cents, onChange, currency = "CHF", unit, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, ...props }, ref) {
+}>(function MoneyInput({ cents, onChange, currency = "CHF", unit, onInvalid, className, id, "aria-describedby": describedBy, "aria-invalid": invalidFromOutside, onFocus, onBlur, onKeyDown, ...props }, ref) {
     const generated = React.useId()
     const field = useReadField<number>({
         value: cents,
         onChange,
         onInvalid,
+        handlers: { onFocus, onBlur, onKeyDown },
         write: formatMoney,
         read: (text) => {
             const r = parseMoney(text)
@@ -76,6 +80,7 @@ export const MoneyInput = React.forwardRef<HTMLInputElement, ShellProps & {
     })
     return (
         <Shell
+            outsideError={Boolean(invalidFromOutside)}
             id={id ?? generated}
             unit={unit ?? currency}
             reason={field.reason}
