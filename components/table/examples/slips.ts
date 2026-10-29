@@ -1,5 +1,6 @@
 import type { ActiveFilter, FilterField } from "../FilterBar"
 import type { Sort } from "../DataTable"
+import { addDays } from "@/components/inputs/parse"
 
 export type Urgency = "dringend" | "hoch" | "normal" | "niedrig"
 export type Station = "offen" | "3d" | "guss" | "polissage" | "versand"
@@ -88,11 +89,21 @@ export const slipNumber = (s: Slip) => `${s.orderId} – ${s.index}/${s.total}`
 export const urgencyOf = (u: Urgency) => URGENCY.find((x) => x.value === u)!
 export const stationLabel = (st: Station) => STATIONS.find((x) => x.value === st)!.label
 
+/** "Today" of the example data, and a due date four weeks after casting. */
+export const TODAY = "2026-10-29"
+export const dueOf = (s: Slip) => addDays(s.castDate, 28)
+
 export const FILTER_FIELDS: FilterField[] = [
     { id: "station", label: "Station", options: STATIONS },
     { id: "urgency", label: "Dringlichkeit", options: URGENCY },
     { id: "material", label: "Material", options: MATERIALS.map((m) => ({ value: m, label: m })) },
+    { id: "frist", label: "Frist", options: [{ value: "ueberfaellig", label: "Überfällig" }] },
 ]
+
+/** Fields that are computed, not stored on the slip. */
+const DERIVED: Record<string, (s: Slip) => string> = {
+    frist: (s) => (dueOf(s) < TODAY ? "ueberfaellig" : ""),
+}
 
 export type SlipQuery = { filters: ActiveFilter[]; q: string; sort: Sort; page: number; pageSize: number }
 export type SlipResult = { rows: Slip[]; total: number; filteredTotal: number; matchingIds: string[] }
@@ -108,6 +119,7 @@ const SORT_KEYS: Record<string, (s: Slip) => number | string> = {
     castDate: (s) => s.castDate,
     pieces: (s) => s.pieces,
     weight: (s) => s.weight ?? -1,
+    due: (s) => dueOf(s),
 }
 
 /** The "server": filter (same field = or, different fields = and), search, sort, page. */
@@ -116,7 +128,7 @@ export function querySlips({ filters, q, sort, page, pageSize }: SlipQuery, sour
     for (const f of filters) byField.set(f.field, [...(byField.get(f.field) ?? []), f.value])
     const term = q.trim().toLowerCase()
     const matching = source.filter((s) => {
-        for (const [field, values] of byField) if (!values.includes(String(s[field as keyof Slip]))) return false
+        for (const [field, values] of byField) if (!values.includes(DERIVED[field]?.(s) ?? String(s[field as keyof Slip]))) return false
         return !term || slipNumber(s).toLowerCase().includes(term) || s.id.includes(term) || s.customer.toLowerCase().includes(term)
     })
     const key = sort ? SORT_KEYS[sort.id] : null

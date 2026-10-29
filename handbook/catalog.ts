@@ -24,6 +24,7 @@ export const FOLDERS: Record<string, string> = {
     workshop: "Werkstatt",
     print: "Druck & Export",
     access: "Rechte & Rollen",
+    home: "Startseite",
 }
 
 export const CATALOG: CatalogEntry[] = [
@@ -134,4 +135,10 @@ export const CATALOG: CatalogEntry[] = [
     { name: "ReadOnlyNotice", path: "components/access/ReadOnlyNotice.tsx", purpose: "Ruhiger Hinweis für Leserechte mit „Zugriff anfragen“.", rules: ["B-03", "B-07"] },
     { name: "RightsSummary", path: "components/access/RightsSummary.tsx", purpose: "Was eine Rolle darf, nach Bereichen in Worten.", rules: ["B-05"] },
     { name: "RoleBadge", path: "components/access/RoleBadge.tsx", purpose: "Name und Rolle der angemeldeten Person.", rules: ["B-05"] },
+
+    // Start page
+    { name: "DataFreshness", path: "components/home/DataFreshness.tsx", purpose: "Von wann die Zahlen sind, mit Aktualisieren; neu beim Wiedersehen der Seite.", rules: ["A-06"] },
+    { name: "RecentList", path: "components/home/RecentList.tsx", purpose: "Die zuletzt geöffneten Datensätze als Weg zurück.", rules: ["A-07"] },
+    { name: "StatTile", path: "components/home/StatTile.tsx", purpose: "Eine Zahl als Link in die gefilterte Liste dahinter.", rules: ["A-05"] },
+    { name: "WorkQueue", path: "components/home/WorkQueue.tsx", purpose: "Arbeitsvorrat mit Grund pro Zeile; leer mit nächstem Termin.", rules: ["A-01", "A-03", "A-04"] },
 ]

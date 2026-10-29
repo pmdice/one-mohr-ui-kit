@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { A01Bad, A01Good } from './examples'
+
+<Meta title="Handbuch/Startseite/A-01 Die Startseite sagt was heute dran ist" />
+
+# A-01 · Die Startseite sagt was heute dran ist
+
+## Regel
+
+Zeig oben auf der Startseite den eigenen Arbeitsvorrat: was überfällig ist, was heute fällig ist, was auf mich wartet. Jede Zeile sagt, warum sie da ist. Kennzahlen stehen höchstens als schmale Leiste darunter.
+
+## Warum
+
+Am Morgen fragt man nicht „Wie viele Aufträge gibt es?“, sondern „Womit fange ich an?“. Eine Startseite, die diese Frage beantwortet, wird jeden Tag benutzt; ein Dashboard mit Diagrammen wird nach einer Woche übersprungen. Linear öffnet darum mit den eigenen Vorgängen.
+
+## Details
+
+- Die ersten fünf Zeilen, dann „Alle N anzeigen“ (D-09) – der Link öffnet die Liste mit denselben Filtern und derselben Reihenfolge.
+- Keine Begrüssung, kein Logo, keine Tipps – die Arbeit steht oben.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<A01Good />}
+  bad={<A01Bad />}
+  goodCaption="Vorrat mit Grund oben"
+  badCaption="Kacheln und Diagramme"
+/>
+
+## Übertragen
+
+- Nova: das Dashboard (`Dashboards\Main`) mit einer Karte, die den Vorrat als Liste zeigt (eigene Card oder Lens-Link); Metrics nur darunter.
+- Blade: eine Startseite pro Rolle mit einer Abfrage „fällig bis heute, mir zugeordnet“.

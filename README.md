@@ -12,6 +12,7 @@ Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind. Je
 | F | Formulare | Pflichtfelder, Fehler, Abschnitte, Positionen, bedingte Felder, Tastatur, Speichern |
 | E | Eingaben | Zahlen mit Einheit, Geld in Rappen, Schweizer Daten, Ja/Nein, Auswahl, Verknüpfungen, Dateien |
 | N | Navigation & App-Rahmen | Pfad, Menü, Zurück, Blättern, Seitenkopf, Suche, Tabs |
+| A | Startseite & Arbeitsvorrat | was heute dran ist, meins zuerst, Zahlen mit Ziel und Zeit, zuletzt geöffnet, pro Rolle |
 | L | Listen & Tabellen | Kennung, Zahlen, Status, Filter, Sortierung, leer, laden, Tastatur, Auswahl |
 | D | Datensatz-Seite | Inhalt und Eigenschaften, Kennzahlen, leere Werte, Kopieren, Termine, Ändern an Ort und Stelle, Zugehöriges |
 | R | Speichern & Rückmeldung | Speicherstand, Meldungen, sofort mit Rückgängig, doppelt klicken, lange Vorgänge, Fehler in Sätzen, Konflikte, Sitzung, Verbindung |

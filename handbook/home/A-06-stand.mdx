@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { A06Bad, A06Good } from './examples'
+
+<Meta title="Handbuch/Startseite/A-06 Zahlen sagen von wann sie sind" />
+
+# A-06 · Zahlen sagen von wann sie sind
+
+## Regel
+
+Schreib zu den Zahlen, von wann sie sind („Stand 10:30“), mit „Aktualisieren“ daneben. Wird die Seite wieder sichtbar (Tab gewechselt, Laptop aufgeklappt), holt sie neue Zahlen von selbst.
+
+## Warum
+
+Die Startseite bleibt oft stundenlang offen. Wer um 15 Uhr auf Zahlen von 8 Uhr schaut, entscheidet falsch, ohne es zu merken. Die Zeit dazu macht den Stand prüfbar.
+
+## Details
+
+- Kein ständiges Neuladen im Sekundentakt; beim Sichtbarwerden und auf Knopfdruck reicht.
+- Ältere Stände (gestern) mit Datum.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<A06Good />}
+  bad={<A06Bad />}
+  goodCaption="Stand mit Zeit, aktualisiert sich"
+  badCaption="Zahlen ohne Zeit"
+/>
+
+## Übertragen
+
+- Nova: `->refreshWhenActionsRun()` lädt Metrics nur nach Aktionen neu; „Stand …“ und das Neuladen beim Sichtbarwerden brauchen eine eigene Card mit etwas JavaScript.
+- JS: `document.addEventListener('visibilitychange', …)` und Neuladen der Karte.

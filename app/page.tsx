@@ -5,6 +5,7 @@ const AREAS = [
     { id: "F", title: "Formulare", description: "Pflichtfelder, Fehler, Positionen, bedingte Felder." },
     { id: "E", title: "Eingaben", description: "Zahlen, Beträge, Daten, Auswahl, Verknüpfungen, Dateien." },
     { id: "N", title: "Navigation & App-Rahmen", description: "Pfad, Menü, Zurück, Suche, Seitenkopf." },
+    { id: "A", title: "Startseite & Arbeitsvorrat", description: "Was heute dran ist, Zahlen mit Ziel und Zeit." },
     { id: "L", title: "Listen & Tabellen", description: "Dichte Tabellen, Filter, Liste → Detail." },
     { id: "D", title: "Datensatz-Seite", description: "Eigenschaften, Ändern an Ort und Stelle, Zugehöriges." },
     { id: "R", title: "Speichern & Rückmeldung", description: "Speicherstand, Meldungen, Konflikte, Fehler in Sätzen." },
