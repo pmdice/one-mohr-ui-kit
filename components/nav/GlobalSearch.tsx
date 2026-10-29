@@ -134,14 +134,14 @@ export function GlobalSearch({ search, typeLabels, placeholder = "Nummer, Kunde 
                     "placeholder:text-fg-subtle focus-visible:border-focus focus-visible:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus/30"
                 )}
             />
-            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-sm border border-border px-1 font-mono text-[10px] text-fg-subtle" aria-hidden="true">/</kbd>
+            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-sm border border-border px-1 font-mono text-xs text-fg-subtle" aria-hidden="true">/</kbd>
 
             {showList && (
                 <div
                     id={listId}
                     role="listbox"
                     aria-label="Suchergebnisse"
-                    className="absolute left-0 right-0 z-50 mt-1 max-h-96 overflow-y-auto rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
+                    className="absolute left-0 right-0 z-50 mt-1 max-h-96 overflow-y-auto rounded-panel border border-border bg-surface-raised py-1 shadow-overlay"
                 >
                     {flat.length === 0 && <p className="m-0 px-3 py-2 text-sm text-fg-muted">Keine Treffer für „{query.trim()}“</p>}
                     {groups.map(([type, records]) => (

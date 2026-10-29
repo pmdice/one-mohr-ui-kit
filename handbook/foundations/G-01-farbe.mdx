@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G01Bad, G01Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-01 Farbe trägt Bedeutung und sonst nichts" />
+
+# G-01 · Farbe trägt Bedeutung und sonst nichts
+
+## Regel
+
+Halte die Oberfläche grau. Nimm den Akzent nur für die Hauptaktion einer Seite, für Ausgewähltes und für Links; Rot, Orange und Grün nur für Fehler oder Gefahr, Warnung und Erfolg. Nie Farbe als Schmuck und nie als einzigen Träger einer Aussage.
+
+## Warum
+
+Wenn alles farbig ist, fällt nichts mehr auf. Eine Oberfläche, die grau bleibt, macht den einen blauen Knopf zur offensichtlichen nächsten Handlung und den roten Satz zum Fehler, ohne dass man lesen muss. Linear und Vercel arbeiten fast nur mit Grautönen und einer Akzentfarbe aus genau diesem Grund.
+
+## Details
+
+- Pro Ansicht höchstens eine Hauptaktion im Akzent; alles andere `outline` oder `ghost`.
+- Jede Farbe kommt aus einem benannten Token (siehe *Tokens*). Der Token-Guard verbietet Palettenfarben wie `bg-violet-600` in Komponenten.
+- Bedeutung immer zusätzlich als Wort oder Form (L-03, S-01) – Farbsehschwäche betrifft etwa jeden zwölften Mann.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G01Good />}
+  bad={<G01Bad />}
+  goodCaption="Grau, ein Akzent, Warnung mit Icon und Wort"
+  badCaption="Bunte Knöpfe ohne Bedeutung"
+/>
+
+## Übertragen
+
+- Nova: das Theme auf wenige Farben reduzieren (`config/nova.php` → `brand`), eigene Farben nur über CSS-Variablen, nicht über Tailwind-Paletten in Feldern.
+- Im Code-Review jede neue Farbe fragen: „Was bedeutet sie?“ Gibt es keine Antwort, ist sie grau.

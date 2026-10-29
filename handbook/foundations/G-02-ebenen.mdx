@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G02Bad, G02Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-02 Drei Ebenen und Schatten nur für Schwebendes" />
+
+# G-02 · Drei Ebenen und Schatten nur für Schwebendes
+
+## Regel
+
+Gliedere mit drei Flächen: `surface-sunken` für den Hintergrund, `surface` für Inhalt, `surface-raised` für das, was darüber schwebt. Trenne innerhalb einer Fläche mit Linien. Einen Schatten (`shadow-overlay`) bekommt nur, was über anderem liegt: Menüs, Aufklapper, Dialoge, Meldungen.
+
+## Warum
+
+Schatten sagen „das liegt oben und geht wieder weg“. Bekommt jede Karte einen, verliert das Zeichen seine Bedeutung und die Seite wirkt unruhig. Linien gliedern ruhiger und brauchen weniger Platz.
+
+## Details
+
+- Keine Karte in der Karte: eine Fläche, darin Linien.
+- Hover ändert die Fläche (`surface-hover`), nicht den Schatten.
+- Ein Schatten-Token für alles Schwebende; der Token-Guard verbietet `shadow-2xl`.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G02Good />}
+  bad={<G02Bad />}
+  goodCaption="Fläche mit Linien, nur das Menü schwebt"
+  badCaption="Jede Box mit eigenem Schatten"
+/>
+
+## Übertragen
+
+- Nova: Dashboard-Karten (`Card`) und Feldgruppen (`Panel`) nicht zusätzlich mit Schatten versehen; eigene Tools und Felder mit `border` statt `shadow` gliedern.
+- Ein Schatten im Entwurf ist eine Frage: Schwebt das wirklich?

@@ -49,7 +49,7 @@ export const Interactive: Story = {
             </CardHeader>
             <CardContent>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Powered by Framer Motion's <code>whileHover</code> and <code>whileTap</code> gestures.
+                    Powered by Framer Motion&apos;s <code>whileHover</code> and <code>whileTap</code> gestures.
                 </p>
             </CardContent>
         </Card>

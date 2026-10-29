@@ -106,10 +106,11 @@ export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = labe
                     ref={menuRef}
                     id={menuId}
                     role="menu"
+                    data-floating=""
                     aria-label={menuLabel}
                     onKeyDown={onMenuKeyDown}
                     style={position}
-                    className="fixed z-50 min-w-44 rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
+                    className="fixed z-50 min-w-44 rounded-panel border border-border bg-surface-raised py-1 shadow-overlay"
                 >
                     {items.map((item) => (
                         <div
@@ -121,7 +122,7 @@ export function ActionMenu({ items, label = "Weitere Aktionen", menuLabel = labe
                             onClick={() => select(item)}
                             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(item) } }}
                             className={cn(
-                                "cursor-pointer px-3 py-1.5 text-sm text-fg outline-none hover:bg-surface-hover focus:bg-surface-hover",
+                                "cursor-pointer px-3 py-1.5 text-sm text-fg outline-none hover:bg-surface-hover focus:bg-surface-hover focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus",
                                 item.disabled && "cursor-default text-fg-muted"
                             )}
                         >

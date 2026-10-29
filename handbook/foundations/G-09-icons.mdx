@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G09Bad, G09Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-09 Icons begleiten Text" />
+
+# G-09 · Icons begleiten Text
+
+## Regel
+
+Stell ein Icon neben ein Wort. Allein steht ein Icon nur für allgemein bekannte Zeichen (Schliessen, Suche, Weitere Aktionen) und dann mit Beschriftung für Screenreader (`aria-label`) und einem Tooltip. Dasselbe Icon heisst überall dasselbe.
+
+## Warum
+
+Icons sind schneller zu erkennen, wenn man sie kennt, und ein Rätsel, wenn nicht. Ein Stern kann Favorit, Wichtig oder Bewertung heissen. Mit dem Wort daneben ist es eindeutig, und das Icon hilft beim nächsten Mal beim Wiederfinden.
+
+## Details
+
+- Icons dekorativ mit `aria-hidden="true"`, wenn das Wort daneben steht.
+- Eine Bibliothek (lucide) und eine Grösse pro Dichte (16 px kompakt).
+- In der Werkstatt nie Bedeutung nur im Icon (W-03).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G09Good />}
+  bad={<G09Bad />}
+  goodCaption="Wort neben Icon, Suche mit Beschriftung"
+  badCaption="Vier Icons ohne Wort"
+/>
+
+## Übertragen
+
+- Nova: Actions haben immer einen Namen (`name()`) und werden als Text im Aktionsmenü gezeigt – so bleibt es. Icons gibt es in eigenen Feldern, Tools und Karten; dort gilt die Regel wie hier.
+- Eine Icon-Liste mit Bedeutung führen (siehe *Komponenten*), damit niemand ein neues Icon für dasselbe wählt.

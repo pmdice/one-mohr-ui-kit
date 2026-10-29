@@ -22,7 +22,7 @@ function contrast(a: string, b: string): number {
     return (hi + 0.05) / (lo + 0.05)
 }
 
-describe.each([['light', ':root'], ['dark', '.dark']])('%s text contrast', (_, selector) => {
+describe.each([['light', '.light'], ['dark', '.dark']])('%s text contrast', (_, selector) => {
     const t = block(selector)
     for (const text of ['fg', 'fg-muted', 'fg-subtle', 'danger']) {
         for (const surface of ['surface', 'surface-sunken']) {

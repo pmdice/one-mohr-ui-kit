@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G05Bad, G05Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-05 Abstände aus einem 4-px-Raster" />
+
+# G-05 · Abstände aus einem 4-px-Raster
+
+## Regel
+
+Nimm Abstände nur aus 4, 8, 12, 16, 24 und 32 px. Setz Zusammengehöriges enger als Getrenntes: Beschriftung und Feld 4 px, Felder eines Abschnitts 12 px, Abschnitte 24 px.
+
+## Warum
+
+Das Auge liest Nähe als Zusammengehörigkeit. Zufällige Abstände (5, 7, 13 px) lassen eine Seite unordentlich wirken, auch wenn niemand sagen kann warum, und machen falsche Gruppen. Ein Raster nimmt die Entscheidung ab.
+
+## Details
+
+- Tailwind: `gap-1` (4), `gap-2` (8), `gap-3` (12), `gap-4` (16), `gap-6` (24), `gap-8` (32).
+- Abstände zwischen Feldern über `gap-stack`, damit die Dichte (G-06) sie mitnimmt.
+- Lieber `gap` am Behälter als `margin` an jedem Kind.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G05Good />}
+  bad={<G05Bad />}
+  goodCaption="Feld eng an Beschriftung, Abschnitte weit"
+  badCaption="Zufällige Abstände, falsche Gruppen"
+/>
+
+## Übertragen
+
+- Nova: eigene Tools mit `space-y-*`/`gap-*` aus derselben Skala; keine Inline-`margin`.
+- Im Entwurf Abstände messen: Ist jeder ein Vielfaches von 4?

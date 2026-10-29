@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G08Bad, G08Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-08 Bewegung erklärt und schmückt nicht" />
+
+# G-08 · Bewegung erklärt und schmückt nicht
+
+## Regel
+
+Bewege nur, um Herkunft oder Zustand zu zeigen: ein Menü wächst aus seinem Knopf, eine neue Zeile blendet sich ein. Halte es kurz (120–200 ms, Tokens `dur-fast` und `dur-base`) und lass alles weg, wenn jemand „Bewegung reduzieren“ eingestellt hat.
+
+## Warum
+
+Bewegung zieht den Blick an. Erklärt sie etwas, hilft sie; tut sie es nicht, stört sie bei der Arbeit – beim hundertsten Öffnen eines Menüs zählt jede Millisekunde. Manche Menschen bekommen von Bewegung Schwindel.
+
+## Details
+
+- Tailwind: `motion-safe:` vor jede Animation, `motion-reduce:hidden` für reine Zierde (wie die Scanlinie in W-02).
+- Keine Dauer-Animationen (pulsieren, hüpfen) ausser für einen laufenden Vorgang.
+- Erscheinen mit `ease-out`, kein Federn und kein Überschiessen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G08Good />}
+  bad={<G08Bad />}
+  goodCaption="Kurz, aus dem Knopf, dann Ruhe"
+  badCaption="Hüpfen und Pulsieren für Aufmerksamkeit"
+/>
+
+## Übertragen
+
+- Nova: eigene Übergänge in CSS mit `@media (prefers-reduced-motion: reduce)` abschalten.
+- Faustregel: Merkt man die Animation beim zehnten Mal noch, ist sie zu lang.

@@ -17,6 +17,12 @@ describe('ActionMenu', () => {
         expect(screen.getByRole('menuitem', { name: 'Zum Auftrag' })).toHaveFocus()
     })
 
+    it('marks the keyboard focus with a ring, not only a faint background (G-07)', async () => {
+        render(<ActionMenu items={items()} />)
+        await userEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen' }))
+        expect(screen.getByRole('menuitem', { name: 'Station setzen …' }).className).toMatch(/focus-visible:ring-2/)
+    })
+
     it('Enter selects and closes', async () => {
         const onB = vi.fn()
         render(<ActionMenu items={items(vi.fn(), onB)} />)

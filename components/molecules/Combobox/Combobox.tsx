@@ -185,7 +185,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                     id={listId}
                     role="listbox"
                     aria-busy={loading || undefined}
-                    className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-panel border border-border bg-surface-raised py-1 shadow-lg"
+                    className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-panel border border-border bg-surface-raised py-1 shadow-overlay"
                 >
                     {loading && visible.length === 0 && (
                         <li className="px-control py-1.5 text-control text-fg-muted">Suche…</li>

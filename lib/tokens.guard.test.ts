@@ -5,6 +5,10 @@ import { describe, it, expect } from 'vitest'
 // Components must use semantic tokens only — no raw palette colors, no pill radii.
 const RAW_COLOR = /\b(?:bg|text|border|ring|fill|stroke|from|to|via|placeholder|divide|outline)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/
 const PILL = /\brounded-full\b/
+// G-04: only the named type steps; G-02: one overlay shadow, no heavier ones
+const ARBITRARY_TEXT = /\btext-\[\d+(?:\.\d+)?(?:px|rem)\]/
+// G-02: one shadow for everything that floats
+const STRAY_SHADOW = /(?<![-\w])shadow(?:-(?:sm|md|lg|xl|2xl|\[[^\]]+\]))?(?![-\w])/
 const ALLOW = 'token-guard: allow'
 
 const ROOT = path.resolve(__dirname, '../components')
@@ -24,11 +28,18 @@ function violations(file: string): string[] {
     return readFileSync(file, 'utf8')
         .split('\n')
         .filter((line) => !line.includes(ALLOW))
-        .flatMap((line) => [line.match(RAW_COLOR)?.[0], line.match(PILL)?.[0]])
+        .flatMap((line) => [RAW_COLOR, PILL, ARBITRARY_TEXT, STRAY_SHADOW].map((re) => line.match(re)?.[0]))
         .filter((m): m is string => Boolean(m))
 }
 
 describe('token guard', () => {
+    it('tokens.css defines motion and overlay tokens in both themes', () => {
+        const css = readFileSync(path.resolve(__dirname, '../app/tokens.css'), 'utf8')
+        const block = (selector: string) => css.slice(css.indexOf(selector + ' {'), css.indexOf('}', css.indexOf(selector + ' {')))
+        for (const name of ['--dur-fast', '--dur-base', '--ease-out', '--shadow-overlay']) expect(block('.light')).toContain(name)
+        expect(block('.dark')).toContain('--shadow-overlay')
+    })
+
     it('finds component files', () => {
         expect(GUARDED.length).toBeGreaterThan(10)
     })

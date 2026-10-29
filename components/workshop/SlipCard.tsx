@@ -24,7 +24,7 @@ export function SlipCard({ number, customer, material, pieces, urgency, notes = 
         ["Dringlichkeit", urgency],
     ]
     return (
-        <section aria-labelledby={id} className={cn("relative flex flex-col overflow-hidden rounded-panel border border-border bg-surface-raised shadow-sm", className)}>
+        <section aria-labelledby={id} className={cn("relative flex flex-col overflow-hidden rounded-panel border border-border bg-surface-raised", className)}>
             {/* The perforated top edge of the paper slip */}
             <span className="h-2 border-b-2 border-dashed border-border bg-surface-sunken" aria-hidden="true" />
             <div className="flex flex-col gap-4 p-5">

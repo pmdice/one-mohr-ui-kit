@@ -1,0 +1,29 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { SpaceScale, TokenTable, TypeScale } from './TokenTable'
+import { TOKEN_GROUPS } from './tokens'
+
+<Meta title="Handbuch/Grundlagen/Tokens" />
+
+# Tokens
+
+Alle Werte des Kits als CSS-Variablen aus `app/tokens.css`. Die Tabelle liest sie direkt aus der Seite – was hier steht, ist, was die Komponenten benutzen. Für Nova oder einen anderen Stack: die Datei übernehmen und Farben, Radien und Grössen nur über diese Namen ansprechen.
+
+## Schriftstufen (G-04)
+
+<TypeScale />
+
+Schrift: Geist für Text, Geist Mono für Kennungen und Codes; Zahlen in Spalten mit Ziffern gleicher Breite (`tabular-nums`).
+
+## Abstände (G-05)
+
+Zusammengehöriges eng, Getrenntes weit. Zwischen Feldern `gap-stack`, damit die Dichte mitgeht.
+
+<SpaceScale />
+
+{TOKEN_GROUPS.map((group) => (
+  <div key={group.title}>
+    <h2>{group.title}</h2>
+    <p>{group.description}</p>
+    <TokenTable group={group} />
+  </div>
+))}

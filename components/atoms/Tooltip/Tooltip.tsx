@@ -60,7 +60,7 @@ export function Tooltip({ content, side = "top", children, className, portal = f
             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, ...SIDE_OFFSET[side] }}
             transition={shouldReduce ? { duration: 0 } : { duration: 0.15, ease: "easeOut" }}
             className={cn(
-                "pointer-events-none z-50 whitespace-nowrap rounded-lg bg-fg px-2.5 py-1.5 text-xs font-medium text-surface shadow-md",
+                "pointer-events-none z-50 whitespace-nowrap rounded-lg bg-fg px-2.5 py-1.5 text-xs font-medium text-surface shadow-overlay",
                 !portal && cn("absolute", SIDE_CLASS[side]),
                 className
             )}

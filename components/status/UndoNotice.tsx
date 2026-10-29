@@ -19,7 +19,7 @@ export function UndoNotice({ message, onUndo, onClose, duration = 8000, classNam
     }, [message, duration])
 
     return (
-        <div role="status" className={cn("flex items-center gap-3 rounded-panel border border-border bg-surface-raised px-4 py-2 text-sm text-fg shadow-lg", className)}>
+        <div role="status" className={cn("flex items-center gap-3 rounded-panel border border-border bg-surface-raised px-4 py-2 text-sm text-fg shadow-overlay", className)}>
             <span>{message}</span>
             <button type="button" onClick={onUndo} className="rounded-control px-2 py-0.5 font-medium text-accent hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
                 Rückgängig

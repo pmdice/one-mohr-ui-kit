@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G06Bad, G06Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-06 Zwei Dichten und eine Komponente" />
+
+# G-06 · Zwei Dichten und eine Komponente
+
+## Regel
+
+Setz die Dichte einmal am Wurzelelement: kompakt am Schreibtisch (Bedienelemente 32 px hoch), komfortabel an Tablet und Werkstatt (44 px). In der Werkstatt kommen die Ziele aus W-03 dazu: mindestens 48 px für alles, was man mit Handschuhen trifft. Komponenten lesen ihre Grösse aus den Tokens; es gibt keine zweite Komponente für Touch.
+
+## Warum
+
+Zwei Komponenten für dasselbe laufen auseinander: Die Touch-Variante bekommt einen Fehler-Fix nicht, die Desktop-Variante eine Regel nicht. Eine Komponente mit zwei Dichten bleibt eine Sache, die man einmal prüft.
+
+## Details
+
+- `data-density="comfortable"` am Wurzelelement der Werkstatt-Ansicht (W-03).
+- Höhe über `h-control`, Innenabstand über `px-control`, Schrift über `text-control`, Feldabstand über `gap-stack`.
+- Komfortabel heisst grösser und weiter, nicht anders: gleiche Reihenfolge, gleiche Wörter.
+- Dialoge und Menüs, die über der Seite schweben, übernehmen die Dichte der Stelle, von der aus sie geöffnet wurden (der Baustein *Dialog* tut das).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G06Good />}
+  bad={<G06Bad />}
+  goodCaption="Dieselben Bausteine, zwei Dichten"
+  badCaption="Eigene Touch-Bausteine mit anderem Aussehen"
+/>
+
+## Übertragen
+
+- Nova kennt keine Dichte; für eine Werkstatt-Seite ein eigenes Tool mit einer Wurzelklasse, die die Grössen setzt.
+- CSS: die vier Dichte-Variablen aus `app/tokens.css` übernehmen.

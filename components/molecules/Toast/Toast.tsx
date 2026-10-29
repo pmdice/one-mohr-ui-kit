@@ -70,7 +70,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: 48, scale: 0.95 }}
                             transition={shouldReduce ? { duration: 0 } : { type: "spring", bounce: 0.15, duration: 0.35 }}
                             className={cn(
-                                "flex w-80 items-start gap-3 rounded-panel border bg-surface-raised p-4 shadow-lg",
+                                "flex w-80 items-start gap-3 rounded-panel border bg-surface-raised p-4 shadow-overlay",
                                 t.variant ? VARIANT_BORDER[t.variant] : "border-border"
                             )}
                         >
