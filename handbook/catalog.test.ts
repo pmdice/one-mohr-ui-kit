@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'fs'
 import path from 'path'
 import { describe, it, expect } from 'vitest'
-import { CATALOG } from './catalog'
+import { CATALOG, FOLDERS } from './catalog'
 import { ALL_RULE_GROUPS } from './allRules'
 
 const ROOT = path.resolve(__dirname, '..')
@@ -18,6 +18,11 @@ describe('component catalog', () => {
     it('lists every component file exactly once', () => {
         const files = componentFiles(path.join(ROOT, 'components')).sort()
         expect(CATALOG.map((c) => c.path).sort()).toEqual(files)
+    })
+
+    it('has a heading for every component folder, so the page shows every entry', () => {
+        const folders = readdirSync(path.join(ROOT, 'components')).filter((f) => f !== 'providers' && statSync(path.join(ROOT, 'components', f)).isDirectory())
+        expect(Object.keys(FOLDERS).sort()).toEqual(folders.sort())
     })
 
     it('only refers to rules that exist', () => {

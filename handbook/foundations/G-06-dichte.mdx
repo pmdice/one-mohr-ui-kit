@@ -8,7 +8,7 @@ import { G06Bad, G06Good } from './examples'
 
 ## Regel
 
-Setz die Dichte einmal am Wurzelelement: kompakt am Schreibtisch (Bedienelemente 32 px hoch), komfortabel an Tablet und Werkstatt (44 px). Komponenten lesen ihre Grösse aus den Tokens; es gibt keine zweite Komponente für Touch.
+Setz die Dichte einmal am Wurzelelement: kompakt am Schreibtisch (Bedienelemente 32 px hoch), komfortabel an Tablet und Werkstatt (44 px). In der Werkstatt kommen die Ziele aus W-03 dazu: mindestens 48 px für alles, was man mit Handschuhen trifft. Komponenten lesen ihre Grösse aus den Tokens; es gibt keine zweite Komponente für Touch.
 
 ## Warum
 
@@ -19,6 +19,7 @@ Zwei Komponenten für dasselbe laufen auseinander: Die Touch-Variante bekommt ei
 - `data-density="comfortable"` am Wurzelelement der Werkstatt-Ansicht (W-03).
 - Höhe über `h-control`, Innenabstand über `px-control`, Schrift über `text-control`, Feldabstand über `gap-stack`.
 - Komfortabel heisst grösser und weiter, nicht anders: gleiche Reihenfolge, gleiche Wörter.
+- Dialoge und Menüs, die über der Seite schweben, übernehmen die Dichte der Stelle, von der aus sie geöffnet wurden (der Baustein *Dialog* tut das).
 
 ## Gut / Schlecht
 

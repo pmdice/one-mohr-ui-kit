@@ -28,6 +28,14 @@ describe('TokenTable', () => {
         expect(within(row).getByText(`dark${colors.tokens[0].name}`)).toBeInTheDocument()
     })
 
+    it('reads the light column in a light scope even when the page is dark', () => {
+        const read = (el: Element, name: string) => (el.closest('.light') ? `light${name}` : el.closest('.dark') ? `dark${name}` : `none${name}`)
+        render(<div className="dark"><TokenTable group={colors} read={read} /></div>)
+        const row = screen.getByRole('row', { name: new RegExp(colors.tokens[0].name) })
+        expect(within(row).getByText(`light${colors.tokens[0].name}`)).toBeInTheDocument()
+        expect(css).toMatch(/:root,\s*\.light\s*\{/)
+    })
+
     it('shows a dash when a value is missing', () => {
         render(<TokenTable group={colors} read={() => ''} />)
         const row = screen.getByRole('row', { name: new RegExp(colors.tokens[0].name) })

@@ -11,7 +11,7 @@ export interface TokenGroup {
     tokens: { name: string; role: string }[]
 }
 
-const THEMES = [{ label: "Hell" }, { label: "Dunkel", className: "dark" }]
+const THEMES = [{ label: "Hell", className: "light" }, { label: "Dunkel", className: "dark" }]
 const ONE = [{ label: "Wert" }]
 
 export const TOKEN_GROUPS: TokenGroup[] = [

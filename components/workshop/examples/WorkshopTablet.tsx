@@ -184,7 +184,7 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
             </div>
 
             {/* The tablet */}
-            <div data-density="comfortable" className="flex flex-col gap-5 rounded-[14px] border border-border bg-surface p-5 shadow-sm sm:p-6">
+            <div data-density="comfortable" className="flex flex-col gap-5 rounded-[14px] border border-border bg-surface p-5 sm:p-6">
                 {!station
                     ? <StationPicker stations={STATIONS} onPick={setStation} />
                     : (
@@ -282,13 +282,16 @@ function Table({ slips, onHold }: { slips: World["slips"]; onHold: (code: string
     )
 }
 
+// Real paper lying on a table keeps its own white and casts its shadow (token-guard: allow)
+const PAPER = "flex min-h-16 -rotate-1 flex-col items-start gap-1.5 rounded-[3px] bg-white px-2.5 py-2 text-left text-black shadow-md transition-transform even:rotate-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus active:scale-95" // token-guard: allow
+
 function PaperSlip({ label, unknown, onClick }: { label: string; unknown?: boolean; onClick: () => void }) {
     return (
         <button
             type="button"
             aria-label={`${label} vor die Kamera halten`}
             onClick={onClick}
-            className="flex min-h-16 -rotate-1 flex-col items-start gap-1.5 rounded-[3px] bg-white px-2.5 py-2 text-left text-black shadow-md transition-transform even:rotate-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-focus active:scale-95"
+            className={PAPER}
         >
             <span
                 className="h-5 w-full opacity-80"

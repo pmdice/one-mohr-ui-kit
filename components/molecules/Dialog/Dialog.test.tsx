@@ -119,3 +119,62 @@ describe('Dialog', () => {
         expect(document.body.style.overflow).toBe('')
     })
 })
+
+describe('Dialog review fixes', () => {
+    it('Escape handled inside (an open list) does not close the dialog', async () => {
+        const onClose = vi.fn()
+        render(
+            <Dialog open onClose={onClose} title="Mit Liste">
+                <input aria-label="Liste" onKeyDown={(e) => { if (e.key === 'Escape') e.preventDefault() }} />
+            </Dialog>
+        )
+        await userEvent.keyboard('{Escape}')
+        expect(onClose).not.toHaveBeenCalled()
+    })
+
+    it('Shift+Tab from the panel itself stays inside', async () => {
+        render(<Dialog open onClose={() => {}} title="Nur Text" footer={<><button>Nein</button><button>Ja</button></>}>Nur ein Satz.</Dialog>)
+        expect(screen.getByRole('dialog')).toHaveFocus()
+        await userEvent.tab({ shift: true })
+        expect(screen.getByRole('button', { name: 'Ja' })).toHaveFocus()
+    })
+
+    it('when the focused element disappears, Escape still closes and Tab comes back in', async () => {
+        const onClose = vi.fn()
+        function Vanish() {
+            const [shown, setShown] = React.useState(true)
+            return (
+                <>
+                    <button>Dahinter</button>
+                    <Dialog open onClose={onClose} title="T">
+                        {shown && <button onClick={() => setShown(false)}>Weg</button>}
+                        <button>Bleibt</button>
+                    </Dialog>
+                </>
+            )
+        }
+        render(<Vanish />)
+        await userEvent.click(screen.getByRole('button', { name: 'Weg' }))
+        expect(document.activeElement).toBe(document.body)
+        await userEvent.tab()
+        expect(screen.getByRole('dialog').contains(document.activeElement)).toBe(true)
+        ;(document.activeElement as HTMLElement).blur()
+        await userEvent.keyboard('{Escape}')
+        expect(onClose).toHaveBeenCalledTimes(1)
+    })
+
+    it('takes the density of where it was opened from', async () => {
+        function Tablet() {
+            const [open, setOpen] = React.useState(false)
+            return (
+                <div data-density="comfortable">
+                    <button onClick={() => setOpen(true)}>Öffnen</button>
+                    <Dialog open={open} onClose={() => setOpen(false)} title="T"><button>Ok</button></Dialog>
+                </div>
+            )
+        }
+        render(<Tablet />)
+        await userEvent.click(screen.getByRole('button', { name: 'Öffnen' }))
+        expect(screen.getByTestId('dialog-backdrop')).toHaveAttribute('data-density', 'comfortable')
+    })
+})
