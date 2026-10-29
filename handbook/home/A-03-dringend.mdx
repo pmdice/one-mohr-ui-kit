@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { A03Bad, A03Good } from './examples'
+
+<Meta title="Handbuch/Startseite/A-03 Dringendes oben und mit Grund" />
+
+# A-03 · Dringendes oben und mit Grund
+
+## Regel
+
+Sortier den Vorrat: überfällig (am längsten zuerst), heute fällig, später; bei gleicher Frist das Dringende zuerst. Jede Zeile sagt in Worten warum: „seit 2 Tagen überfällig“, „heute fällig“, „wartet seit 5 h auf Freigabe“.
+
+## Warum
+
+Eine Liste ohne Grund lässt raten, warum etwas oben steht. Mit Grund sieht man auf einen Blick, wo man anfangen muss, und kann es vertreten. Der Abstand in Worten ist schneller gelesen als ein Datum (D-06).
+
+## Details
+
+- Überfällig als Warnung (G-01), nur das Wort eingefärbt.
+- Die gleiche Reihenfolge wie die Liste mit Filter „fällig“ (L-06).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<A03Good />}
+  bad={<A03Bad />}
+  goodCaption="Überfälliges oben, mit Grund"
+  badCaption="Nach Nummer sortiert, ohne Grund"
+/>
+
+## Übertragen
+
+- Laravel: `orderBy('due_at')->orderByDesc('urgency_rank')`; der Grund aus `formatDue` (D-06) im Resource-Feld.
+- Nova: Index-Sortierung der Lens über `$request->orderBy`-Standard setzen.

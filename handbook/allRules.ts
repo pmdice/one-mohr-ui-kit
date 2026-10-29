@@ -10,6 +10,7 @@ import { STATUS_RULE_GROUPS } from "./status/rules"
 import { WORKSHOP_RULE_GROUPS } from "./workshop/rules"
 import { PRINT_RULE_GROUPS } from "./print/rules"
 import { ACCESS_RULE_GROUPS } from "./access/rules"
+import { HOME_RULE_GROUPS } from "./home/rules"
 
 /** The handbook's parts in reading order, each with its rule prefix. */
 export const PARTS: { prefix: string; title: string; groups: RuleGroup[] }[] = [
@@ -17,6 +18,7 @@ export const PARTS: { prefix: string; title: string; groups: RuleGroup[] }[] = [
     { prefix: "F", title: "Formulare", groups: FORM_RULE_GROUPS },
     { prefix: "E", title: "Eingaben", groups: INPUT_RULE_GROUPS },
     { prefix: "N", title: "Navigation & App-Rahmen", groups: NAV_RULE_GROUPS },
+    { prefix: "A", title: "Startseite & Arbeitsvorrat", groups: HOME_RULE_GROUPS },
     { prefix: "L", title: "Listen & Tabellen", groups: LIST_RULE_GROUPS },
     { prefix: "D", title: "Datensatz-Seite", groups: RECORD_RULE_GROUPS },
     { prefix: "R", title: "Speichern & Rückmeldung", groups: FEEDBACK_RULE_GROUPS },

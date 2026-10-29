@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { A05Bad, A05Good } from './examples'
+
+<Meta title="Handbuch/Startseite/A-05 Jede Zahl führt in die Liste dahinter" />
+
+# A-05 · Jede Zahl führt in die Liste dahinter
+
+## Regel
+
+Jede Kennzahl ist ein Link auf die gefilterte Liste – und diese Liste zeigt dieselbe Zahl (L-12). „3 überfällig“ führt zur Liste mit Filter „überfällig“ und 3 Zeilen. Eine Zahl, die nirgendwohin führt, gehört nicht auf die Startseite.
+
+## Warum
+
+Eine Zahl weckt die Frage „Welche?“. Ohne Link muss man die Liste selbst filtern und hofft, dieselbe Zahl zu bekommen. Weichen Startseite und Liste ab, verliert man das Vertrauen in beide.
+
+## Details
+
+- Eine Abfrage für Zahl und Liste, nicht zwei.
+- Die Kachel ist als Ganzes klickbar, Name „3 überfällig“.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<A05Good />}
+  bad={<A05Bad />}
+  goodCaption="Zahl als Link mit gleicher Liste"
+  badCaption="Bunte Zahl ohne Ziel"
+/>
+
+## Übertragen
+
+- Nova: Metrics sind keine Links – die Zahl als eigene Card mit Link auf die Index-URL mit Filter oder als Lens im Menü mit Zähler (`MenuItem::lens(...)->withBadge(fn () => …)`); Zahl und Lens aus derselben Query.
+- Blade: Link mit Query-String der Listenfilter (L-05).
