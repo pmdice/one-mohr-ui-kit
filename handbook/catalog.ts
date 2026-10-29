@@ -18,6 +18,7 @@ export const FOLDERS: Record<string, string> = {
     inputs: "Eingaben",
     nav: "Navigation & App-Rahmen",
     table: "Listen & Tabellen",
+    record: "Datensatz-Seite",
     status: "Status & Lebenszyklus",
     workshop: "Werkstatt",
 }
@@ -81,6 +82,16 @@ export const CATALOG: CatalogEntry[] = [
     { name: "EmptyState", path: "components/table/EmptyState.tsx", purpose: "Leere Liste mit Grund und nächstem Schritt.", rules: ["L-07"] },
     { name: "FilterBar", path: "components/table/FilterBar.tsx", purpose: "Aktive Filter als Chips und die Anzahl immer sichtbar.", rules: ["L-05", "L-12"] },
     { name: "Pagination", path: "components/table/Pagination.tsx", purpose: "Bereich, Blättern und Seitengrösse.", rules: ["L-12"] },
+
+    // Record page
+    { name: "AttachmentGallery", path: "components/record/AttachmentGallery.tsx", purpose: "Bilder als Vorschau, gross im Dialog und mit Pfeiltasten blätterbar.", rules: ["D-09"] },
+    { name: "CopyButton", path: "components/record/CopyButton.tsx", purpose: "Kopiert eine Kennung mit einem Klick und sagt es an derselben Stelle.", rules: ["D-05"] },
+    { name: "InlineEdit", path: "components/record/InlineEdit.tsx", purpose: "Eine Angabe an Ort und Stelle ändern, mit „Speichert …“ und Fehler am Feld.", rules: ["D-04", "D-07"] },
+    { name: "KeyFacts", path: "components/record/KeyFacts.tsx", purpose: "Höchstens vier Kennzahlen mit Einordnung unter dem Kopf.", rules: ["D-02"] },
+    { name: "PropertyList", path: "components/record/PropertyList.tsx", purpose: "Eigenschaften als Beschriftung und Wert; leere Werte sagen, was fehlt.", rules: ["D-03", "D-04"] },
+    { name: "RecordLayout", path: "components/record/RecordLayout.tsx", purpose: "Inhalt links, Eigenschaften rechts; schmal die Eigenschaften zuerst.", rules: ["D-01"] },
+    { name: "RecordMeta", path: "components/record/RecordMeta.tsx", purpose: "Wer hat wann angelegt und geändert, mit Link zum Verlauf.", rules: ["D-10"] },
+    { name: "RelatedList", path: "components/record/RelatedList.tsx", purpose: "Zugehörige Datensätze mit Anzahl, „Alle N anzeigen“ und Aktion bei leer.", rules: ["D-09"] },
 
     // Status & lifecycle
     { name: "ActivityLog", path: "components/status/ActivityLog.tsx", purpose: "Verlauf in Sätzen, gruppiert und filterbar.", rules: ["S-09", "S-11", "S-12"] },

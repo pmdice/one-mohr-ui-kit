@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D06Bad, D06Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-06 Termine sagen wie weit weg sie sind" />
+
+# D-06 · Termine sagen wie weit weg sie sind
+
+## Regel
+
+Zeig einen Termin als Abstand und als Datum: „in 5 Tagen · Fr, 14.11.2026“, „heute“, „morgen“. Ein überfälliger Termin heisst „seit 2 Tagen überfällig“ und ist eine Warnung. Vergangene Daten, die einfach passiert sind (geliefert am), sind neutral („vor 2 Tagen“).
+
+## Warum
+
+Bei einem Termin fragt man: Wie viel Zeit bleibt? Das Datum allein zwingt zum Rechnen, der Abstand allein ist nicht eindeutig. Beides zusammen beantwortet die Frage und lässt sich nachprüfen. Zeitstempel mit Sekunden und Zeitzone sind für Maschinen.
+
+## Details
+
+- Absolutes Datum mit Wochentag (E-05).
+- Abstände in Tagen; Stunden nur für Fristen am selben Tag (S-03).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D06Good />}
+  bad={<D06Bad />}
+  goodCaption="Abstand und Datum, überfällig markiert"
+  badCaption="ISO-Zeitstempel"
+/>
+
+## Übertragen
+
+- Nova: `Date::make()->displayUsing(fn ($d) => $d->diffForHumans() . ' · ' . $d->isoFormat('dd, DD.MM.YYYY'))` mit `Carbon::setLocale('de')`.
+- Überfällig als `Badge` mit Warnfarbe, nicht nur rote Schrift.

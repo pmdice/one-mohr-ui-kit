@@ -29,7 +29,7 @@ export function AttachmentGallery({ title, items }: { title: string; items: Atta
 
     return (
         <section aria-label={title} className="flex flex-col gap-2">
-            <ul className="m-0 grid list-none grid-cols-3 gap-2 p-0 sm:grid-cols-4">
+            <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-2 p-0">
                 {items.map((item, index) => (
                     <li key={item.id}>
                         <button

@@ -20,7 +20,7 @@ export function KeyFacts({ facts, className }: { facts: KeyFact[]; className?: s
                 <div key={fact.label} className="flex flex-col gap-0.5 bg-surface px-4 py-3">
                     <dt className="text-xs text-fg-muted">{fact.label}</dt>
                     <dd className="m-0 flex flex-col">
-                        <span data-tone={fact.tone} className={cn("font-mono text-base font-semibold tabular-nums text-fg", fact.tone && TONES[fact.tone])}>{fact.value}</span>
+                        <span data-tone={fact.tone} className={cn("text-base font-semibold tabular-nums text-fg", fact.tone && TONES[fact.tone])}>{fact.value}</span>
                         {fact.detail && <span className="text-xs text-fg-muted">{fact.detail}</span>}
                     </dd>
                 </div>

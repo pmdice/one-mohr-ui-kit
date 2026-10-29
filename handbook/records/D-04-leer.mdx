@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D04Bad, D04Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-04 Leere Werte sagen was fehlt" />
+
+# D-04 · Leere Werte sagen was fehlt
+
+## Regel
+
+Schreib statt eines Strichs, was fehlt: „Kein Liefertermin“, „Keine Bestellnummer“. Wo man es ändern darf, steht direkt „Hinzufügen“ daneben. Was für diesen Datensatz gar nicht zutrifft (Gravur bei einem Anhänger ohne Gravur), wird nicht gezeigt.
+
+## Warum
+
+„—“ oder „null“ lässt offen, ob etwas fehlt, unbekannt ist oder nicht gilt. Ein Satz sagt es und lädt ein, es nachzutragen. In Tabellen bleibt „—“ (L-02), weil dort Platz zählt und die Spalte den Rest sagt.
+
+## Details
+
+- Fehlt etwas Pflichtiges, ist es eine Warnung (G-01), sonst grau.
+- „Hinzufügen“ öffnet dieselbe Bearbeitung an Ort und Stelle wie D-07.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D04Good />}
+  bad={<D04Bad />}
+  goodCaption="Ein Satz und Hinzufügen"
+  badCaption="null, -, N/A, leer"
+/>
+
+## Übertragen
+
+- Nova: `->displayUsing(fn ($v) => $v ?? 'Kein Liefertermin')` für die Detailseite; Felder, die nicht zutreffen, mit `->hideFromDetail(fn () => …)` oder `->canSee()` ausblenden.
+- Hinzufügen an Ort und Stelle braucht in Nova ein eigenes Feld oder Inline-Edit-Paket; sonst führt der Link zur Bearbeitung mit Fokus auf dem Feld.

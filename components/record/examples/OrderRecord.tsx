@@ -214,9 +214,9 @@ export function OrderRecord({ saveDelay = 600 }: { saveDelay?: number }) {
                                     />
                                 </Property>
                                 <Property label="Lieferadresse">
-                                    <div className="flex items-start justify-between gap-2 pt-0.5">
+                                    <div className="flex flex-col items-start gap-1 pt-0.5">
                                         <span className="flex flex-col">{address.street}<span>{address.zip} {address.city}</span></span>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditAddress(true)} aria-label="Lieferadresse bearbeiten">Bearbeiten</Button>
+                                        <button type="button" onClick={() => setEditAddress(true)} aria-label="Lieferadresse bearbeiten" className="rounded-control text-xs font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">Bearbeiten</button>
                                     </div>
                                 </Property>
                             </PropertyList>

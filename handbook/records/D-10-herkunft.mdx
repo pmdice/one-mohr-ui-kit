@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D10Bad, D10Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-10 Herkunft steht am Rand" />
+
+# D-10 · Herkunft steht am Rand
+
+## Regel
+
+Schreib klein am Ende der Seitenspalte, wer den Datensatz wann angelegt und wer ihn zuletzt geändert hat, mit Link zum ganzen Verlauf (S-12). Die interne ID steht nur hier, klein und kopierbar – für Support und Entwickler.
+
+## Warum
+
+Wer und wann ist oft die erste Rückfrage („Wer hat das geändert?“), aber selten die Arbeit selbst. Am Rand ist es da, ohne Platz zu nehmen. Interne IDs prominent im Titel verwirren, weil es dann zwei Nummern gibt.
+
+## Details
+
+- Zeiten relativ mit genauer Zeit im Titel-Attribut (S-03).
+- „Geändert“ meint die letzte Änderung durch einen Menschen, nicht durch einen Hintergrund-Job.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D10Good />}
+  bad={<D10Bad />}
+  goodCaption="Klein am Rand, mit Verlauf"
+  badCaption="Interne ID und Zeitstempel im Titel"
+/>
+
+## Übertragen
+
+- Nova: `created_at`/`updated_at` mit `->onlyOnDetail()` ans Ende von `fields()`; für „von wem“ ein Audit-Paket (z. B. owen-it/laravel-auditing) oder eigene Spalten `created_by`/`updated_by`.
+- `ID::make()->onlyOnDetail()->copyable()` am Ende statt am Anfang.

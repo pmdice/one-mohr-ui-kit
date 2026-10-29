@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D05Bad, D05Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-05 Kennungen sind kopierbar" />
+
+# D-05 · Kennungen sind kopierbar
+
+## Regel
+
+Stell neben jede Kennung, Nummer oder Adresse, die man weitergibt (in eine E-Mail, ins Telefon, in ein anderes Programm), einen Knopf zum Kopieren. Danach steht zwei Sekunden lang „Kopiert“ an derselben Stelle. Geht die Zwischenablage nicht, sagt der Knopf, wie man von Hand kopiert.
+
+## Warum
+
+Abtippen kostet Zeit und erzeugt Zahlendreher – bei Auftragsnummern genau der Fehler, der später am teuersten ist. Linear kopiert die Kennung eines Vorgangs mit einem Klick oder Kürzel; das spart jeden Tag Dutzende Male Markieren.
+
+## Details
+
+- Kennungen in der Mono-Schrift, damit 0/O und 1/l unterscheidbar sind.
+- Die Rückmeldung ist für Screenreader hörbar (`role="status"`).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D05Good />}
+  bad={<D05Bad />}
+  goodCaption="Kopieren mit Rückmeldung"
+  badCaption="Nicht markierbar, „bitte abtippen“"
+/>
+
+## Übertragen
+
+- Nova: Felder mit `->copyable()` (Text, ID) – Nova zeigt dann ein Kopier-Symbol.
+- Blade/Alpine: `navigator.clipboard.writeText()` mit `try`/`catch` und Rückmeldung.

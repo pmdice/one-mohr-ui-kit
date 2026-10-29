@@ -13,7 +13,7 @@ export function PropertyList({ label, children, className }: { label: string; ch
 
 export function Property({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
     return (
-        <div className={cn("grid grid-cols-[7rem_minmax(0,1fr)] items-start gap-3 py-1.5", className)}>
+        <div className={cn("grid grid-cols-[6.5rem_minmax(0,1fr)] items-start gap-3 py-1.5", className)}>
             <dt className="pt-1 text-xs text-fg-muted">{label}</dt>
             <dd className="m-0 min-w-0 text-sm text-fg">{children}</dd>
         </div>

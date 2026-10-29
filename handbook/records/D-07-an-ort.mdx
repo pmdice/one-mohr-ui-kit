@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { D07Bad, D07Good } from './examples'
+
+<Meta title="Handbuch/Datensatz/D-07 Einzelne Angaben an Ort und Stelle ändern" />
+
+# D-07 · Einzelne Angaben an Ort und Stelle ändern
+
+## Regel
+
+Lass eine einzelne Angabe dort ändern, wo sie steht: Klick oder Enter auf den Wert öffnet das passende Feld (E-01) an derselben Stelle. Enter oder Verlassen speichert, Escape verwirft. Während des Speicherns bleibt der neue Wert sichtbar mit „Speichert …“. Scheitert es, steht der Grund am Feld, der getippte Wert bleibt, und Escape stellt den alten wieder her.
+
+## Warum
+
+Für einen geänderten Liefertermin in ein Formular mit 24 Feldern zu wechseln, kostet Zeit und Orientierung, und man riskiert, versehentlich anderes zu ändern. An Ort und Stelle bleibt der Blick, wo er war – so ändert man in Linear Status, Zuständigkeit oder Termin.
+
+## Details
+
+- Gleicher Wert speichert nicht.
+- Ein Klick daneben schliesst ohne Änderung; der Fokus bleibt, wo man hingeklickt hat.
+- Wer nicht ändern darf, sieht den Wert ohne Knopf (Teil Rechte).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<D07Good />}
+  bad={<D07Bad />}
+  goodCaption="Termin ändern, wo er steht"
+  badCaption="Ein Knopf für das ganze Formular"
+/>
+
+## Übertragen
+
+- Nova kennt das nicht von Haus aus; Inline-Edit-Pakete für Nova oder ein eigenes Feld mit Vue-Komponente, die per API speichert. Ohne das: Link „Ändern“ neben dem Wert, der direkt zur Bearbeitung springt und das Feld fokussiert.
+- Livewire: `wire:model.blur` und `wire:keydown.escape` für genau dieses Verhalten.
