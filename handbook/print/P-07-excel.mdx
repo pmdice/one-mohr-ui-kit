@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { P07Bad, P07Good } from './examples'
+
+<Meta title="Handbuch/Druck/P-07 Excel öffnet es richtig" />
+
+# P-07 · Excel öffnet es richtig
+
+## Regel
+
+Schreib CSV so, dass Excel mit Schweizer Einstellungen sie richtig öffnet: UTF-8 mit BOM (sonst „DÃ¤hler“), Semikolon als Trenner, Zahlen ohne Tausender-Zeichen mit Punkt, Daten als TT.MM.JJJJ, Kennungen mit führenden Nullen als `="00123"` (Excel ignoriert Anführungszeichen beim Öffnen; so bleibt es Text), Text, der mit `=`, `+`, `-` oder `@` beginnt, mit einem Apostroph davor (sonst rechnet Excel ihn als Formel), Werte mit Semikolon, Anführungszeichen oder Zeilenumbruch in Anführungszeichen.
+
+## Warum
+
+Die meisten Exporte enden in Excel. Ein Doppelklick, der kaputte Umlaute, eine einzige Spalte oder `1.23457E+11` liefert, kostet jedes Mal Nacharbeit – und Zahlen als Text lassen sich nicht summieren.
+
+## Details
+
+- Fehlende Werte leer, nicht „null“ oder „—“.
+- Wer mehr braucht (Formate, mehrere Blätter) oder die Datei weiterverarbeitet: XLSX statt CSV – dort ist eine Textspalte einfach eine Textspalte.
+- Telefonnummern wie `+41 79 …` erscheinen mit Apostroph davor; das ist der Preis dafür, dass keine Formel ausgeführt wird.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<P07Good />}
+  bad={<P07Bad />}
+  goodCaption="Umlaute, Spalten und Zahlen stimmen"
+  badCaption="Komma-CSV ohne BOM"
+/>
+
+## Übertragen
+
+- PHP: `\xEF\xBB\xBF` vor den Inhalt, `fputcsv($handle, $row, ';')`, Zahlen unformatiert, Daten mit `format('d.m.Y')`.
+- XLSX: maatwebsite/excel mit `WithColumnFormatting` für Text- und Datumsspalten.

@@ -112,3 +112,20 @@ body {
   from { opacity: 0; transform: translateY(4px) scale(0.98); }
   to { opacity: 1; transform: none; }
 }
+
+/* Print (P-01): pages that hold a print copy print only that, at real size, on sheets without margins.
+   Other pages print as they are, with the browser's margins. */
+@page sheet {
+  size: A4 portrait;
+  margin: 0;
+}
+
+.print-root {
+  display: none;
+}
+
+@media print {
+  body:has(> .print-root) > *:not(.print-root) { display: none !important; }
+  .print-root { display: block; page: sheet; }
+  .print-sheet { break-after: page; }
+}

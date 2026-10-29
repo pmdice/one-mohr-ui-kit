@@ -8,6 +8,7 @@ import { RECORD_RULE_GROUPS } from "./records/rules"
 import { LIST_RULE_GROUPS } from "./lists/rules"
 import { STATUS_RULE_GROUPS } from "./status/rules"
 import { WORKSHOP_RULE_GROUPS } from "./workshop/rules"
+import { PRINT_RULE_GROUPS } from "./print/rules"
 
 /** The handbook's parts in reading order, each with its rule prefix. */
 export const PARTS: { prefix: string; title: string; groups: RuleGroup[] }[] = [
@@ -20,6 +21,7 @@ export const PARTS: { prefix: string; title: string; groups: RuleGroup[] }[] = [
     { prefix: "R", title: "Speichern & Rückmeldung", groups: FEEDBACK_RULE_GROUPS },
     { prefix: "S", title: "Status & Lebenszyklus", groups: STATUS_RULE_GROUPS },
     { prefix: "W", title: "Werkstatt-Ansicht", groups: WORKSHOP_RULE_GROUPS },
+    { prefix: "P", title: "Druck & Export", groups: PRINT_RULE_GROUPS },
 ]
 
 export const ALL_RULE_GROUPS: RuleGroup[] = PARTS.flatMap((p) => p.groups)

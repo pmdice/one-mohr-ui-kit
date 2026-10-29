@@ -22,6 +22,7 @@ export const FOLDERS: Record<string, string> = {
     feedback: "Speichern & Rückmeldung",
     status: "Status & Lebenszyklus",
     workshop: "Werkstatt",
+    print: "Druck & Export",
 }
 
 export const CATALOG: CatalogEntry[] = [
@@ -117,4 +118,11 @@ export const CATALOG: CatalogEntry[] = [
     { name: "ScanBanner", path: "components/workshop/ScanBanner.tsx", purpose: "Grosse Rückmeldung EIN/AUS/FEHLER mit Ton und Weg zurück.", rules: ["W-04", "W-06"] },
     { name: "SlipCard", path: "components/workshop/SlipCard.tsx", purpose: "Das Nötigste zum Zettel, aufgebaut wie der Zettel.", rules: ["W-05"] },
     { name: "StationHeader", path: "components/workshop/StationHeader.tsx", purpose: "Station gross mit Weg, Ton, Verbindung und bewusstem Wechsel.", rules: ["W-01", "W-07"] },
+
+    // Print & export
+    { name: "Barcode", path: "components/print/Barcode.tsx", purpose: "Code 128 in echten Millimetern mit Ruhezone und Klartext.", rules: ["P-03"] },
+    { name: "ExportMenu", path: "components/print/ExportMenu.tsx", purpose: "Export der aktuellen Ansicht; sagt vorher, was in der Datei steht.", rules: ["P-05", "P-07"] },
+    { name: "PrintPreview", path: "components/print/PrintPreview.tsx", purpose: "Vorschau mit Seitenzahl und Hinweis auf tatsächliche Grösse.", rules: ["P-01", "P-03"] },
+    { name: "PrintSheet", path: "components/print/PrintSheet.tsx", purpose: "A4-Seite für Papier mit Kopf und Fuss auf jeder Seite.", rules: ["P-01", "P-04"] },
+    { name: "RunSlip", path: "components/print/RunSlip.tsx", purpose: "Laufzettel: Nummer gross, Barcode, die vier Angaben der Station.", rules: ["P-02", "W-05"] },
 ]

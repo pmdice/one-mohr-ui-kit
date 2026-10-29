@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { P03Bad, P03Good } from './examples'
+
+<Meta title="Handbuch/Druck/P-03 Barcodes mit Ruhezone und Klartext" />
+
+# P-03 · Barcodes mit Ruhezone und Klartext
+
+## Regel
+
+Druck Barcodes als Code 128 mit einer Modulbreite von mindestens 0.33 mm, mindestens 12 mm hoch, mit einer Ruhezone von mindestens zehn Modulen links und rechts und dem Wert als Klartext darunter. Gedruckt wird in tatsächlicher Grösse – nie „An Seite anpassen“.
+
+## Warum
+
+Ein Barcode ist ein Mass, keine Grafik. Wird er skaliert, gestaucht oder steht Text zu nah daneben, liest der Scanner ihn nicht oder falsch. Ohne Klartext darunter steht die Werkstatt still, wenn der Scanner versagt (W-06).
+
+## Details
+
+- Code 128 reicht für Nummern mit Bindestrich; die Kamera liest ihn (W-02).
+- Als SVG in mm erzeugen, nicht als Bild mit Pixeln.
+- Den Druckdialog-Hinweis „Tatsächliche Grösse“ in der Vorschau zeigen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<P03Good />}
+  bad={<P03Bad />}
+  goodCaption="Code 128 in mm, Ruhezone, Klartext"
+  badCaption="Gestaucht, ohne Ruhezone, ohne Text"
+/>
+
+## Übertragen
+
+- PHP: picqer/php-barcode-generator (`BarcodeGeneratorSVG`, Typ `TYPE_CODE_128`) – der Breitenfaktor ist in SVG-Einheiten; das SVG mit `width` in mm einbetten, damit ein Modul ≥ 0.33 mm wird.
+- Etikettendrucker (Zebra) drucken mit ZPL eigene Barcodes – dort `^BC` mit `^BY3` bei 203 dpi (3 Punkte = 0.375 mm); `^BY2` erst ab 300 dpi.
