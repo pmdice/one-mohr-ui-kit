@@ -41,7 +41,6 @@ export const CATALOG: CatalogEntry[] = [
     { name: "SearchInput", path: "components/molecules/SearchInput/SearchInput.tsx", purpose: "Suchfeld mit Lupe und Leeren-Knopf.", rules: ["N-07"] },
     { name: "Select", path: "components/molecules/Select/Select.tsx", purpose: "Auswahl aus wenigen festen Werten, mit Tastatur bedienbar.", rules: ["F-11"] },
     { name: "Tabs", path: "components/molecules/Tabs/Tabs.tsx", purpose: "Wechselt Inhalt innerhalb einer Seite, im Stil der Seiten-Tabs.", rules: ["N-11"] },
-    { name: "Toast", path: "components/molecules/Toast/Toast.tsx", purpose: "Kurze Meldung am Bildschirmrand.", rules: [], note: "Altbestand; wird mit UndoNotice im Teil Speichern & Rückmeldung zusammengeführt." },
 
     // Forms
     { name: "ConditionalField", path: "components/forms/ConditionalField.tsx", purpose: "Blendet Felder ein, wenn ihre Bedingung erfüllt ist, statt sie auszugrauen.", rules: ["F-10"] },
