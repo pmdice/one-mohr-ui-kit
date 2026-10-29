@@ -15,6 +15,7 @@ export const FOLDERS: Record<string, string> = {
     atoms: "Grundbausteine",
     molecules: "Zusammengesetzte Bausteine",
     forms: "Formulare",
+    inputs: "Eingaben",
     nav: "Navigation & App-Rahmen",
     table: "Listen & Tabellen",
     status: "Status & Lebenszyklus",
@@ -27,14 +28,14 @@ export const CATALOG: CatalogEntry[] = [
     { name: "Button", path: "components/atoms/Button/Button.tsx", purpose: "Knopf in sechs Varianten und vier Grössen, mit Ladezustand, der den Fokus behält.", rules: ["G-01", "G-07", "G-10", "F-12"] },
     { name: "Input", path: "components/atoms/Input/Input.tsx", purpose: "Einzeiliges Eingabefeld in der Höhe der Dichte.", rules: ["G-06", "G-07"] },
     { name: "Label", path: "components/atoms/Label/Label.tsx", purpose: "Beschriftung eines Feldes mit Pflicht- oder Optional-Kennzeichen.", rules: ["F-01"] },
-    { name: "Textarea", path: "components/atoms/Textarea/Textarea.tsx", purpose: "Mehrzeiliges Eingabefeld.", rules: ["G-06", "G-07"] },
+    { name: "Textarea", path: "components/atoms/Textarea/Textarea.tsx", purpose: "Mehrzeiliges Eingabefeld; mit maxLength erscheint ein Zähler kurz vor der Grenze.", rules: ["G-06", "G-07", "E-03"] },
     { name: "ThemeToggle", path: "components/atoms/ThemeToggle/ThemeToggle.tsx", purpose: "Wahl zwischen hell, dunkel und System.", rules: ["G-03"] },
     { name: "Tooltip", path: "components/atoms/Tooltip/Tooltip.tsx", purpose: "Beschriftung für Icon-Knöpfe bei Zeiger und Fokus.", rules: ["G-09"] },
 
     // Molecules
     { name: "Accordion", path: "components/molecules/Accordion/Accordion.tsx", purpose: "Aufklappbare Abschnitte für Hilfetexte.", rules: [], note: "Altbestand; Formulare klappen über GroupBlock ein (F-09)." },
     { name: "Card", path: "components/molecules/Card/Card.tsx", purpose: "Fläche mit Rahmen für zusammengehörigen Inhalt.", rules: ["G-02"] },
-    { name: "Combobox", path: "components/molecules/Combobox/Combobox.tsx", purpose: "Auswahl mit Suche für lange Listen.", rules: ["F-11"] },
+    { name: "Combobox", path: "components/molecules/Combobox/Combobox.tsx", purpose: "Auswahl mit Suche für lange Listen, mit „zuletzt benutzt“ und „… neu anlegen“.", rules: ["F-11", "E-09"] },
     { name: "Dialog", path: "components/molecules/Dialog/Dialog.tsx", purpose: "Der Dialog des Kits: beschriftet, Fokus bleibt drin und kehrt zurück, Escape schliesst nur den obersten.", rules: ["G-07", "S-06"] },
     { name: "SearchInput", path: "components/molecules/SearchInput/SearchInput.tsx", purpose: "Suchfeld mit Lupe und Leeren-Knopf.", rules: ["N-07"] },
     { name: "Select", path: "components/molecules/Select/Select.tsx", purpose: "Auswahl aus wenigen festen Werten, mit Tastatur bedienbar.", rules: ["F-11"] },
@@ -51,6 +52,16 @@ export const CATALOG: CatalogEntry[] = [
     { name: "RepeatableGroup", path: "components/forms/RepeatableGroup.tsx", purpose: "Liste von Positionen: hinzufügen, duplizieren, entfernen, einklappen.", rules: ["F-06", "F-09"] },
     { name: "RequiredRegistry", path: "components/forms/RequiredRegistry.tsx", purpose: "Zählt Pflichtfelder pro Abschnitt, damit Kopf und Zusammenfassung sie kennen.", rules: ["F-01"] },
     { name: "SubRows", path: "components/forms/SubRows.tsx", purpose: "Unterzeilen sichtbar innerhalb ihres Blocks.", rules: ["F-07"] },
+
+    // Inputs
+    { name: "Checkbox", path: "components/inputs/Checkbox.tsx", purpose: "Ja/Nein, das mit dem Formular gespeichert wird, auch mit „teilweise“.", rules: ["E-07"] },
+    { name: "DateInput", path: "components/inputs/DateInput.tsx", purpose: "Datum als TT.MM.JJJJ mit Abkürzungen, Wochentag und Kalender per Tastatur.", rules: ["E-01", "E-04", "E-05"] },
+    { name: "FileDrop", path: "components/inputs/FileDrop.tsx", purpose: "Dateien ablegen oder wählen, mit Vorschau, Fortschritt und Grund pro Datei.", rules: ["E-03", "E-10"] },
+    { name: "NumberInput", path: "components/inputs/NumberInput.tsx", purpose: "Zahl und Geldbetrag mit Einheit im Feld, grosszügig gelesen und kanonisch gezeigt.", rules: ["E-01", "E-02", "E-03", "E-04", "E-06"] },
+    { name: "RadioGroup", path: "components/inputs/RadioGroup.tsx", purpose: "Zwei bis fünf Möglichkeiten sichtbar, als Liste oder Segmente.", rules: ["E-08"] },
+    { name: "RecordPicker", path: "components/inputs/RecordPicker.tsx", purpose: "Verknüpfung zu einem Datensatz: suchen, zuletzt benutzt, neu anlegen, Link.", rules: ["E-09", "N-08"] },
+    { name: "Switch", path: "components/inputs/Switch.tsx", purpose: "Einstellung, die sofort gilt.", rules: ["E-07"] },
+    { name: "field", path: "components/inputs/field.tsx", purpose: "Gemeinsame Hülle der Eingabefelder: Rahmen, Einheit, Lesen beim Verlassen, Grund bei Fehlern.", rules: ["E-02", "E-04"] },
 
     // Navigation
     { name: "AppShell", path: "components/nav/AppShell.tsx", purpose: "App-Rahmen aus Kopf, Seitenleiste und Inhalt; die Leiste klappt zu Icons ein.", rules: ["N-12"] },

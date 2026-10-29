@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E05Bad, E05Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-05 Daten schweizerisch und mit Abkürzungen" />
+
+# E-05 · Daten schweizerisch und mit Abkürzungen
+
+## Regel
+
+Zeig Daten als `TT.MM.JJJJ` und den Wochentag im Feld daneben („Fr“). Versteh `14.11.2026`, `14.11.26`, `14.11.` (dieses Jahr), `14112026`, `heute`, `morgen` und `+3` (in drei Tagen). Den Kalender gibt es als Hilfe hinter einem Knopf; er beginnt am Montag, markiert heute und geht ganz mit der Tastatur.
+
+## Warum
+
+Wer ein Datum weiss, tippt es schneller, als er im Kalender blättert. Der Wochentag fängt die häufigsten Fehler: Ein Liefertermin am Samstag fällt auf. Ein Kalender als einziger Weg zwingt jeden zum Klicken – auch die, die das Datum schon im Kopf haben.
+
+## Details
+
+- Kalender: Pfeile Tag/Woche, Bild auf/ab Monat (31.01. → 28.02.), Pos1/Ende Wochenanfang/-ende, Enter wählt, Escape schliesst, der Fokus kehrt ins Feld zurück.
+- „Diesen Tag gibt es nicht“ für 31.02.; „Frühestens 29.10.2026“ ausserhalb der Grenzen.
+- Gespeichert wird ISO (`2026-11-14`), gezeigt Schweizer Form.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E05Good />}
+  bad={<E05Bad />}
+  goodCaption="Tippen mit Abkürzungen, Wochentag, Kalender als Hilfe"
+  badCaption="Drei Auswahllisten für Tag, Monat, Jahr"
+/>
+
+## Übertragen
+
+- Nova: `Date::make()->displayUsing(fn ($d) => $d?->format('d.m.Y'))`; Nova 4/5 nutzt im Formular das Browser-Datumsfeld – für Abkürzungen ein eigenes Feld oder ein Paket mit Textfeld.
+- Carbon: `Carbon::createFromFormat('d.m.Y', …)` nach der Normalisierung wie in `parseDate`.

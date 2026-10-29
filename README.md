@@ -10,6 +10,7 @@ Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind. Je
 |---|---|---|
 | G | Grundlagen | Farbe, Ebenen, hell/dunkel, Schrift, Abstände, Dichte, Fokus, Bewegung, Icons, Sprache |
 | F | Formulare | Pflichtfelder, Fehler, Abschnitte, Positionen, bedingte Felder, Tastatur, Speichern |
+| E | Eingaben | Zahlen mit Einheit, Geld in Rappen, Schweizer Daten, Ja/Nein, Auswahl, Verknüpfungen, Dateien |
 | N | Navigation & App-Rahmen | Pfad, Menü, Zurück, Blättern, Seitenkopf, Suche, Tabs |
 | L | Listen & Tabellen | Kennung, Zahlen, Status, Filter, Sortierung, leer, laden, Tastatur, Auswahl |
 | S | Status & Lebenszyklus | Status-Sprache, erlaubte Schritte, Bestätigen, Scan, Sperre, Verlauf |

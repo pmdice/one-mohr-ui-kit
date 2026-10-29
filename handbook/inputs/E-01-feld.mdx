@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E01Bad, E01Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-01 Das Feld passt zur Angabe" />
+
+# E-01 · Das Feld passt zur Angabe
+
+## Regel
+
+Nimm für eine Zahl ein Zahlenfeld mit Einheit, für ein Datum ein Datumsfeld, für zwei bis fünf Möglichkeiten sichtbare Optionen (E-08), für sechs bis etwa fünfzehn eine Auswahlliste und für mehr oder für andere Datensätze eine Suche (E-09). Ja/Nein ist eine Checkbox oder ein Schalter (E-07).
+
+## Warum
+
+Das Feld sagt, welche Art Antwort erwartet wird, bevor man liest. Ein freies Textfeld für eine Menge lädt zu „zwölf Stück“ ein, ein Browser-Datumsfeld zeigt je nach Gerät `11/14/2026`. Das passende Feld verhindert Fehler, statt sie danach zu melden.
+
+## Details
+
+- Das Zahlenfeld ist ein Textfeld mit `inputMode="decimal"`, kein `type="number"` – das verschluckt Kommas, ändert Werte beim Scrollen und zeigt Pfeile ohne Einheit.
+- Das Datumsfeld ist ein Textfeld mit Kalender-Knopf, kein `type="date"` (E-05).
+- Suche statt Auswahlliste, sobald man scrollen müsste.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E01Good />}
+  bad={<E01Bad />}
+  goodCaption="Zahl mit Einheit, Datum, sichtbare Optionen"
+  badCaption="Textfeld, US-Datum, Liste für drei Optionen"
+/>
+
+## Übertragen
+
+- Nova: `Number::make()` mit `->step()` und `->displayUsing()`, `Date::make()` mit `->displayUsing()` für TT.MM.JJJJ, `Select` erst ab sechs Optionen, sonst `Boolean`/`BooleanGroup` oder ein Radio-Feld (z. B. ein Paket für Radio-Buttons), `BelongsTo` mit `->searchable()` für Datensätze.
+- In Blade/Livewire: dieselbe Zuordnung, mit `inputmode` statt `type=number`.

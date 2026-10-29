@@ -67,7 +67,7 @@ export function RadioGroup({ value, onChange, options, label, variant = "list", 
                                 className={cn(
                                     "h-[calc(var(--control-h)-0.375rem)] rounded-[calc(var(--r-control)-2px)] px-3 text-control transition-colors duration-fast",
                                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-                                    checked ? "bg-surface font-medium text-fg shadow-overlay" : "text-fg-muted hover:text-fg"
+                                    checked ? "bg-surface font-medium text-fg ring-1 ring-border-strong" : "text-fg-muted hover:text-fg"
                                 )}
                             >
                                 {option.label}

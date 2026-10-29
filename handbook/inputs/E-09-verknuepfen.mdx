@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E09Bad, E09Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-09 Verknüpfen heisst suchen, erkennen, notfalls anlegen" />
+
+# E-09 · Verknüpfen heisst suchen, erkennen, notfalls anlegen
+
+## Regel
+
+Ein Feld, das auf einen anderen Datensatz zeigt (Kunde, Artikel), sucht nach Nummer und Name, zeigt pro Treffer eine zweite Zeile zum Unterscheiden (Nummer, Ort), die zuletzt benutzten zuerst und bietet „„…“ neu anlegen“ mit dem getippten Text an, wenn nichts genau passt. Der gewählte Datensatz ist ein Link (N-08).
+
+## Warum
+
+Zwei Kunden heissen „Dähler“; ohne zweite Zeile wählt man falsch. Wer einen Kunden nicht findet, will ihn anlegen, ohne das Formular zu verlassen und seine Eingaben zu verlieren. Und wer einen gewählten Kunden prüfen will, braucht den Weg dorthin.
+
+## Details
+
+- Suche nach Nummer und Name gleichzeitig; exakte Nummer zuerst (N-06).
+- „Neu anlegen“ öffnet einen kleinen Dialog mit dem getippten Namen vorausgefüllt; danach ist der neue Datensatz gewählt.
+- Der Link öffnet den Datensatz; im Formular in einem neuen Tab, damit nichts verloren geht.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E09Good />}
+  bad={<E09Bad />}
+  goodCaption="Zweite Zeile, zuletzt benutzt, anlegen, Link"
+  badCaption="Liste mit Doppelnamen, Anlegen woanders"
+/>
+
+## Übertragen
+
+- Nova: `BelongsTo::make('Kunde')->searchable()->withSubtitles()->showCreateRelationButton()` – Untertitel über `subtitle()` in der Resource.
+- Zuletzt benutzt: pro Benutzer die letzten fünf IDs speichern und bei leerer Suche zuerst liefern.
