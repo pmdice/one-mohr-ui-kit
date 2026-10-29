@@ -6,8 +6,14 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
     error?: boolean
 }
 
+/** Share of maxLength from which the count appears (E-03): earlier it is noise, later it is too late. */
+const COUNT_FROM = 0.8
+
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-    ({ className, error, ...props }, ref) => (
+    ({ className, error, maxLength, onChange, ...props }, ref) => {
+        const [typed, setTyped] = React.useState(() => String(props.defaultValue ?? "").length)
+        const length = props.value !== undefined ? String(props.value).length : typed
+        const area = (
         <textarea
             ref={ref}
             className={cn(
@@ -21,8 +27,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 className
             )}
             aria-invalid={error ? true : undefined}
+            maxLength={maxLength}
+            onChange={(e) => { setTyped(e.target.value.length); onChange?.(e) }}
             {...props}
         />
-    )
+        )
+        if (maxLength === undefined) return area
+        return (
+            <div className="flex w-full flex-col gap-1">
+                {area}
+                <span aria-live="polite" className="self-end font-mono text-xs tabular-nums text-fg-subtle">
+                    {length >= maxLength * COUNT_FROM ? `${length} / ${maxLength}` : ""}
+                </span>
+            </div>
+        )
+    }
 )
 Textarea.displayName = "Textarea"
