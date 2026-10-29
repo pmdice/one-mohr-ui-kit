@@ -8,7 +8,7 @@ import { A03Bad, A03Good } from './examples'
 
 ## Regel
 
-Sortier den Vorrat: überfällig (am längsten zuerst), heute fällig, später; bei gleicher Frist das Dringende zuerst. Jede Zeile sagt in Worten warum: „seit 2 Tagen überfällig“, „heute fällig“, „wartet seit 5 h auf Freigabe“.
+Sortier den Vorrat nach Frist: überfällig (am längsten zuerst), heute fällig, später; bei gleicher Frist in der normalen Reihenfolge der Liste (L-06: Dringendes zuerst). Jede Zeile sagt in Worten warum: „seit 2 Tagen überfällig“, „heute fällig“, „wartet seit 5 h auf Freigabe“.
 
 ## Warum
 
@@ -17,7 +17,7 @@ Eine Liste ohne Grund lässt raten, warum etwas oben steht. Mit Grund sieht man 
 ## Details
 
 - Überfällig als Warnung (G-01), nur das Wort eingefärbt.
-- Die gleiche Reihenfolge wie die Liste mit Filter „fällig“ (L-06).
+- „Alle N anzeigen“ öffnet die Liste mit denselben Filtern und `sort=due` – dieselbe Reihenfolge wie im Vorrat.
 
 ## Gut / Schlecht
 
@@ -31,4 +31,4 @@ Eine Liste ohne Grund lässt raten, warum etwas oben steht. Mit Grund sieht man 
 ## Übertragen
 
 - Laravel: `orderBy('due_at')->orderByDesc('urgency_rank')`; der Grund aus `formatDue` (D-06) im Resource-Feld.
-- Nova: Index-Sortierung der Lens über `$request->orderBy`-Standard setzen.
+- Nova: in `indexQuery()` bzw. `Lens::query()` die Standard-Reihenfolge mit `$request->withOrdering($query, fn ($q) => $q->orderBy('due_at')->orderByDesc('urgency_rank'))` setzen.

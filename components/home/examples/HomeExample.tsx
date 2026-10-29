@@ -2,89 +2,94 @@
 
 import * as React from "react"
 import { RadioGroup } from "@/components/inputs/RadioGroup"
-import { addDays } from "@/components/inputs/parse"
 import { formatDue } from "@/components/record/due"
-import { SLIPS, slipNumber, stationLabel, urgencyOf, type Slip } from "@/components/table/examples/slips"
+import type { ActiveFilter } from "@/components/table/FilterBar"
+import { TODAY, dueOf, querySlips, slipNumber, stationLabel, type Slip } from "@/components/table/examples/slips"
 import { DataFreshness } from "../DataFreshness"
 import { RecentList } from "../RecentList"
 import { StatTile } from "../StatTile"
 import { WorkQueue, type QueueItem } from "../WorkQueue"
 
-export const TODAY = "2026-10-29"
+export { TODAY, dueOf }
 const NOW = new Date(2026, 9, 29, 10, 30).getTime()
-
-/** The example's due date: four weeks after casting. */
-export const dueOf = (s: Slip) => addDays(s.castDate, 28)
+/** As many rows as a related list shows (D-09). */
+const SHOWN = 5
 
 type Role = "buero" | "werkstatt" | "leitung"
 const ROLES = [{ value: "buero", label: "Büro" }, { value: "werkstatt", label: "Werkstatt" }, { value: "leitung", label: "Teamleitung" }]
 
 const titleCase = (s: string) => s.toLowerCase().replace(/(^|[\s+-])\p{L}/gu, (m) => m.toUpperCase())
-const href = (params: Record<string, string>) => `#laufzettel?${new URLSearchParams(params).toString()}`
 
-/** Overdue first (longest first), then today, then later; at equal date the more urgent first (A-03). */
-function sortByDue(slips: Slip[]) {
-    return [...slips].sort((a, b) => dueOf(a).localeCompare(dueOf(b)) || urgencyOf(b.urgency).rank - urgencyOf(a.urgency).rank)
+/** One filter object for both the number and the link, so they cannot drift apart (A-05). */
+type View = { filters: ActiveFilter[]; sort?: "due" }
+const f = (field: string, ...values: string[]): ActiveFilter[] => values.map((value) => ({ field, value }))
+
+function hrefOf({ filters, sort }: View) {
+    const byField = new Map<string, string[]>()
+    for (const x of filters) byField.set(x.field, [...(byField.get(x.field) ?? []), x.value])
+    const params = new URLSearchParams([...byField].map(([k, v]) => [k, v.join(",")]))
+    if (sort) params.set("sort", sort)
+    return `#laufzettel?${params.toString().replace(/%2C/g, ",")}`
 }
 
-function toItem(s: Slip, prefix = ""): QueueItem {
+/** The list's own query: same filters, same order (A-03: by due date, then the list's default). */
+function run({ filters, sort }: View) {
+    return querySlips({ filters, q: "", sort: sort ? { id: sort, dir: "asc" } : null, page: 1, pageSize: 10_000 })
+}
+
+function toItem(s: Slip): QueueItem {
     const due = formatDue(dueOf(s), TODAY)
     return {
         id: s.id,
         title: slipNumber(s),
         meta: `${titleCase(s.customer)} · ${stationLabel(s.station)}${s.urgency === "dringend" ? " · Dringend" : ""}`,
         href: `#laufzettel-${s.id}`,
-        reason: `${prefix}${due.relative === "heute" ? "heute fällig" : due.relative}`,
+        reason: due.relative === "heute" ? "heute fällig" : due.relative,
         tone: due.overdue ? "warning" : undefined,
     }
+}
+
+const STUCK = f("station", "offen", "3d", "guss", "polissage")
+
+const VIEWS: Record<Role, { title: string; queue: View; tiles: { label: string; detail: string; view: View; tone?: "warning" }[]; empty: string }> = {
+    werkstatt: {
+        title: "An Guss",
+        queue: { filters: f("station", "guss"), sort: "due" },
+        tiles: [
+            { label: "an Guss", detail: "Laufzettel", view: { filters: f("station", "guss") } },
+            { label: "überfällig", detail: "Laufzettel", view: { filters: [...f("station", "guss"), ...f("frist", "ueberfaellig")] }, tone: "warning" },
+            { label: "dringend", detail: "Laufzettel", view: { filters: [...f("station", "guss"), ...f("urgency", "dringend")] } },
+        ],
+        empty: "An Guss liegt nichts.",
+    },
+    buero: {
+        title: "Zu planen",
+        queue: { filters: f("station", "offen"), sort: "due" },
+        tiles: [
+            { label: "zu planen", detail: "nicht gescannte Laufzettel", view: { filters: f("station", "offen") } },
+            { label: "versandbereit", detail: "Laufzettel", view: { filters: f("station", "versand") } },
+        ],
+        empty: "Nichts zu planen.",
+    },
+    leitung: {
+        title: "Hängt fest",
+        queue: { filters: [...STUCK, ...f("frist", "ueberfaellig")], sort: "due" },
+        tiles: [
+            { label: "überfällig", detail: "noch nicht im Versand", view: { filters: [...STUCK, ...f("frist", "ueberfaellig")] }, tone: "warning" },
+            { label: "dringend", detail: "davon dringend", view: { filters: [...STUCK, ...f("frist", "ueberfaellig"), ...f("urgency", "dringend")] } },
+        ],
+        empty: "Nichts hängt fest.",
+    },
 }
 
 /** The start page for three roles (A-01–A-08): same parts, the work of each role. */
 export function HomeExample() {
     const [role, setRole] = React.useState<Role>("werkstatt")
     const [at, setAt] = React.useState(NOW - 5 * 60_000)
-
-    const view = React.useMemo(() => {
-        if (role === "werkstatt") {
-            const mine = SLIPS.filter((s) => s.station === "guss")
-            const overdue = mine.filter((s) => dueOf(s) < TODAY)
-            return {
-                title: "An Guss",
-                queue: sortByDue(mine),
-                tiles: [
-                    { label: "an Guss", value: mine.length, href: href({ station: "guss" }), detail: "Laufzettel" },
-                    { label: "überfällig", value: overdue.length, href: href({ station: "guss", frist: "ueberfaellig" }), detail: "Laufzettel", tone: "warning" as const },
-                    { label: "dringend", value: mine.filter((s) => s.urgency === "dringend").length, href: href({ station: "guss", dringlichkeit: "dringend" }), detail: "Laufzettel" },
-                ],
-                more: href({ station: "guss" }),
-                empty: { text: "An Guss liegt nichts.", next: "Neue Laufzettel kommen aus dem 3D-Druck." },
-            }
-        }
-        if (role === "buero") {
-            const plan = SLIPS.filter((s) => s.station === "offen")
-            return {
-                title: "Zu planen",
-                queue: sortByDue(plan),
-                tiles: [
-                    { label: "zu planen", value: plan.length, href: href({ station: "offen" }), detail: "nicht gescannte Laufzettel" },
-                    { label: "versandbereit", value: SLIPS.filter((s) => s.station === "versand").length, href: href({ station: "versand" }), detail: "Laufzettel" },
-                ],
-                more: href({ station: "offen" }),
-                empty: { text: "Nichts zu planen.", next: "Neue Aufträge erscheinen hier, sobald sie erfasst sind." },
-            }
-        }
-        const stuck = SLIPS.filter((s) => s.station !== "versand" && dueOf(s) < TODAY)
-        return {
-            title: "Hängt fest",
-            queue: sortByDue(stuck),
-            tiles: [
-                { label: "überfällig", value: stuck.length, href: href({ frist: "ueberfaellig" }), detail: "Laufzettel an allen Stationen", tone: "warning" as const },
-                { label: "dringend", value: stuck.filter((s) => s.urgency === "dringend").length, href: href({ frist: "ueberfaellig", dringlichkeit: "dringend" }), detail: "davon dringend" },
-            ],
-            more: href({ frist: "ueberfaellig" }),
-            empty: { text: "Nichts hängt fest.", next: `Nächster Termin: ${formatDue(addDays(TODAY, 1), TODAY).absolute}` },
-        }
-    }, [role])
+    const view = VIEWS[role]
+    const queue = run(view.queue)
+    // The next date comes from the data, not from the calendar (A-04)
+    const next = run({ filters: view.queue.filters.filter((x) => x.field !== "frist"), sort: "due" }).rows.map(dueOf).find((d) => d >= TODAY)
 
     return (
         <div className="flex min-h-full flex-col gap-4 bg-surface-sunken p-4 text-fg" data-density="compact">
@@ -98,9 +103,15 @@ export function HomeExample() {
                         <h1 className="m-0 text-xl font-semibold">Heute</h1>
                         <DataFreshness at={at} now={NOW} onRefresh={() => setAt(NOW)} />
                     </div>
-                    <WorkQueue title={view.title} items={view.queue.slice(0, 6).map((s) => toItem(s))} total={view.queue.length} moreHref={view.more} empty={view.empty} />
+                    <WorkQueue
+                        title={view.title}
+                        items={queue.rows.slice(0, SHOWN).map(toItem)}
+                        total={queue.filteredTotal}
+                        moreHref={hrefOf(view.queue)}
+                        empty={{ text: view.empty, next: next ? `Nächster Termin: ${formatDue(next, TODAY).absolute}` : undefined }}
+                    />
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        {view.tiles.map((t) => <StatTile key={t.label} {...t} />)}
+                        {view.tiles.map((t) => <StatTile key={t.label} label={t.label} detail={t.detail} tone={t.tone} value={run(t.view).filteredTotal} href={hrefOf(t.view)} />)}
                     </div>
                 </div>
                 <aside className="flex flex-col gap-4">
