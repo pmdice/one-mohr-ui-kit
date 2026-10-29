@@ -69,15 +69,15 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "id": "B-01",
         "title": "Ausblenden sperren oder erklären",
         "notes": [
-            "Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt); `->canRun(fn ($request, $model) => …)` sperrt (Zustand); für „kennen muss“ die Action sichtbar lassen und in `handle()` mit `Action::danger('Nur Teamleitung …')` antworten.",
-            "Laravel: die gleiche Unterscheidung in der Policy – `before()` für Rollen, die Methode für den Zustand, und `Response::deny('Grund')` statt `false`."
+            "Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt). `->canRun()` lässt die Action sichtbar und lehnt erst beim Ausführen ab – einen Grund zeigt Nova dabei nicht; für Zustand und „kennen muss“ darum in `handle()` mit `Action::danger('Zuerst alle Laufzettel abschliessen.')` antworten.",
+            "Laravel: in jeder Policy-Methode zuerst die Rolle, dann den Zustand prüfen und `Response::deny('Grund')` statt `false` zurückgeben (`before()` ist für globale Ausnahmen wie Administratoren gedacht)."
         ]
     },
     {
         "id": "B-02",
         "title": "Gesperrt heisst mit Grund und mit Weg",
         "notes": [
-            "Nova: gesperrte Actions zeigt Nova ausgegraut ohne Grund – darum lieber sichtbar lassen und den Grund mit `Action::danger()` beim Ausführen nennen, oder den Grund als `->help()` in den Feldern.",
+            "Nova: mit `canRun` false bleibt eine Action im Menü und wird erst beim Ausführen abgelehnt, ohne Grund – darum den Grund selbst mit `Action::danger()` beim Ausführen nennen, oder als `->help()` in den Feldern der Action.",
             "HTML: `aria-disabled=\"true\"` und `aria-describedby` auf den Grund; Klick im Script abfangen."
         ]
     },
@@ -85,7 +85,7 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "id": "B-03",
         "title": "Nur lesen sieht aus wie lesen",
         "notes": [
-            "Nova: die Detailseite ist bereits Text; Bearbeiten über `authorizedToUpdate()` in der Policy ausblenden statt Felder `->readonly()` zu setzen.",
+            "Nova: die Detailseite ist bereits Text; den Bearbeiten-Knopf über die Policy-Methode `update()` ausblenden (Nova fragt sie über `authorizedToUpdate()` der Resource ab) statt Felder `->readonly()` zu setzen.",
             "Eigene Formulare: Leseansicht als eigene Darstellung, nicht als `disabled` auf jedem Feld."
         ]
     },
@@ -109,7 +109,7 @@ export const PORTING: { id: string; title: string; notes: string[] }[] = [
         "id": "B-06",
         "title": "Als jemand anderes ansehen ist unübersehbar",
         "notes": [
-            "Nova: `Nova::impersonation()` bzw. `Impersonatable` am User; Nova zeigt ein Band – den Text nach dieser Regel anpassen und im Audit-Log `impersonator_id` speichern.",
+            "Nova: Trait `Laravel\\Nova\\Auth\\Impersonatable` am User mit `canImpersonate()`/`canBeImpersonated()`; Nova bietet „Stop Impersonating“ im Benutzermenü – das Band nach dieser Regel im eigenen Layout ergänzen; in den Events `StartedImpersonating`/`StoppedImpersonating` den Wechsel und im Audit-Log `impersonator_id` festhalten.",
             "Laravel: lab404/laravel-impersonate mit eigenem Band im Layout."
         ]
     },
