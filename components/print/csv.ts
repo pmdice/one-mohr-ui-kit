@@ -3,7 +3,7 @@ import { formatDate } from "@/components/inputs/parse"
 export interface CsvColumn<T> {
     label: string
     value: (row: T) => string | number | null | undefined
-    /** text: always quoted (keeps leading zeros); number: plain with a point; date: ISO in, TT.MM.JJJJ out. */
+    /** text: always quoted, leading zeros kept as ="00123"; number: plain with a point; date: ISO in, TT.MM.JJJJ out. */
     kind?: "text" | "number" | "date"
 }
 
@@ -21,7 +21,11 @@ export function toCsv<T>(rows: T[], columns: CsvColumn<T>[]): string {
         if (raw === null || raw === undefined || raw === "") return ""
         if (column.kind === "number") return String(raw)
         if (column.kind === "date") return formatDate(String(raw))
-        const text = String(raw)
+        let text = String(raw)
+        // Identifiers with leading zeros: Excel ignores quotes when opening, ="…" keeps them as text
+        if (column.kind === "text" && /^0\d/.test(text)) return `=${quote(text)}`
+        // Text Excel would run as a formula is defused with an apostrophe (OWASP)
+        if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`
         if (column.kind === "text" || /[;"\r\n]/.test(text)) return quote(text)
         return text
     }

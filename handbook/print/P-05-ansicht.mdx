@@ -30,5 +30,5 @@ Wer filtert und dann exportiert, erwartet die gefilterte Liste. Bekommt er alle 
 
 ## Übertragen
 
-- Nova: `ExportAsCsv::make()` (ab Nova 4) exportiert die gewählten oder gefilterten Zeilen; die Felder mit `->withFormat(fn ($model) => [...])` auf die Spalten der Liste beschränken.
+- Nova: `ExportAsCsv::make()` (Nova 4; schreibt Komma-CSV ohne BOM – für P-07 einen eigenen Export bauen) exportiert die gewählten oder gefilterten Zeilen; die Felder mit `->withFormat(fn ($model) => [...])` auf die Spalten der Liste beschränken.
 - Laravel: denselben Query-Builder für Liste und Export verwenden (z. B. eine Scope-Klasse), nicht zwei.

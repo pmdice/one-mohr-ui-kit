@@ -15,7 +15,17 @@ export function Barcode({ value, module = 0.33, height = 12, quiet = 10, classNa
     quiet?: number
     className?: string
 }) {
-    const widths = modules(encode128B(value))
+    let widths: string
+    try {
+        widths = modules(encode128B(value))
+    } catch (e) {
+        // One slip that cannot carry a barcode must not stop the others from printing
+        return (
+            <figure role="img" aria-label={`Barcode nicht druckbar: ${value}`} className={className} style={{ margin: 0, border: "0.5mm solid #000", padding: "2mm", color: "#000", fontSize: "3mm" }}>
+                {e instanceof Error ? e.message : "Barcode nicht druckbar"} · <span style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}>{value}</span>
+            </figure>
+        )
+    }
     const bars: { x: number; w: number }[] = []
     let x = quiet
     ;[...widths].forEach((w, i) => {

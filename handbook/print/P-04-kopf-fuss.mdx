@@ -30,5 +30,5 @@ Gedruckte Seiten werden getrennt, geheftet, verlegt. Eine Seite ohne Kopf gehör
 
 ## Übertragen
 
-- Dompdf/Browsershot: Kopf und Fuss als feste Elemente oder über die Header/Footer-Optionen; Seitenzahlen mit `{PAGE_NUM}` / `{PAGE_COUNT}` (Dompdf) bzw. `pageNumber`/`totalPages` (Chrome).
+- Dompdf/Browsershot: Kopf und Fuss als feste Elemente oder über die Header/Footer-Optionen; Seitenzahlen bei Dompdf über `$canvas->page_text(…, "Seite {PAGE_NUM} von {PAGE_COUNT}", …)` bzw. `pageNumber`/`totalPages` (Chrome).
 - Nova-Index drucken ist kein Bericht: einen eigenen Druck-Endpunkt bauen.

@@ -8,7 +8,7 @@ import { P07Bad, P07Good } from './examples'
 
 ## Regel
 
-Schreib CSV so, dass Excel mit Schweizer Einstellungen sie richtig öffnet: UTF-8 mit BOM (sonst „DÃ¤hler“), Semikolon als Trenner, Zahlen ohne Tausender-Zeichen mit Punkt, Daten als TT.MM.JJJJ, Kennungen in Anführungszeichen als Text (führende Nullen bleiben), Werte mit Semikolon, Anführungszeichen oder Zeilenumbruch in Anführungszeichen.
+Schreib CSV so, dass Excel mit Schweizer Einstellungen sie richtig öffnet: UTF-8 mit BOM (sonst „DÃ¤hler“), Semikolon als Trenner, Zahlen ohne Tausender-Zeichen mit Punkt, Daten als TT.MM.JJJJ, Kennungen mit führenden Nullen als `="00123"` (Excel ignoriert Anführungszeichen beim Öffnen; so bleibt es Text), Text, der mit `=`, `+`, `-` oder `@` beginnt, mit einem Apostroph davor (sonst rechnet Excel ihn als Formel), Werte mit Semikolon, Anführungszeichen oder Zeilenumbruch in Anführungszeichen.
 
 ## Warum
 
@@ -17,7 +17,8 @@ Die meisten Exporte enden in Excel. Ein Doppelklick, der kaputte Umlaute, eine e
 ## Details
 
 - Fehlende Werte leer, nicht „null“ oder „—“.
-- Wer mehr braucht (Formate, mehrere Blätter): XLSX statt CSV.
+- Wer mehr braucht (Formate, mehrere Blätter) oder die Datei weiterverarbeitet: XLSX statt CSV – dort ist eine Textspalte einfach eine Textspalte.
+- Telefonnummern wie `+41 79 …` erscheinen mit Apostroph davor; das ist der Preis dafür, dass keine Formel ausgeführt wird.
 
 ## Gut / Schlecht
 
