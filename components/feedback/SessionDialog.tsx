@@ -12,7 +12,7 @@ import { Dialog } from "@/components/molecules/Dialog/Dialog"
 export function SessionDialog({ open, user, onLogin, onDone }: {
     open: boolean
     user: string
-    /** Rejects with an Error whose message is shown at the field. */
+    /** Rejects with a string to show a sentence at the field (e.g. "Passwort stimmt nicht."); anything else gets a general one. */
     onLogin: (password: string) => Promise<void>
     onDone: () => void
 }) {
@@ -31,7 +31,8 @@ export function SessionDialog({ open, user, onLogin, onDone }: {
             setPassword("")
             onDone()
         } catch (err) {
-            setError(err instanceof Error && err.message ? err.message : "Anmelden hat nicht geklappt. Erneut versuchen.")
+            // Only sentences written for people reach the screen, never library errors (R-07)
+            setError(typeof err === "string" && err ? err : "Anmelden hat nicht geklappt. Passwort prüfen und erneut versuchen.")
         } finally {
             setBusy(false)
         }

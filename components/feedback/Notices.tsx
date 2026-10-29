@@ -32,6 +32,7 @@ export function useNotice() {
 }
 
 let counter = 0
+const subscribeNothing = () => () => {}
 
 /** Floating notices for things whose place is gone or that ran in the background (R-02, R-03). */
 export function NoticeProvider({ children }: { children: React.ReactNode }) {
@@ -39,16 +40,27 @@ export function NoticeProvider({ children }: { children: React.ReactNode }) {
     const dismiss = React.useCallback((id: number) => setNotices((list) => list.filter((n) => n.id !== id)), [])
     const notify = React.useCallback((input: NoticeInput) => {
         const id = ++counter
-        setNotices((list) => [...list, { ...input, id }].slice(-MAX))
+        setNotices((list) => {
+            const next = [...list, { ...input, id }]
+            // Errors stay until closed (R-03): when there are too many, the oldest non-error goes first
+            while (next.length > MAX) {
+                const drop = next.findIndex((n) => n.tone !== "error")
+                if (drop === -1 || drop === next.length - 1) break
+                next.splice(drop, 1)
+            }
+            return next
+        })
         return id
     }, [])
     const value = React.useMemo(() => ({ notify, dismiss }), [notify, dismiss])
+    // The portal exists only in the browser: rendered after hydration, so server and first client render match
+    const mounted = React.useSyncExternalStore(subscribeNothing, () => true, () => false)
 
     return (
         <Context.Provider value={value}>
             {children}
-            {typeof document !== "undefined" && createPortal(
-                <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[22rem] max-w-[calc(100vw-2rem)] flex-col gap-2">
+            {mounted && createPortal(
+                <div role="region" aria-label="Meldungen" aria-live="polite" className="pointer-events-none fixed bottom-4 right-4 z-50 flex w-[22rem] max-w-[calc(100vw-2rem)] flex-col gap-2">
                     {notices.map((n) => <TimedNotice key={n.id} notice={n} onClose={() => dismiss(n.id)} />)}
                 </div>,
                 document.body
@@ -59,7 +71,10 @@ export function NoticeProvider({ children }: { children: React.ReactNode }) {
 
 /** Runs out after its time, but not while the pointer or the focus is on it; then only the rest (R-03). */
 export function useTimeout(duration: number | null, onEnd: () => void, restartKey?: unknown) {
-    const [paused, setPaused] = React.useState(false)
+    // Pointer and focus pause separately: leaving with the mouse must not end it under the keyboard
+    const [hovered, setHovered] = React.useState(false)
+    const [focused, setFocused] = React.useState(false)
+    const paused = hovered || focused
     const remaining = React.useRef(duration ?? 0)
     const keyRef = React.useRef(restartKey)
     const endRef = React.useRef(onEnd)
@@ -73,10 +88,10 @@ export function useTimeout(duration: number | null, onEnd: () => void, restartKe
         return () => { clearTimeout(timer); remaining.current -= Date.now() - started }
     }, [duration, paused, restartKey])
     const pause = {
-        onMouseEnter: () => setPaused(true),
-        onMouseLeave: () => setPaused(false),
-        onFocus: () => setPaused(true),
-        onBlur: (e: React.FocusEvent) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setPaused(false) },
+        onMouseEnter: () => setHovered(true),
+        onMouseLeave: () => setHovered(false),
+        onFocus: () => setFocused(true),
+        onBlur: (e: React.FocusEvent) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false) },
     }
     return { pause, paused }
 }

@@ -18,6 +18,8 @@ Ohne Prüfung gewinnt, wer zuletzt speichert, und die Arbeit der anderen Person 
 
 - Jeder Datensatz trägt eine Version (oder `updated_at`), die beim Speichern mitgeschickt wird.
 - Felder, die nur eine Seite geändert hat, werden ohne Frage zusammengeführt.
+- „Meine Änderungen speichern“ sendet gegen die Version, die jetzt auf dem Server ist – mit der alten käme wieder ein Konflikt.
+- „Andere übernehmen“ zeigt danach deren Stand; eigene Änderungen an anderen Feldern bleiben als ungespeichert markiert.
 
 ## Gut / Schlecht
 
@@ -30,5 +32,5 @@ Ohne Prüfung gewinnt, wer zuletzt speichert, und die Arbeit der anderen Person 
 
 ## Übertragen
 
-- Nova prüft das von Haus aus: Ändert jemand den Datensatz während der Bearbeitung, meldet Nova „Dieser Datensatz wurde geändert“ (`$trafficCop`) – eingeschaltet lassen. Für eigene Tools: `updated_at` mitsenden und bei Abweichung 409 zurückgeben.
+- Nova erkennt den Fall von Haus aus (`$trafficCop`, eingeschaltet lassen), meldet ihn aber nur allgemein und bietet Neuladen an – Feld für Feld wählen kann man dort nicht; das bleibt eigenen Tools vorbehalten. Für eigene Tools: `updated_at` mitsenden und bei Abweichung 409 zurückgeben.
 - Laravel: optimistische Sperre mit Spalte `version` und `where('version', $old)` beim Update.
