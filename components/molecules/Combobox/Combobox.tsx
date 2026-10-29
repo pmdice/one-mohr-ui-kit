@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface ComboboxOption {
@@ -19,6 +19,11 @@ type ComboboxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" |
     valueLabel?: string
     placeholder?: string
     emptyText?: string
+    /** Offered as the last option when nothing matches the typed text exactly (E-09). */
+    onCreate?: (query: string) => void
+    createLabel?: (query: string) => string
+    /** Shown first while nothing is typed, under "Zuletzt benutzt" (E-09). */
+    recent?: ComboboxOption[]
 } & (
     | { options: ComboboxOption[]; loadOptions?: never }
     | { loadOptions: (query: string, signal: AbortSignal) => Promise<ComboboxOption[]>; options?: never }
@@ -32,6 +37,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
     {
         value = null, onChange, valueLabel, options, loadOptions,
         placeholder = "Suchen…", emptyText = "Keine Treffer",
+        onCreate, createLabel = (q) => `„${q}“ neu anlegen`, recent,
         id, className, onBlur, onKeyDown, disabled, ...props
     },
     ref
@@ -89,14 +95,30 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
 
     React.useEffect(() => () => requestRef.current.controller?.abort(), [])
 
+    const term = editing ? query.trim().toLowerCase() : ""
+    const showRecent = !term && (recent?.length ?? 0) > 0
     const visible = React.useMemo(() => {
+        if (showRecent) {
+            const seen = new Set(recent!.map((o) => o.value))
+            return [...recent!, ...(loadOptions ? [] : (options ?? []).filter((o) => !seen.has(o.value)))]
+        }
         if (loadOptions) return remote
-        const term = editing ? query.trim().toLowerCase() : ""
         if (!term) return options ?? []
         return (options ?? []).filter(o =>
             o.label.toLowerCase().includes(term) || o.description?.toLowerCase().includes(term)
         )
-    }, [loadOptions, remote, options, query, editing])
+    }, [showRecent, recent, loadOptions, remote, options, term])
+
+    // "… neu anlegen" as a last pseudo-option, only when nothing matches exactly
+    const typed = query.trim()
+    const canCreate = Boolean(onCreate) && editing && typed !== "" && !loading && !visible.some((o) => o.label.toLowerCase() === typed.toLowerCase())
+    const count = visible.length + (canCreate ? 1 : 0)
+    const create = () => {
+        onCreate?.(typed)
+        setEditing(false)
+        setOpen(false)
+        if (loadOptions) setRemote([])
+    }
 
     const commit = (option: ComboboxOption | undefined) => {
         if (!option) return
@@ -114,7 +136,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
         if (loadOptions) setRemote([])
     }
 
-    const showList = open && (editing || !loadOptions)
+    const showList = open && (editing || !loadOptions || showRecent)
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         onKeyDown?.(e)
@@ -123,7 +145,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
             case "ArrowDown":
                 e.preventDefault()
                 if (!showList) { setOpen(true); setHighlight(0) }
-                else setHighlight(h => Math.min(h + 1, visible.length - 1))
+                else setHighlight(h => Math.max(0, Math.min(h + 1, count - 1)))
                 break
             case "ArrowUp":
                 e.preventDefault()
@@ -133,7 +155,9 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                 if (showList) {
                     e.preventDefault()
                     // Never commit while the shown results may belong to an older term
-                    if (!loading) commit(visible[highlight])
+                    if (loading) break
+                    if (canCreate && highlight === visible.length) create()
+                    else commit(visible[highlight])
                 }
                 break
             case "Escape":
@@ -159,7 +183,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                 aria-autocomplete="list"
                 aria-expanded={showList}
                 aria-controls={listId}
-                aria-activedescendant={showList && visible[highlight] ? optionId(highlight) : undefined}
+                aria-activedescendant={showList && highlight >= 0 && highlight < count ? optionId(highlight) : undefined}
                 disabled={disabled}
                 placeholder={placeholder}
                 value={query}
@@ -190,14 +214,16 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                     {loading && visible.length === 0 && (
                         <li className="px-control py-1.5 text-control text-fg-muted">Suche…</li>
                     )}
-                    {!loading && visible.length === 0 && (
+                    {!loading && count === 0 && (
                         <li className="px-control py-1.5 text-control text-fg-muted">
                             {loadOptions && !query.trim() ? "Zum Suchen tippen" : emptyText}
                         </li>
                     )}
+                    {showRecent && <li role="presentation" className="px-control pb-1 pt-1.5 text-xs font-medium text-fg-subtle">Zuletzt benutzt</li>}
                     {visible.map((option, index) => (
+                        <React.Fragment key={option.value}>
+                        {showRecent && index === recent!.length && index > 0 && <li role="presentation" className="my-1 border-t border-border" />}
                         <li
-                            key={option.value}
                             id={optionId(index)}
                             role="option"
                             aria-selected={option.value === value}
@@ -217,7 +243,25 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(functi
                             </span>
                             {option.value === value && <Check className="h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />}
                         </li>
+                        </React.Fragment>
                     ))}
+                    {canCreate && (
+                        <li
+                            id={optionId(visible.length)}
+                            role="option"
+                            aria-selected={false}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onMouseEnter={() => setHighlight(visible.length)}
+                            onClick={create}
+                            className={cn(
+                                "flex cursor-pointer items-center gap-2 border-t border-border px-control py-1.5 text-control text-accent",
+                                highlight === visible.length && "bg-surface-hover"
+                            )}
+                        >
+                            <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                            {createLabel(typed)}
+                        </li>
+                    )}
                 </ul>
             )}
         </div>

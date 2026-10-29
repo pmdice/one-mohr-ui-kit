@@ -6,6 +6,7 @@ import { Button } from "@/components/atoms/Button/Button"
 import { NavLink } from "@/components/nav/NavLink"
 import { isEditableTarget, useShortcut } from "@/components/nav/shortcuts"
 import { cn } from "@/lib/utils"
+import { Checkbox } from "@/components/inputs/Checkbox"
 import { ActionMenu, type MenuItem } from "./ActionMenu"
 
 export type Column<T> = {
@@ -116,10 +117,6 @@ export function DataTable<T>({
     }, [cursorId])
 
     const pageSelected = ids.filter((id) => selected?.has(id)).length
-    const allRef = React.useRef<HTMLInputElement>(null)
-    React.useEffect(() => {
-        if (allRef.current) allRef.current.indeterminate = pageSelected > 0 && pageSelected < ids.length
-    })
     const toggleAll = () => {
         if (!selected || !onSelectedChange) return
         const next = new Set(selected)
@@ -154,7 +151,6 @@ export function DataTable<T>({
         stickyFirst && index <= identIndex && "sticky z-[1] bg-inherit",
     )
     const checkCell = (head = false) => cn("sticky left-0 z-[1] w-10 border-b border-border bg-inherit px-3", head ? "h-8" : "h-[var(--control-h)]")
-    const checkbox = "h-3.5 w-3.5 cursor-pointer accent-[var(--accent)] align-middle"
 
     return (
         <div className={cn("relative overflow-auto rounded-panel border border-border bg-surface", className)}>
@@ -168,12 +164,10 @@ export function DataTable<T>({
                     <tr className="bg-surface">
                         {selectable && (
                             <th scope="col" className={checkCell(true)}>
-                                <input
-                                    ref={allRef}
-                                    type="checkbox"
+                                <Checkbox
                                     aria-label="Alle auf dieser Seite auswählen"
-                                    className={checkbox}
-                                    checked={ids.length > 0 && pageSelected === ids.length}
+                                    className="align-middle"
+                                    checked={ids.length > 0 && pageSelected === ids.length ? true : pageSelected > 0 ? "mixed" : false}
                                     onChange={toggleAll}
                                     disabled={ids.length === 0}
                                 />
@@ -247,10 +241,8 @@ export function DataTable<T>({
                                         <td data-no-open className={cn(checkCell(), "p-0")} onClick={(e) => { if (e.target === e.currentTarget) toggle(id) }}>
                                             {/* The whole cell toggles: a near miss must not open the row */}
                                             <label className="flex h-full min-h-[var(--control-h)] cursor-pointer items-center px-3">
-                                                <input
-                                                    type="checkbox"
+                                                <Checkbox
                                                     aria-label={`${rowLabel?.(row) ?? id} auswählen`}
-                                                    className={checkbox}
                                                     checked={isSelected}
                                                     onChange={() => toggle(id)}
                                                 />

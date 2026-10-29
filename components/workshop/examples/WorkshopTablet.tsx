@@ -7,6 +7,7 @@ import { normalizeIdentifier } from "@/components/nav/identifier"
 import { resolveScan, type ScanTarget } from "@/components/status/scan"
 import { NOW, STATIONS, applyEvent, number, seedWorld, stationLabel, type World } from "@/components/status/examples/slip"
 import { cn } from "@/lib/utils"
+import { Switch } from "@/components/inputs/Switch"
 import { useAutoFlush } from "../autoFlush"
 import { CameraScanner } from "../CameraScanner"
 import { HereList } from "../HereList"
@@ -168,19 +169,12 @@ export function WorkshopTablet({ initial = "default", now = NOW, dedupeMs = 3000
             {/* Outside the device: what the story simulates */}
             <div className="flex flex-wrap items-center gap-3 text-sm text-fg-muted">
                 <span className="rounded-control border border-dashed border-border-strong px-2 py-0.5 font-medium uppercase tracking-[0.12em]">Simulation</span>
-                <button
-                    type="button"
-                    role="switch"
-                    aria-checked={online}
-                    onClick={toggleOnline}
-                    className="inline-flex min-h-10 items-center gap-2 rounded-control border border-border bg-surface px-3 text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-                >
-                    <span className={cn("relative h-4 w-7 rounded-control transition-colors", online ? "bg-success" : "bg-border-strong")} aria-hidden="true">
-                        <span className={cn("absolute top-0.5 h-3 w-3 rounded-[3px] bg-surface transition-[left]", online ? "left-3.5" : "left-0.5")} />
-                    </span>
-                    Verbindung
-                    <span className="text-fg-muted" aria-hidden="true">{online ? "an" : "aus"}</span>
-                </button>
+                <Switch
+                    checked={online}
+                    onChange={toggleOnline}
+                    label="Verbindung"
+                    className="rounded-control border border-border bg-surface px-3 py-2"
+                />
             </div>
 
             {/* The tablet */}

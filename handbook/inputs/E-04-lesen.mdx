@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E04Bad, E04Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-04 Grosszügig lesen und streng zeigen" />
+
+# E-04 · Grosszügig lesen und streng zeigen
+
+## Regel
+
+Versteh jede eindeutige Schreibweise: „1,5“ und „1.5“ sind dasselbe, Tausender mit `'`, `’` oder Leerzeichen sind erlaubt. Nach dem Verlassen des Feldes (oder Enter) zeigt es die eine kanonische Schreibweise (`1’500`). Abgelehnt wird nur, was mehrdeutig oder sinnlos ist – der Text bleibt stehen, und ein Satz sagt warum.
+
+## Warum
+
+Menschen tippen, wie sie es gewohnt sind. Ein Feld, das „1'500“ ablehnt, obwohl klar ist, was gemeint ist, erzieht zum Raten. Die kanonische Anzeige danach zeigt, was verstanden wurde – wäre „1.500“ als 1.5 gelesen worden, sähe man es sofort.
+
+## Details
+
+- Gelesen wird beim Verlassen und bei Enter, nicht bei jedem Tastendruck – sonst springt der Text unter den Fingern.
+- Solange das Feld den Fokus hat, überschreibt ein Wert von aussen die laufende Eingabe nicht.
+- Pfeil hoch/runter ändert um einen Schritt, innerhalb der Grenzen.
+- Der Punkt ist der Dezimaltrenner (Schweiz); „1.500“ ist 1.5.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E04Good />}
+  bad={<E04Bad />}
+  goodCaption="Versteht 1'500 und zeigt 1’500"
+  badCaption="Lehnt Tausender-Zeichen ab"
+/>
+
+## Übertragen
+
+- PHP: dieselbe Normalisierung vor der Validierung (`prepareForValidation`): `str_replace(["'", '’', ' '], '', $v)`, dann `,` → `.`; die Funktionen in `components/inputs/parse.ts` sind dafür geschrieben, Zeile für Zeile übertragbar.
+- Nova: im Feld `->resolveUsing()` für die Anzeige, `->fillUsing()` für das Lesen.

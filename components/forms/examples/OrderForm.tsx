@@ -6,6 +6,8 @@ import { Input } from "@/components/atoms/Input/Input"
 import { Textarea } from "@/components/atoms/Textarea/Textarea"
 import { Select } from "@/components/molecules/Select/Select"
 import { Combobox } from "@/components/molecules/Combobox/Combobox"
+import { DateInput } from "@/components/inputs/DateInput"
+import { FileDrop, type Upload } from "@/components/inputs/FileDrop"
 import { Form, controlLabel, useEnterpriseForm, useFieldError, type ErrorSummary } from "../Form"
 import { FormField } from "../FormField"
 import { FormSection } from "../FormSection"
@@ -18,6 +20,17 @@ import {
     type OrderInput, type OrderOutput, type PositionInput,
 } from "./orderSchema"
 import { searchArticles } from "./mockArticles"
+
+/** The example has no server: an upload that takes a moment and reports its progress. */
+const simulateUpload: Upload = (_file, onProgress, signal) => new Promise((resolve, reject) => {
+    let share = 0
+    const timer = setInterval(() => {
+        share = Math.min(1, share + 0.25)
+        onProgress(share)
+        if (share === 1) { clearInterval(timer); resolve() }
+    }, 200)
+    signal.addEventListener("abort", () => { clearInterval(timer); reject(new DOMException("aborted", "AbortError")) })
+})
 
 export const EMPTY_POSITION: Omit<PositionInput, "no"> = {
     typ: "", material: "", qty: "", articleId: "", note: "", extras: [],
@@ -120,9 +133,16 @@ function PositionFields({ index }: { index: number }) {
                 />
             </ConditionalField>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Field name={`${path}.photos`} label="Fotos">
-                    <Input type="file" multiple accept="image/*" className="py-1" {...register(`${path}.photos`)} />
-                </Field>
+                <Controller
+                    control={control}
+                    name={`${path}.photos`}
+                    render={({ field }) => (
+                        <div role="group" aria-labelledby={`${field.name}-label`} className="flex flex-col gap-1">
+                            <span id={`${field.name}-label`} className="text-sm font-medium text-fg">Fotos</span>
+                            <FileDrop upload={simulateUpload} accept="image/*" acceptLabel="Bilder" maxBytes={10 * 1024 * 1024} capture="environment" initial={field.value} onChange={field.onChange} />
+                        </div>
+                    )}
+                />
                 <Field name={`${path}.note`} label="Notiz">
                     <Textarea rows={1} className="min-h-[var(--control-h)]" {...register(`${path}.note`)} />
                 </Field>
@@ -174,7 +194,15 @@ export function OrderForm({ defaultValues = EMPTY_ORDER, onSubmit }: OrderFormPr
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <Field name="customer" label="Kunde" required><Input {...form.register("customer")} /></Field>
                     <Field name="orderNo" label="Auftragsnummer" required><Input className="font-mono" {...form.register("orderNo")} /></Field>
-                    <Field name="dueDate" label="Liefertermin" required><Input type="date" {...form.register("dueDate")} /></Field>
+                    <Controller
+                        control={form.control}
+                        name="dueDate"
+                        render={({ field }) => (
+                            <Field name="dueDate" label="Liefertermin" required hint="z. B. 14.11., morgen, +10">
+                                <DateInput ref={field.ref} name={field.name} value={field.value || null} onChange={(v) => field.onChange(v ?? "")} onInvalid={(reason) => { if (reason) field.onChange(`!${reason}`) }} onBlur={field.onBlur} />
+                            </Field>
+                        )}
+                    />
                 </div>
                 <Field name="remark" label="Bemerkung"><Textarea {...form.register("remark")} /></Field>
             </FormSection>

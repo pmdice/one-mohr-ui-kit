@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E10Bad, E10Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-10 Dateien zeigen was mit ihnen passiert" />
+
+# E-10 · Dateien zeigen was mit ihnen passiert
+
+## Regel
+
+Lass Dateien ablegen oder auswählen und zeig pro Datei Name, Grösse, eine Vorschau bei Bildern und den Fortschritt. Wird eine Datei abgelehnt, steht der Grund genau an dieser Datei („Zu gross: 14 MB, erlaubt 10 MB“); die anderen laufen weiter. Eine fehlgeschlagene lässt sich erneut senden, eine laufende abbrechen.
+
+## Warum
+
+Beim Hochladen von zehn Fotos ist „Upload fehlgeschlagen“ wertlos: Welches? Warum? Muss ich alle nochmal? Pro Datei sichtbar heisst: nur das Problem wiederholen. Auf dem Tablet ist die Kamera der schnellste Weg zum Foto.
+
+## Details
+
+- Erlaubte Typen und Grösse stehen vorher da (E-03).
+- Entfernen bricht einen laufenden Upload ab.
+- Auf Tablets `capture="environment"` für Bilder.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E10Good />}
+  bad={<E10Bad />}
+  goodCaption="Pro Datei: Vorschau, Fortschritt, Grund"
+  badCaption="Ein Feld, eine Sammelmeldung mit Code"
+/>
+
+## Übertragen
+
+- Nova: `Image::make()`/`File::make()` mit `->acceptedTypes('image/*')` und `->rules('max:10240')`; mehrere Dateien mit einem Paket für Medien (z. B. Spatie Media Library) – Fehler pro Datei aus dessen Antwort zeigen.
+- Server: Grösse und Typ zusätzlich prüfen; die Meldung mit Datei-Namen zurückgeben.

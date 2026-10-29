@@ -65,6 +65,10 @@
   padding-inline: var(--control-px);
 }
 
+@utility pr-control {
+  padding-right: var(--control-px);
+}
+
 @utility pl-control {
   padding-left: var(--control-px);
 }

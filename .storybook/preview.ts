@@ -61,8 +61,8 @@ const preview: Preview = {
         options: {
             storySort: {
                 order: [
-                    'Handbuch', ['Einleitung', 'Grundlagen', ['Übersicht', 'Tokens'], 'Komponenten', 'Formulare', 'Navigation', 'Listen', 'Status', 'Werkstatt'],
-                    'Formulare', 'Navigation', 'Listen', 'Status', 'Werkstatt',
+                    'Handbuch', ['Einleitung', 'Grundlagen', ['Übersicht', 'Tokens'], 'Komponenten', 'Formulare', 'Eingaben', 'Navigation', 'Listen', 'Status', 'Werkstatt'],
+                    'Formulare', 'Eingaben', 'Navigation', 'Listen', 'Status', 'Werkstatt',
                 ],
             },
         },

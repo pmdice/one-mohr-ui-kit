@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E03Bad, E03Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-03 Grenzen stehen vorher da" />
+
+# E-03 · Grenzen stehen vorher da
+
+## Regel
+
+Schreib unter das Feld, was erlaubt ist – Bereich, Format, Dateityp, Grösse, Länge –, bevor jemand tippt. Ein Zeichenzähler erscheint erst ab 80 % der Grenze. Wird eine Grenze überschritten, nennt die Meldung den erlaubten Bereich.
+
+## Warum
+
+Eine Grenze, die man erst nach dem Speichern erfährt, kostet einen Umweg. Steht sie vorher da, trifft man sie beim ersten Mal. Ein Zähler, der immer läuft, ist Lärm; einer, der kurz vor der Grenze erscheint, ist eine Warnung.
+
+## Details
+
+- Hinweis über `hint` am Feld (F-03), nicht als Platzhalter – der verschwindet beim Tippen.
+- Meldung bei Überschreitung: „Erlaubt: 1 bis 60“, nicht „Ungültiger Wert“.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E03Good />}
+  bad={<E03Bad />}
+  goodCaption="Bereich vorher, Zähler kurz vor der Grenze"
+  badCaption="Grenze erst in der Fehlermeldung, Zähler immer"
+/>
+
+## Übertragen
+
+- Nova: `->help('1 bis 60')` und dieselben Grenzen in `->rules('integer', 'min:1', 'max:60')` (ohne `integer` oder `numeric` prüft Laravel die Länge des Textes, nicht die Zahl); die Validierungsmeldung in `lang/de/validation.php` mit `:min` und `:max` formulieren.
+- Für Textfelder `maxlength` setzen und den Zähler per Alpine/Livewire erst ab 80 % zeigen.

@@ -14,6 +14,19 @@ const order = (positions: PositionInput[]): OrderInput => ({
 })
 
 describe('OrderForm', () => {
+    it('an unreadable date blocks saving with its reason instead of saving the old date', async () => {
+        const user = userEvent.setup()
+        const onSubmit = vi.fn()
+        render(<OrderForm defaultValues={order([complete(1)])} onSubmit={onSubmit} />)
+        const due = screen.getByRole('textbox', { name: /Liefertermin/ })
+        await user.clear(due)
+        await user.type(due, '31.02.2027')
+        await user.click(screen.getByRole('button', { name: 'Speichern' }))
+        expect(await screen.findByText('Diesen Tag gibt es nicht')).toBeInTheDocument()
+        expect(onSubmit).not.toHaveBeenCalled()
+        expect(due).toHaveValue('31.02.2027')
+    })
+
     it('summary groups incomplete positions by number', async () => {
         const user = userEvent.setup()
         render(<OrderForm defaultValues={order([complete(1), incomplete(2), complete(3), incomplete(4)])} onSubmit={vi.fn()} />)

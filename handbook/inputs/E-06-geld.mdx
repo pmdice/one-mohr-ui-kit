@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E06Bad, E06Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-06 Geld in Rappen" />
+
+# E-06 · Geld in Rappen
+
+## Regel
+
+Speichere und rechne Beträge in ganzen Rappen (`123450` für CHF 1’234.50). Zeig sie mit zwei Nachkommastellen, `’` als Tausender und der Währung im Feld. Gelesen wird aus dem Text selbst, nie über eine Multiplikation mit Gleitkomma.
+
+## Warum
+
+Gleitkomma kann 0.1 + 0.2 nicht genau: Es ergibt 0.30000000000000004. In einer Rechnung wird daraus irgendwann ein Rappen Differenz, den niemand findet. Ganze Rappen rechnen exakt.
+
+## Details
+
+- Mehr als zwei Nachkommastellen werden abgelehnt: „Höchstens zwei Stellen nach dem Punkt“.
+- Summen, Rabatte und Steuern in Rappen rechnen und erst zum Anzeigen formatieren.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E06Good />}
+  bad={<E06Bad />}
+  goodCaption="Exakt in Rappen"
+  badCaption="0.1 + 0.2 in Gleitkomma"
+/>
+
+## Übertragen
+
+- Datenbank: `integer`/`bigint` für Rappen, nicht `float`; oder `decimal(12,2)` mit `brick/money` in PHP.
+- Nova: `Currency::make('Preis')->currency('CHF')->asMinorUnits()` speichert Rappen.

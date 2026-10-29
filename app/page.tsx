@@ -3,6 +3,7 @@ import { ThemeToggle } from "@/components/atoms/ThemeToggle/ThemeToggle"
 const AREAS = [
     { id: "G", title: "Grundlagen", description: "Farbe, Schrift, Abstände, Dichte, Fokus, Bewegung, Sprache." },
     { id: "F", title: "Formulare", description: "Pflichtfelder, Fehler, Positionen, bedingte Felder." },
+    { id: "E", title: "Eingaben", description: "Zahlen, Beträge, Daten, Auswahl, Verknüpfungen, Dateien." },
     { id: "N", title: "Navigation & App-Rahmen", description: "Pfad, Menü, Zurück, Suche, Seitenkopf." },
     { id: "L", title: "Listen & Tabellen", description: "Dichte Tabellen, Filter, Liste → Detail." },
     { id: "S", title: "Status & Lebenszyklus", description: "Status-Sprache, erlaubte Schritte, Scan, Verlauf." },

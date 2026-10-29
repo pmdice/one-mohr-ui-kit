@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { E08Bad, E08Good } from './examples'
+
+<Meta title="Handbuch/Eingaben/E-08 Wenige Möglichkeiten sind sichtbar" />
+
+# E-08 · Wenige Möglichkeiten sind sichtbar
+
+## Regel
+
+Zeig bis fünf Möglichkeiten alle auf einmal: als Liste mit Beschreibung, oder bei kurzen Wörtern als Segmente nebeneinander. Eine Auswahlliste erst ab sechs. Mit der Tastatur ist die Gruppe ein Tab-Halt; die Pfeile wechseln.
+
+## Warum
+
+Eine Auswahlliste versteckt die Möglichkeiten hinter einem Klick, und man vergleicht nur im Kopf. Sichtbare Optionen zeigen auf einen Blick, was es gibt und was gewählt ist – mit einem Klick weniger.
+
+## Details
+
+- Segmente nur für ein bis zwei kurze Wörter je Option, sonst Liste.
+- Eine Option ist immer gewählt, wenn es einen sinnvollen Standard gibt; sonst keine und das Feld ist Pflicht (F-01).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<E08Good />}
+  bad={<E08Bad />}
+  goodCaption="Drei Optionen sichtbar mit Erklärung"
+  badCaption="Auswahlliste für drei Optionen"
+/>
+
+## Übertragen
+
+- Nova: für 2–5 Optionen ein Radio-Feld aus einem Paket; `BooleanGroup` ist keine Alternative – das sind unabhängige Checkboxen für mehrere Antworten. Bleibt nur `Select`, dann mit `->displayUsingLabels()` und einer Hilfe, die die Optionen nennt.
+- HTML: `fieldset` mit `legend` und `input type=radio` – die Tastatur-Logik kommt vom Browser.
