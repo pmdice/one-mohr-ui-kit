@@ -1,21 +1,25 @@
 import type { Preview, Decorator } from '@storybook/nextjs-vite'
 import React from 'react'
 import { ThemeProvider } from '../components/providers/theme-provider'
+import '@fontsource-variable/geist'
+import '@fontsource-variable/geist-mono'
+import './fonts.css'
 import '../app/globals.css'
 
-const withTheme: Decorator = (Story, context) => {
-    const theme = (context.globals.theme as string) ?? 'light'
-
+/** Keeps the html class in step with the toolbar, so tokens under `.dark` apply to portals too. */
+function ThemeFrame({ theme, children }: { theme: string; children: React.ReactNode }) {
     React.useEffect(() => {
         document.documentElement.classList.toggle('dark', theme === 'dark')
     }, [theme])
-
     return React.createElement(
-        ThemeProvider as React.ComponentType<any>,
+        ThemeProvider,
         { attribute: 'class', forcedTheme: theme, enableSystem: false, disableTransitionOnChange: true },
-        React.createElement(Story as React.ElementType)
+        children
     )
 }
+
+const withTheme: Decorator = (Story, context) =>
+    React.createElement(ThemeFrame, { theme: (context.globals.theme as string) ?? 'light' }, React.createElement(Story as React.ElementType))
 
 const withDensity: Decorator = (Story, context) => {
     const density = (context.globals.density as string) ?? 'compact'
@@ -54,6 +58,14 @@ const preview: Preview = {
     decorators: [withDensity, withTheme],
     parameters: {
         backgrounds: { disable: true },
+        options: {
+            storySort: {
+                order: [
+                    'Handbuch', ['Einleitung', 'Grundlagen', ['Übersicht', 'Tokens'], 'Komponenten', 'Formulare', 'Navigation', 'Listen', 'Status', 'Werkstatt'],
+                    'Formulare', 'Navigation', 'Listen', 'Status', 'Werkstatt',
+                ],
+            },
+        },
         controls: {
             matchers: {
                 color: /(background|color)$/i,

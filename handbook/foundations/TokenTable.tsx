@@ -63,3 +63,44 @@ function Value({ kind, name, className, density, read }: { kind: TokenGroup["kin
         </div>
     )
 }
+
+const TYPE_STEPS = [
+    { px: 12, className: "text-xs", tw: "text-xs", role: "Metadaten, Kennungen in Übersichten, Hinweise unter Feldern", sample: "Auftrag 26100013 · vor 5 min" },
+    { px: 13, className: "text-control", tw: "text-control", role: "Bedienelemente in kompakter Dichte", sample: "Speichern" },
+    { px: 14, className: "text-sm", tw: "text-sm", role: "Fliesstext, Tabellen, Werte", sample: "Dähler + Blaser, 4 Positionen, 48 Stück" },
+    { px: 16, className: "text-base font-semibold", tw: "text-base", role: "Abschnittstitel", sample: "Positionen" },
+    { px: 20, className: "text-xl font-semibold", tw: "text-xl", role: "Seitentitel", sample: "Ringe Herbst 2026" },
+]
+
+/** The five type steps of G-04, each set in its own size. */
+export function TypeScale() {
+    return (
+        <Unstyled>
+            <div className="my-6 divide-y divide-border rounded-panel border border-border bg-surface font-sans text-fg" data-density="compact">
+                {TYPE_STEPS.map((s) => (
+                    <div key={s.px} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-baseline sm:gap-6">
+                        <span className="w-28 shrink-0 font-mono text-xs text-fg-subtle">{s.px} px · {s.tw}</span>
+                        <span className={cn("min-w-0 flex-1", s.className)}>{s.sample}</span>
+                        <span className="text-xs text-fg-muted sm:w-64 sm:text-right">{s.role}</span>
+                    </div>
+                ))}
+            </div>
+        </Unstyled>
+    )
+}
+
+/** The spacing steps of G-05 as bars. */
+export function SpaceScale() {
+    return (
+        <Unstyled>
+            <div className="my-6 flex flex-col gap-2 rounded-panel border border-border bg-surface p-4 font-sans" data-density="compact">
+                {[[4, "gap-1"], [8, "gap-2"], [12, "gap-3"], [16, "gap-4"], [24, "gap-6"], [32, "gap-8"]].map(([px, tw]) => (
+                    <div key={px} className="flex items-center gap-4">
+                        <span className="w-24 shrink-0 font-mono text-xs text-fg-subtle">{px} px · {tw}</span>
+                        <span className="bg-accent-subtle ring-1 ring-inset ring-accent" style={{ width: Number(px), height: Number(px) }} />
+                    </div>
+                ))}
+            </div>
+        </Unstyled>
+    )
+}

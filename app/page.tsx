@@ -1,10 +1,12 @@
 import { ThemeToggle } from "@/components/atoms/ThemeToggle/ThemeToggle"
 
 const AREAS = [
-    { id: "F", title: "Formulare", description: "Pflichtfelder, Fehler, Positionen, bedingte Felder.", status: "verfügbar" },
-    { id: "N", title: "Navigation & App-Rahmen", description: "Sidebar, Breadcrumb, Seitenhierarchie.", status: "geplant" },
-    { id: "T", title: "Listen & Tabellen", description: "Dichte Tabellen, Filter, Liste → Detail.", status: "geplant" },
-    { id: "S", title: "Status & Lebenszyklus", description: "Status-Sprache, Scan-Ein/Aus, Historie.", status: "geplant" },
+    { id: "G", title: "Grundlagen", description: "Farbe, Schrift, Abstände, Dichte, Fokus, Bewegung, Sprache." },
+    { id: "F", title: "Formulare", description: "Pflichtfelder, Fehler, Positionen, bedingte Felder." },
+    { id: "N", title: "Navigation & App-Rahmen", description: "Pfad, Menü, Zurück, Suche, Seitenkopf." },
+    { id: "L", title: "Listen & Tabellen", description: "Dichte Tabellen, Filter, Liste → Detail." },
+    { id: "S", title: "Status & Lebenszyklus", description: "Status-Sprache, erlaubte Schritte, Scan, Verlauf." },
+    { id: "W", title: "Werkstatt-Ansicht", description: "Tablet an der Station: Kamera, Rückmeldung, offline." },
 ]
 
 export default function Home() {
@@ -38,7 +40,6 @@ export default function Home() {
                             <p className="text-sm font-medium text-fg">{area.title}</p>
                             <p className="text-sm text-fg-muted">{area.description}</p>
                         </div>
-                        <span className="text-xs text-fg-subtle">{area.status}</span>
                     </li>
                 ))}
             </ul>

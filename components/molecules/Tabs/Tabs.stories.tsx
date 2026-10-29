@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Tabs } from './Tabs'
 
 const TABS = [
-    { id: 'overview', label: 'Overview', content: <p className="text-sm text-fg-muted">Overview content: high-level summary of the component's purpose and capabilities.</p> },
+    { id: 'overview', label: 'Overview', content: <p className="text-sm text-fg-muted">Overview content: high-level summary of the component&apos;s purpose and capabilities.</p> },
     { id: 'usage',    label: 'Usage',    content: <p className="text-sm text-fg-muted">Usage content: import the component and pass a <code>tabs</code> array of <code>{"{ id, label, content }"}</code>.</p> },
     { id: 'api',      label: 'API',      content: <p className="text-sm text-fg-muted">API content: <code>tabs</code>, <code>defaultTab</code>, <code>className</code> props available.</p> },
 ]

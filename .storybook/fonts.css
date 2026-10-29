@@ -1,0 +1,5 @@
+/* Storybook has no next/font: load Geist from the package and name it the way app/layout.tsx does. */
+:root {
+  --font-geist-sans: "Geist Variable", system-ui, sans-serif;
+  --font-geist-mono: "Geist Mono Variable", ui-monospace, monospace;
+}
