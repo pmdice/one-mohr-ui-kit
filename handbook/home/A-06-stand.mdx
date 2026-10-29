@@ -30,5 +30,5 @@ Die Startseite bleibt oft stundenlang offen. Wer um 15 Uhr auf Zahlen von 8 Uhr 
 
 ## Übertragen
 
-- Nova: Metrics mit `->refreshWhenActionsRun()`; Zeitstempel als Hilfetext der Karte.
+- Nova: `->refreshWhenActionsRun()` lädt Metrics nur nach Aktionen neu; „Stand …“ und das Neuladen beim Sichtbarwerden brauchen eine eigene Card mit etwas JavaScript.
 - JS: `document.addEventListener('visibilitychange', …)` und Neuladen der Karte.

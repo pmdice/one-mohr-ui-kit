@@ -35,7 +35,7 @@ Patrick hat freie Hand gegeben; alle Entscheidungen hier sind meine.
   wartet auf mich – jede Zeile mit dem Grund, warum sie da ist. Kennzahlen höchstens als Leiste darunter.
 - **A-02 Meins zuerst.** Was mir oder meiner Station gehört, steht vor dem, was das Team betrifft; „Alle“
   ist ein Link, nicht die Voreinstellung.
-- **A-03 Dringendes oben, mit Grund.** Sortiert nach Dringlichkeit und Frist (L-06); jede Zeile sagt in
+- **A-03 Dringendes oben, mit Grund.** Sortiert nach Frist, bei gleicher Frist nach der Reihenfolge der Liste (L-06); jede Zeile sagt in
   Worten warum: „seit 2 Tagen überfällig“, „heute fällig“, „wartet seit 5 h auf Freigabe“.
 - **A-04 Leer heisst: nichts zu tun, und was als Nächstes kommt.** Ein leerer Vorrat sagt das ruhig und nennt
   den nächsten Termin (L-07) – keine Konfetti, kein „Super!“.

@@ -18,8 +18,9 @@ export function StatTile({ label, value, href, detail, tone }: {
             href={href}
             className="group flex flex-col gap-0.5 rounded-panel border border-border bg-surface px-4 py-3 no-underline transition-colors duration-fast hover:border-border-strong hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
-            <span className={cn("text-xl font-semibold tabular-nums text-fg", tone && TONES[tone])}>{value} <span className="text-sm font-normal text-fg">{label}</span></span>
-            {detail && <span className="text-xs text-fg-muted group-hover:text-fg">{detail} →</span>}
+            {/* Zero is no warning (G-01) */}
+            <span className={cn("text-xl font-semibold tabular-nums text-fg", tone && value !== 0 && TONES[tone])}>{value} <span className="text-sm font-normal text-fg">{label}</span></span>
+            {detail && <span className="text-xs text-fg-muted group-hover:text-fg">{detail}<span aria-hidden="true"> →</span></span>}
         </NavLink>
     )
 }
