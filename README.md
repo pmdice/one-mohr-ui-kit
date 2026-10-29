@@ -21,7 +21,7 @@ Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind. Je
 | B | Rechte & Rollen | ausblenden, sperren mit Grund, erklären; Leseansicht; keine Lücken; Rolle sichtbar; Zugriff anfragen |
 | W | Werkstatt-Ansicht | Station, Kamera, grosse Ziele, Rückmeldung, Offline-Warteschlange |
 
-Dazu in Storybook: **Tokens** (alle Werte live aus `app/tokens.css`) und **Komponenten** (jede Komponente mit Zweck und Regeln; ein Test hält die Liste vollständig).
+Dazu in Storybook: **Übertragen nach Nova** (alle Hinweise zur Umsetzung auf einer Seite, aus den Regeln erzeugt mit `node scripts/porting.mjs`), **Tokens** (alle Werte live aus `app/tokens.css`) und **Komponenten** (jede Komponente mit Zweck und Regeln; ein Test hält die Liste vollständig).
 
 ## Loslegen
 
