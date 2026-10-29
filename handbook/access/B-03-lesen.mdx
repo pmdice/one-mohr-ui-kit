@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B03Bad, B03Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-03 Nur lesen sieht aus wie lesen" />
+
+# B-03 · Nur lesen sieht aus wie lesen
+
+## Regel
+
+Wer nur lesen darf, sieht Werte als Text in der Eigenschaftenliste (D-03), nicht ein Formular mit ausgegrauten Feldern. Oben steht ruhig: „Sie können Aufträge nur lesen. Ändern dürfen: Büro, Teamleitung.“ – mit „Zugriff anfragen“.
+
+## Warum
+
+Ausgegraute Felder sind schwer zu lesen (zu wenig Kontrast), sehen kaputt aus und verlocken zum Klicken. Text ist zum Lesen gemacht. Der Hinweis oben beantwortet die Frage, bevor sie entsteht.
+
+## Details
+
+- Keine Bearbeiten-Knöpfe, keine Stifte an Werten (D-07), keine Eingabefelder.
+- Kopieren (D-05) und Verweise (N-08) bleiben – lesen heisst nicht weniger sehen.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B03Good />}
+  bad={<B03Bad />}
+  goodCaption="Text mit Hinweis"
+  badCaption="Formular voller grauer Felder"
+/>
+
+## Übertragen
+
+- Nova: die Detailseite ist bereits Text; Bearbeiten über `authorizedToUpdate()` in der Policy ausblenden statt Felder `->readonly()` zu setzen.
+- Eigene Formulare: Leseansicht als eigene Darstellung, nicht als `disabled` auf jedem Feld.

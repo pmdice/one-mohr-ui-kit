@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B08Bad, B08Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-08 Der Server entscheidet und die Oberfläche spiegelt" />
+
+# B-08 · Der Server entscheidet und die Oberfläche spiegelt
+
+## Regel
+
+Alles in diesem Teil ist Darstellung. Geprüft wird auf dem Server, bei jeder Anfrage, mit denselben Regeln. Lehnt der Server ab (weil sich Rechte geändert haben oder jemand die Oberfläche umgeht), sagt die Oberfläche es als Satz (R-07) und blendet die Aktion danach aus.
+
+## Warum
+
+Was nur im Browser verborgen ist, kann jeder mit den Entwicklerwerkzeugen aufrufen. Und Rechte ändern sich während der Arbeit. Eine einzige Quelle für die Regeln verhindert, dass Oberfläche und Server auseinanderlaufen.
+
+## Details
+
+- Die Oberfläche bekommt die Entscheidungen vom Server mitgeliefert (z. B. `can: { archive: false, reason: … }`), statt sie nachzubauen.
+- 403 heisst: Satz zeigen, Daten neu laden.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B08Good />}
+  bad={<B08Bad />}
+  goodCaption="Server prüft, Oberfläche spiegelt"
+  badCaption="Knopf nur versteckt"
+/>
+
+## Übertragen
+
+- Laravel: Policies für jede Aktion, `authorize()` in jedem Controller; Nova nutzt die Policies automatisch.
+- Für eigene Oberflächen die Policy-Ergebnisse mit Grund mitsenden (`Gate::inspect()` liefert `allowed()` und `message()`).

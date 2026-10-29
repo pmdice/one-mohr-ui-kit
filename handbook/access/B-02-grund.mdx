@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B02Bad, B02Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-02 Gesperrt heisst mit Grund und mit Weg" />
+
+# B-02 · Gesperrt heisst mit Grund und mit Weg
+
+## Regel
+
+Ein gesperrter Knopf sagt sichtbar daneben, warum, und wer es darf oder was zuerst passieren muss: „Zuerst alle Laufzettel abschliessen (3 offen).“ Der Knopf bleibt per Tastatur erreichbar (`aria-disabled` statt `disabled`), damit der Grund vorgelesen wird. Ein Tooltip allein reicht nicht.
+
+## Warum
+
+Ein grauer Knopf ohne Grund ist die häufigste Sackgasse in Firmensoftware: Man probiert, fragt Kollegen, schreibt ein Ticket. Ein Satz daneben spart all das. Tooltips sieht man auf Touch-Geräten nicht und mit der Tastatur nur zufällig.
+
+## Details
+
+- Grund als Satz mit Zahl, wo es eine gibt.
+- „Zugriff anfragen“ neben dem Grund, wenn es um ein Recht geht, nicht um einen Zustand.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B02Good />}
+  bad={<B02Bad />}
+  goodCaption="Grund daneben, erreichbar"
+  badCaption="Grau, ohne Grund"
+/>
+
+## Übertragen
+
+- Nova: gesperrte Actions zeigt Nova ausgegraut ohne Grund – darum lieber sichtbar lassen und den Grund mit `Action::danger()` beim Ausführen nennen, oder den Grund als `->help()` in den Feldern.
+- HTML: `aria-disabled="true"` und `aria-describedby` auf den Grund; Klick im Script abfangen.

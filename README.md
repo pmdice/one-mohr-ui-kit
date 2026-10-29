@@ -17,6 +17,7 @@ Das Kit hält **Regeln** fest, die unabhängig vom Framework formuliert sind. Je
 | R | Speichern & Rückmeldung | Speicherstand, Meldungen, sofort mit Rückgängig, doppelt klicken, lange Vorgänge, Fehler in Sätzen, Konflikte, Sitzung, Verbindung |
 | S | Status & Lebenszyklus | Status-Sprache, erlaubte Schritte, Bestätigen, Scan, Sperre, Verlauf |
 | P | Druck & Export | Druckansicht, Laufzettel, Barcodes, Kopf und Fuss, Export nach Ansicht, Dateinamen, Excel-taugliche CSV |
+| B | Rechte & Rollen | ausblenden, sperren mit Grund, erklären; Leseansicht; keine Lücken; Rolle sichtbar; Zugriff anfragen |
 | W | Werkstatt-Ansicht | Station, Kamera, grosse Ziele, Rückmeldung, Offline-Warteschlange |
 
 Dazu in Storybook: **Tokens** (alle Werte live aus `app/tokens.css`) und **Komponenten** (jede Komponente mit Zweck und Regeln; ein Test hält die Liste vollständig).

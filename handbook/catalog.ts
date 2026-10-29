@@ -23,6 +23,7 @@ export const FOLDERS: Record<string, string> = {
     status: "Status & Lebenszyklus",
     workshop: "Werkstatt",
     print: "Druck & Export",
+    access: "Rechte & Rollen",
 }
 
 export const CATALOG: CatalogEntry[] = [
@@ -125,4 +126,12 @@ export const CATALOG: CatalogEntry[] = [
     { name: "PrintPreview", path: "components/print/PrintPreview.tsx", purpose: "Vorschau mit Seitenzahl und Hinweis auf tatsächliche Grösse.", rules: ["P-01", "P-03"] },
     { name: "PrintSheet", path: "components/print/PrintSheet.tsx", purpose: "A4-Seite für Papier mit Kopf und Fuss auf jeder Seite.", rules: ["P-01", "P-04"] },
     { name: "RunSlip", path: "components/print/RunSlip.tsx", purpose: "Laufzettel: Nummer gross, Barcode, die vier Angaben der Station.", rules: ["P-02", "W-05"] },
+
+    // Rights & roles
+    { name: "AccessRequestDialog", path: "components/access/AccessRequestDialog.tsx", purpose: "Zugriff anfragen mit Grund, an die zuständige Person.", rules: ["B-07"] },
+    { name: "Guarded", path: "components/access/Guarded.tsx", purpose: "Wendet die Entscheidung an: weg, gesperrt mit Grund, oder da.", rules: ["B-01", "B-02"] },
+    { name: "ImpersonationBanner", path: "components/access/ImpersonationBanner.tsx", purpose: "Band beim Ansehen als andere Person, mit Weg zurück.", rules: ["B-06"] },
+    { name: "ReadOnlyNotice", path: "components/access/ReadOnlyNotice.tsx", purpose: "Ruhiger Hinweis für Leserechte mit „Zugriff anfragen“.", rules: ["B-03", "B-07"] },
+    { name: "RightsSummary", path: "components/access/RightsSummary.tsx", purpose: "Was eine Rolle darf, nach Bereichen in Worten.", rules: ["B-05"] },
+    { name: "RoleBadge", path: "components/access/RoleBadge.tsx", purpose: "Name und Rolle der angemeldeten Person.", rules: ["B-05"] },
 ]

@@ -1,0 +1,34 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { B01Bad, B01Good } from './examples'
+
+<Meta title="Handbuch/Rechte/B-01 Ausblenden sperren oder erklären" />
+
+# B-01 · Ausblenden sperren oder erklären
+
+## Regel
+
+Entscheide für jede Aktion und jedes Feld zwischen drei Möglichkeiten. Was eine Rolle nie darf, ist nicht da (N-10). Was sie grundsätzlich darf, aber gerade nicht (Zustand, S-05), ist sichtbar und gesperrt mit Grund. Was sie nicht darf, aber kennen muss, weil sie es anstossen soll, ist sichtbar mit „Nur Büro und Teamleitung“ und „Zugriff anfragen“ (B-07).
+
+## Warum
+
+Eine Werkstatt, die nie löscht, braucht keinen Löschen-Knopf – er wäre nur Lärm. Wer aber einen Liefertermin verschieben lassen muss, sucht den Knopf; findet er ihn nicht, fragt er sich, ob die Funktion fehlt. Die drei Fälle sauber zu trennen, macht die Oberfläche ruhig und trotzdem vollständig.
+
+## Details
+
+- Die Entscheidung als eine Regel pro Aktion an einer Stelle (`decide`), nicht verstreut in Templates.
+- Fehlt die Rolle, gewinnt das vor einem Zustandsgrund: „Nur Teamleitung“ ist die wichtigere Auskunft.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<B01Good />}
+  bad={<B01Bad />}
+  goodCaption="Löschen fehlt, Verschieben erklärt"
+  badCaption="Alles da, die Hälfte grau"
+/>
+
+## Übertragen
+
+- Nova: `->canSee(fn ($request) => …)` blendet aus (Rolle fehlt); `->canRun(fn ($request, $model) => …)` sperrt (Zustand); für „kennen muss“ die Action sichtbar lassen und in `handle()` mit `Action::danger('Nur Teamleitung …')` antworten.
+- Laravel: die gleiche Unterscheidung in der Policy – `before()` für Rollen, die Methode für den Zustand, und `Response::deny('Grund')` statt `false`.
