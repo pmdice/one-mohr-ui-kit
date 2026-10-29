@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2, Pencil } from "lucide-react"
+import { Loader2, Pencil, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface EditorProps<T> {
@@ -23,7 +23,7 @@ type Mode = "view" | "editing" | "saving"
  * there; Enter or leaving saves, Escape discards. While saving the new value stays visible; a failure keeps the
  * field open with the typed value and the reason. Focus comes back to the value.
  */
-export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly, className }: {
+export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly, isEmpty, emptyText, className }: {
     label: string
     value: T
     display: (value: T) => React.ReactNode
@@ -31,6 +31,9 @@ export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly,
     /** Reject with an Error whose message says what went wrong and what to do. */
     onSave: (value: T) => void | Promise<void>
     readOnly?: boolean
+    /** When true, the value shows `emptyText` and the button adds instead of changes (D-04). */
+    isEmpty?: (value: T) => boolean
+    emptyText?: string
     className?: string
 }) {
     const id = React.useId()
@@ -39,15 +42,22 @@ export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly,
     const [error, setError] = React.useState<string | null>(null)
     const buttonRef = React.useRef<HTMLButtonElement>(null)
     const inputRef = React.useRef<HTMLElement>(null)
+    const editorRef = React.useRef<HTMLDivElement>(null)
     const returnFocus = React.useRef(false)
     const saving = React.useRef(false)
 
     React.useEffect(() => {
-        if (mode === "editing") inputRef.current?.focus()
-        if (mode === "view" && returnFocus.current) { returnFocus.current = false; buttonRef.current?.focus() }
+        // The editor's own field, or else its first control
+        if (mode === "editing") (inputRef.current ?? editorRef.current?.querySelector<HTMLElement>('input, textarea, select, button, [tabindex="0"]'))?.focus()
+        if (mode === "view" && returnFocus.current) {
+            returnFocus.current = false
+            // Only when the focus was lost with the editor; someone who clicked elsewhere keeps it there
+            if (!document.activeElement || document.activeElement === document.body) buttonRef.current?.focus()
+        }
     }, [mode, error])
 
-    if (readOnly) return <span className={cn("block pt-0.5", className)}>{display(value)}</span>
+    const empty = isEmpty?.(value) ?? false
+    if (readOnly) return <span className={cn("block pt-0.5", empty && "text-fg-subtle", className)}>{empty ? emptyText : display(value)}</span>
 
     const open = () => { setDraft(value); setError(null); setMode("editing") }
     const close = () => { returnFocus.current = true; setError(null); setMode("view") }
@@ -75,14 +85,21 @@ export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly,
                 ref={buttonRef}
                 type="button"
                 onClick={open}
-                aria-label={`${label} ändern`}
+                aria-label={`${label} ${empty ? "hinzufügen" : "ändern"}`}
                 className={cn(
                     "group -mx-1.5 flex w-[calc(100%+0.75rem)] items-start justify-between gap-2 rounded-control px-1.5 py-0.5 text-left text-sm text-fg",
                     "hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
                     className
                 )}
             >
-                <span className="min-w-0 flex-1">{display(value)}</span>
+                {empty ? (
+                    <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2">
+                        <span className="text-fg-subtle">{emptyText}</span>
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-accent"><Plus className="h-3 w-3" aria-hidden="true" />Hinzufügen</span>
+                    </span>
+                ) : (
+                    <span className="min-w-0 flex-1">{display(value)}</span>
+                )}
                 <Pencil className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fg-subtle opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true" />
             </button>
         )
@@ -101,7 +118,12 @@ export function InlineEdit<T>({ label, value, display, editor, onSave, readOnly,
 
     return (
         <div
+            ref={editorRef}
             className={cn("flex flex-col gap-1", className)}
+            onBlur={(e) => {
+                // Leaving the editor without a change closes it; a change already started saving
+                if (!e.currentTarget.contains(e.relatedTarget as Node | null) && !saving.current && !error) setMode("view")
+            }}
             onKeyDown={(e) => {
                 // An open list or calendar inside the editor handles its own Escape
                 if (e.key === "Escape" && !e.defaultPrevented) { e.preventDefault(); e.stopPropagation(); close() }

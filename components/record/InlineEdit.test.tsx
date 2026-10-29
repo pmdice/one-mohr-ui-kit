@@ -103,4 +103,40 @@ describe('InlineEdit', () => {
         expect(screen.queryByRole('button')).toBeNull()
         expect(screen.getByText('Steine nicht mitgiessen')).toBeInTheDocument()
     })
+
+    it('an empty value says what is missing and the button adds it (D-04)', async () => {
+        function Ref() {
+            const [value, setValue] = React.useState('')
+            return <InlineEdit<string> label="Bestellnummer" value={value} isEmpty={(v) => !v} emptyText="Keine Bestellnummer" display={(v) => v} editor={(p) => <TextEditor {...p} />} onSave={setValue} />
+        }
+        render(<Ref />)
+        const add = screen.getByRole('button', { name: 'Bestellnummer hinzufügen' })
+        expect(add).toHaveTextContent('Keine Bestellnummer')
+        expect(add).toHaveTextContent('Hinzufügen')
+        await userEvent.click(add)
+        expect(screen.getByRole('textbox')).toHaveFocus()
+    })
+
+    it('leaving without a change closes, also when the editor did not report anything', async () => {
+        function Silent() {
+            return (
+                <>
+                    <InlineEdit<string> label="Art" value="neu" display={(v) => v} editor={({ inputRef }) => <button ref={inputRef as React.Ref<HTMLButtonElement>}>Option</button>} onSave={vi.fn()} />
+                    <button>Woanders</button>
+                </>
+            )
+        }
+        render(<Silent />)
+        await userEvent.click(screen.getByRole('button', { name: 'Art ändern' }))
+        expect(screen.getByRole('button', { name: 'Option' })).toHaveFocus()
+        await userEvent.click(screen.getByRole('button', { name: 'Woanders' }))
+        expect(screen.getByRole('button', { name: 'Art ändern' })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Woanders' })).toHaveFocus()
+    })
+
+    it('focuses the first control when the editor gives no ref', async () => {
+        render(<InlineEdit<string> label="Art" value="neu" display={(v) => v} editor={() => <input aria-label="Feld" />} onSave={vi.fn()} />)
+        await userEvent.click(screen.getByRole('button', { name: 'Art ändern' }))
+        expect(screen.getByRole('textbox', { name: 'Feld' })).toHaveFocus()
+    })
 })
