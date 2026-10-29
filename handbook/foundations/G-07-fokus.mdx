@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G07Bad, G07Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-07 Der Fokus ist immer sichtbar" />
+
+# G-07 · Der Fokus ist immer sichtbar
+
+## Regel
+
+Zeig den Tastatur-Fokus als 2 px Ring in der Farbe `focus`, nur bei Tastatur (`:focus-visible`). Entferne den Umriss nie ohne Ersatz. Die Reihenfolge mit Tab folgt dem Lesefluss; ein Dialog hält den Fokus in sich und gibt ihn beim Schliessen zurück.
+
+## Warum
+
+Wer mit der Tastatur arbeitet – in Firmensoftware die schnellsten Nutzer –, ist ohne sichtbaren Fokus blind. Ein Hintergrund, der sich um einen Hauch ändert, reicht nicht: Er ist neben der Hover-Farbe nicht zu unterscheiden.
+
+## Details
+
+- Tailwind: `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus` – nie `outline-none` allein.
+- In Menüs und Listen: Ring innen (`ring-inset`), damit er nicht abgeschnitten wird.
+- Der Baustein *Dialog* setzt Fokus-Falle und Rückgabe um; eigene Dialoge bauen darauf auf.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G07Good />}
+  bad={<G07Bad />}
+  goodCaption="Ring zeigt, wo Tab steht"
+  badCaption="Umriss entfernt, kein Ersatz"
+/>
+
+## Übertragen
+
+- Nova zeigt Fokus in eigenen Komponenten; in eigenen Feldern `focus:ring` aus Nova übernehmen und nie `outline: none` setzen.
+- Test: einmal die ganze Seite nur mit Tab bedienen.

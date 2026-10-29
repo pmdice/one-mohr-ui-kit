@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { TokenTable } from './TokenTable'
+import { TOKEN_GROUPS } from './tokens'
+
+<Meta title="Handbuch/Grundlagen/Tokens" />
+
+# Tokens
+
+Alle Werte des Kits als CSS-Variablen aus `app/tokens.css`. Die Tabelle liest sie direkt aus der Seite – was hier steht, ist, was die Komponenten benutzen. Für Nova oder einen anderen Stack: die Datei übernehmen und Farben, Radien und Grössen nur über diese Namen ansprechen.
+
+## Schriftstufen (G-04)
+
+| Stufe | Tailwind | Rolle |
+|---|---|---|
+| 12 px | `text-xs` | Metadaten, Kennungen in Übersichten, Hinweise unter Feldern |
+| 13 px | `text-control` | Bedienelemente in kompakter Dichte |
+| 14 px | `text-sm` | Fliesstext, Tabellen, Werte |
+| 16 px | `text-base` | Abschnittstitel |
+| 20 px | `text-xl` | Seitentitel |
+
+Schrift: Geist für Text, Geist Mono für Kennungen, Codes und Zahlen in Spalten.
+
+## Abstände (G-05)
+
+4 · 8 · 12 · 16 · 24 · 32 px (`gap-1`, `gap-2`, `gap-3`, `gap-4`, `gap-6`, `gap-8`). Zwischen Feldern `gap-stack`, damit die Dichte mitgeht.
+
+{TOKEN_GROUPS.map((group) => (
+  <div key={group.title}>
+    <h2>{group.title}</h2>
+    <p>{group.description}</p>
+    <TokenTable group={group} />
+  </div>
+))}

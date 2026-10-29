@@ -1,0 +1,35 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G03Bad, G03Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-03 Hell und dunkel sind gleichwertig" />
+
+# G-03 · Hell und dunkel sind gleichwertig
+
+## Regel
+
+Gib jedem Farb-Token einen hellen und einen dunklen Wert und prüfe Text in beiden auf mindestens 4.5:1 Kontrast. Nur echte Dinge behalten ihre Farbe: ein Kamerabild bleibt schwarz, ein Stück Papier weiss.
+
+## Warum
+
+Viele arbeiten heute im dunklen Modus, Werkstatt-Tablets oft auch. Wird der dunkle Modus erst am Schluss „umgefärbt“, sind Fehlertexte darin unlesbar und Abzeichen verschwinden. Wer nur Tokens benutzt, bekommt den dunklen Modus fast geschenkt.
+
+## Details
+
+- Nie feste Farbwerte (`#c4322f`, `text-black`) in Komponenten; immer Tokens.
+- Im dunklen Modus werden Akzentfarben heller, nicht nur Flächen dunkler.
+- Jede neue Ansicht einmal in beiden Modi ansehen (Storybook: Theme-Schalter in der Leiste).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G03Good />}
+  bad={<G03Bad />}
+  goodCaption="Tokens: beide Modi lesbar"
+  badCaption="Feste Farben: dunkel unlesbar"
+/>
+
+## Übertragen
+
+- Nova bringt einen dunklen Modus mit; eigene Felder und Tools müssen die Nova-Variablen (`rgba(var(--colors-gray-500))`) nutzen statt fester Farben.
+- Kontrast prüfen: Storybook-Addon *Accessibility* oder die Entwicklertools des Browsers.

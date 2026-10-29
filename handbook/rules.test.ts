@@ -4,12 +4,18 @@ import { NAV_RULE_GROUPS } from './navigation/rules'
 import { LIST_RULE_GROUPS } from './lists/rules'
 import { STATUS_RULE_GROUPS } from './status/rules'
 import { WORKSHOP_RULE_GROUPS } from './workshop/rules'
+import { FOUNDATION_RULE_GROUPS } from './foundations/rules'
 import type { RuleGroup } from './rules.types'
 
 const ids = (groups: RuleGroup[]) => groups.flatMap((g) => g.rules.map((r) => r.id))
 const expected = (prefix: string, count = 12) => Array.from({ length: count }, (_, i) => `${prefix}-${String(i + 1).padStart(2, '0')}`)
 
 describe('rule index', () => {
+    it('lists G-01 to G-10 once, in order, linking to foundation pages', () => {
+        expect(ids(FOUNDATION_RULE_GROUPS)).toEqual(expected('G', 10))
+        for (const rule of FOUNDATION_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-grundlagen-g-/)
+    })
+
     it('lists N-01 to N-12 once, in order, linking to navigation pages', () => {
         expect(ids(NAV_RULE_GROUPS)).toEqual(expected('N'))
         for (const rule of NAV_RULE_GROUPS.flatMap((g) => g.rules)) expect(rule.docsId).toMatch(/^handbuch-navigation-n-/)

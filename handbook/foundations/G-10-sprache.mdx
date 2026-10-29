@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G10Bad, G10Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-10 Gleiche Wörter für gleiche Dinge" />
+
+# G-10 · Gleiche Wörter für gleiche Dinge
+
+## Regel
+
+Benenne Knöpfe mit dem Verb dessen, was passiert („Speichern“, „Auftrag archivieren“), und nimm dasselbe Wort im Knopf, in der Meldung danach und im Verlauf. Schreib Schweizer Hochdeutsch (ss statt ß), Satzschreibung, ohne Ausrufezeichen und ohne Entwickler-Wörter (ID, null, deaktiviert, Error 422).
+
+## Warum
+
+Wer „Archivieren“ klickt und „Datensatz deaktiviert“ liest, fragt sich, ob das dasselbe war. Gleiche Wörter machen die Software vorhersehbar. Entwickler-Wörter zwingen Nutzer, das Datenmodell zu lernen.
+
+## Details
+
+- Begriffsliste: Auftrag (nicht Order), Position (nicht Zeile), Laufzettel, Station, archivieren (nicht deaktivieren/löschen, wenn es zurückholbar ist), Kunde.
+- Knöpfe: Verb + bei Mehrdeutigkeit das Objekt („Auftrag anlegen“). Nie „OK“, „Ja“, „Absenden“.
+- Meldungen im Perfekt („Auftrag archiviert“), ohne „erfolgreich“ und ohne Ausrufezeichen.
+- Zahlen und Daten im Schweizer Format: `1'234.50`, `14.11.2026` (Teil Eingaben).
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G10Good />}
+  bad={<G10Bad />}
+  goodCaption="Ein Wort durch Knopf, Meldung, Verlauf"
+  badCaption="OK, „erfolgreich deaktiviert!“, Feldnamen"
+/>
+
+## Übertragen
+
+- Nova: `Action::name()`, `Resource::label()`, Meldungen aus `Action::message()` – die Wörter aus der Begriffsliste; Übersetzungen in `lang/de.json` pflegen statt Nova-Standardtexte stehen zu lassen.
+- Die Begriffsliste ist Teil des Code-Reviews: neues Wort → in die Liste oder ändern.

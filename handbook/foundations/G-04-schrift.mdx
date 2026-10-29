@@ -1,0 +1,36 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { RuleExample } from '../RuleExample'
+import { G04Bad, G04Good } from './examples'
+
+<Meta title="Handbuch/Grundlagen/G-04 Wenige Schriftstufen mit festen Rollen" />
+
+# G-04 · Wenige Schriftstufen mit festen Rollen
+
+## Regel
+
+Nutze fünf Schriftgrössen mit festen Rollen: 12 px für Metadaten, 13 px für Bedienelemente, 14 px für Fliesstext, 16 px für Abschnittstitel, 20 px für Seitentitel. Ordne über Gewicht (normal, mittel, halbfett) und Textfarbe (`fg`, `fg-muted`, `fg-subtle`). Nie unter 12 px; grösser nur in der Werkstatt (W-03).
+
+## Warum
+
+Jede neue Grösse ist eine neue Stufe in der Hierarchie, die der Leser lernen muss. Mit wenigen Stufen erkennt man auf jeder Seite sofort, was Titel, Wert und Nebensache ist. Linear kommt in der ganzen App mit einer Handvoll Grössen aus.
+
+## Details
+
+- Tailwind: `text-xs` (12), `text-control` (13), `text-sm` (14), `text-base` (16), `text-xl` (20).
+- Grossbuchstaben nur für kurze Etiketten, nie für Sätze.
+- Zahlen, Kennungen und Codes in der Mono-Schrift mit Ziffern gleicher Breite (`tabular-nums`) (L-02).
+- Der Token-Guard verbietet willkürliche Grössen wie `text-[10px]` in Komponenten.
+
+## Gut / Schlecht
+
+<RuleExample
+  good={<G04Good />}
+  bad={<G04Bad />}
+  goodCaption="Fünf Stufen, Gewicht und Farbe"
+  badCaption="Sechs Grössen, drei Stile, Farbe"
+/>
+
+## Übertragen
+
+- Nova: in eigenen Feldern und Tools die Nova-Klassen `text-xs`, `text-sm`, `text-base`, `text-xl` verwenden, keine Inline-Grössen.
+- Die Rollen gelten auch in PDFs und Drucken (Teil Druck & Export).
