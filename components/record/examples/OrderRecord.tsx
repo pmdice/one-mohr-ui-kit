@@ -13,6 +13,7 @@ import { Switch } from "@/components/inputs/Switch"
 import { Dialog } from "@/components/molecules/Dialog/Dialog"
 import { PageHeader } from "@/components/nav/PageHeader"
 import { ActivityLog } from "@/components/status/ActivityLog"
+import { ConfirmDialog } from "@/components/status/ConfirmDialog"
 import type { ActivityEntry } from "@/components/status/activity"
 import { StatusBadge } from "@/components/status/StatusBadge"
 import type { StatusDef } from "@/components/status/workflow"
@@ -120,7 +121,7 @@ export function OrderRecord({ saveDelay = 600 }: { saveDelay?: number }) {
 
                 <section aria-label="Auf einen Blick">
                     <KeyFacts facts={[
-                        { label: "Liefertermin", value: facts?.absolute ?? "Offen", detail: facts?.relative, tone: facts?.overdue ? "danger" : undefined },
+                        { label: "Liefertermin", value: facts?.absolute ?? "Offen", detail: facts?.relative, tone: facts?.overdue ? "warning" : undefined },
                         { label: "Menge", value: "48 Stk.", detail: "in 4 Positionen" },
                         { label: "Fortschritt", value: "1 von 4", detail: "Positionen fertig" },
                         { label: "Auftragswert", value: "CHF 18’640.00", detail: "ohne MWST" },
@@ -155,7 +156,7 @@ export function OrderRecord({ saveDelay = 600 }: { saveDelay?: number }) {
                             </div>
                             <section aria-label="Verlauf" className="flex flex-col gap-2">
                                 <h2 className="m-0 text-base font-semibold">Verlauf</h2>
-                                <ActivityLog entries={history} now={NOW} />
+                                <ActivityLog entries={history} now={NOW} limit={3} moreHref="#verlauf" />
                             </section>
                         </>
                     }
@@ -187,7 +188,7 @@ export function OrderRecord({ saveDelay = 600 }: { saveDelay?: number }) {
                                         label="Dringlichkeit"
                                         value={urgency}
                                         display={(v) => label(URGENCY, v)}
-                                        editor={(p) => <RadioGroup label="Dringlichkeit" variant="segments" options={URGENCY} value={p.value} onChange={p.commit} className="[&>span]:sr-only" />}
+                                        editor={(p) => <SegmentEditor {...p} />}
                                         onSave={(v) => save("Dringlichkeit", urgency, v, setUrgency, (x) => label(URGENCY, x))}
                                     />
                                 </Property>
@@ -226,7 +227,8 @@ export function OrderRecord({ saveDelay = 600 }: { saveDelay?: number }) {
                 />
             </div>
 
-            <AddressDialog open={editAddress} address={address} onClose={() => setEditAddress(false)} onSave={(a) => { setAddress(a); setEditAddress(false) }} />
+            {/* Mounted only while open, so every opening starts from the saved address */}
+            {editAddress && <AddressDialog address={address} onClose={() => setEditAddress(false)} onSave={(a) => { setAddress(a); setEditAddress(false) }} />}
         </div>
     )
 }
@@ -263,30 +265,75 @@ function NoteEditor({ value, commit, inputRef, id }: EditorProps<string>) {
     )
 }
 
-function DateEditor({ value, commit, inputRef, id }: EditorProps<string | null>) {
+/** Arrow keys only move the date; Enter, leaving or a calendar pick saves (D-07). */
+function DateEditor({ value, commit, inputRef, id, setInvalid }: EditorProps<string | null>) {
     const [draft, setDraft] = React.useState(value)
+    const arrowing = React.useRef(false)
+    const pending = React.useRef<{ value: string | null } | null>(null)
+    const flush = () => { if (pending.current) { const v = pending.current.value; pending.current = null; commit(v) } }
     return (
-        <DateInput
-            ref={inputRef as React.Ref<HTMLInputElement>}
-            id={id}
-            aria-label="Liefertermin"
-            today={TODAY}
-            value={draft}
-            onChange={(v) => { setDraft(v); commit(v) }}
-        />
+        <div onKeyDownCapture={(e) => { arrowing.current = e.key === "ArrowUp" || e.key === "ArrowDown" }}>
+            <DateInput
+                ref={inputRef as React.Ref<HTMLInputElement>}
+                id={id}
+                aria-label="Liefertermin"
+                today={TODAY}
+                value={draft}
+                onInvalid={setInvalid}
+                onChange={(v) => {
+                    setDraft(v)
+                    if (arrowing.current) pending.current = { value: v }
+                    else commit(v)
+                }}
+                onKeyDown={(e) => { if (e.key === "Enter") flush() }}
+                onBlur={flush}
+            />
+        </div>
     )
 }
 
-function AddressDialog({ open, address, onClose, onSave }: { open: boolean; address: Address; onClose: () => void; onSave: (a: Address) => void }) {
+/** Arrow keys move the choice; Enter, leaving or a click saves (D-07). */
+function SegmentEditor({ value, commit }: EditorProps<string>) {
+    const [choice, setChoice] = React.useState(value)
+    const current = React.useRef(value)
+    const pointer = React.useRef(false)
+    return (
+        <div
+            onPointerDownCapture={() => { pointer.current = true }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit(current.current) } }}
+            onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) commit(current.current) }}
+        >
+            <RadioGroup
+                label="Dringlichkeit"
+                variant="segments"
+                options={URGENCY}
+                value={choice}
+                onChange={(v) => {
+                    current.current = v
+                    setChoice(v)
+                    if (pointer.current) { pointer.current = false; commit(v) }
+                }}
+                className="[&>span]:sr-only"
+            />
+        </div>
+    )
+}
+
+function AddressDialog({ address, onClose, onSave }: { address: Address; onClose: () => void; onSave: (a: Address) => void }) {
     const [draft, setDraft] = React.useState(address)
+    const [asking, setAsking] = React.useState(false)
+    const dirty = JSON.stringify(draft) !== JSON.stringify(address)
+    // Changes are never thrown away silently (F-12)
+    const leave = () => (dirty ? setAsking(true) : onClose())
     const field = (key: keyof Address) => ({ value: draft[key], onChange: (e: React.ChangeEvent<HTMLInputElement>) => setDraft({ ...draft, [key]: e.target.value }) })
     return (
+        <>
         <Dialog
-            open={open}
-            onClose={onClose}
+            open
+            onClose={leave}
             title="Lieferadresse bearbeiten"
             description="Strasse, PLZ und Ort gehören zusammen und werden zusammen gespeichert (D-08)."
-            footer={<><Button variant="outline" onClick={onClose}>Abbrechen</Button><Button onClick={() => onSave(draft)}>Adresse speichern</Button></>}
+            footer={<><Button variant="outline" onClick={leave}>Abbrechen</Button><Button onClick={() => onSave(draft)}>Adresse speichern</Button></>}
         >
             <div className="flex flex-col gap-3">
                 <FormField label="Strasse"><Input {...field("street")} /></FormField>
@@ -296,5 +343,14 @@ function AddressDialog({ open, address, onClose, onSave }: { open: boolean; addr
                 </div>
             </div>
         </Dialog>
+        <ConfirmDialog
+            open={asking}
+            title="Änderungen verwerfen?"
+            consequences={["Ihre Änderungen an der Lieferadresse gehen verloren."]}
+            confirmLabel="Verwerfen"
+            onConfirm={onClose}
+            onCancel={() => setAsking(false)}
+        />
+        </>
     )
 }

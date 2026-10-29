@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 
 export type Outcome<T> = { ok: true; value: T | null } | { ok: false; reason: string }
 
-export type ShellProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "defaultValue" | "onChange" | "min" | "max" | "step"> & {
+export type ShellProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "defaultValue" | "onChange" | "onInvalid" | "min" | "max" | "step"> & {
     /** Shown inside the field on the right (E-02). */
     unit?: string
     /** Called with the reason when the text cannot be read, and with null once it can again. */

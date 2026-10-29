@@ -39,13 +39,13 @@ describe('InlineEdit', () => {
     it('opens the field in place, saves on Enter and returns focus to the value', async () => {
         const onSave = vi.fn()
         render(<Note onSave={onSave} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Notiz ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Notiz ändern/ }))
         const field = screen.getByRole('textbox', { name: 'Notiz' })
         expect(field).toHaveFocus()
         await userEvent.clear(field)
         await userEvent.type(field, 'Baum abschrecken{Enter}')
         expect(onSave).toHaveBeenCalledWith('Baum abschrecken')
-        const button = await screen.findByRole('button', { name: 'Notiz ändern' })
+        const button = await screen.findByRole('button', { name: /^Notiz ändern/ })
         expect(button).toHaveTextContent('Baum abschrecken')
         expect(button).toHaveFocus()
     })
@@ -54,7 +54,7 @@ describe('InlineEdit', () => {
         const d = deferred()
         const onSave = vi.fn(() => d.promise)
         render(<Note onSave={onSave} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Notiz ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Notiz ändern/ }))
         await userEvent.clear(screen.getByRole('textbox', { name: 'Notiz' }))
         await userEvent.type(screen.getByRole('textbox', { name: 'Notiz' }), 'Neu{Enter}')
         expect(screen.getByText('Speichert …')).toBeInTheDocument()
@@ -68,13 +68,13 @@ describe('InlineEdit', () => {
     it('a failed save keeps the typed value with the reason; Escape brings the old value back', async () => {
         const onSave = vi.fn().mockRejectedValue(new Error('Keine Verbindung. Nochmals versuchen.'))
         render(<Note onSave={onSave} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Notiz ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Notiz ändern/ }))
         await userEvent.clear(screen.getByRole('textbox', { name: 'Notiz' }))
         await userEvent.type(screen.getByRole('textbox', { name: 'Notiz' }), 'Neu{Enter}')
         expect(await screen.findByRole('alert')).toHaveTextContent('Keine Verbindung. Nochmals versuchen.')
         expect(screen.getByRole('textbox', { name: 'Notiz' })).toHaveValue('Neu')
         await userEvent.keyboard('{Escape}')
-        const button = screen.getByRole('button', { name: 'Notiz ändern' })
+        const button = screen.getByRole('button', { name: /^Notiz ändern/ })
         expect(button).toHaveTextContent('Steine nicht mitgiessen')
         expect(button).toHaveFocus()
     })
@@ -82,20 +82,20 @@ describe('InlineEdit', () => {
     it('Escape closes without saving', async () => {
         const onSave = vi.fn()
         render(<Note onSave={onSave} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Notiz ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Notiz ändern/ }))
         await userEvent.type(screen.getByRole('textbox', { name: 'Notiz' }), ' und mehr')
         await userEvent.keyboard('{Escape}')
         expect(onSave).not.toHaveBeenCalled()
-        expect(screen.getByRole('button', { name: 'Notiz ändern' })).toHaveTextContent('Steine nicht mitgiessen')
+        expect(screen.getByRole('button', { name: /^Notiz ändern/ })).toHaveTextContent('Steine nicht mitgiessen')
     })
 
     it('the same value does not save', async () => {
         const onSave = vi.fn()
         render(<Note onSave={onSave} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Notiz ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Notiz ändern/ }))
         await userEvent.keyboard('{Enter}')
         expect(onSave).not.toHaveBeenCalled()
-        expect(screen.getByRole('button', { name: 'Notiz ändern' })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /^Notiz ändern/ })).toBeInTheDocument()
     })
 
     it('read-only shows the value without a way to change it', () => {
@@ -110,7 +110,7 @@ describe('InlineEdit', () => {
             return <InlineEdit<string> label="Bestellnummer" value={value} isEmpty={(v) => !v} emptyText="Keine Bestellnummer" display={(v) => v} editor={(p) => <TextEditor {...p} />} onSave={setValue} />
         }
         render(<Ref />)
-        const add = screen.getByRole('button', { name: 'Bestellnummer hinzufügen' })
+        const add = screen.getByRole('button', { name: /^Bestellnummer hinzufügen/ })
         expect(add).toHaveTextContent('Keine Bestellnummer')
         expect(add).toHaveTextContent('Hinzufügen')
         await userEvent.click(add)
@@ -127,16 +127,54 @@ describe('InlineEdit', () => {
             )
         }
         render(<Silent />)
-        await userEvent.click(screen.getByRole('button', { name: 'Art ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Art ändern/ }))
         expect(screen.getByRole('button', { name: 'Option' })).toHaveFocus()
         await userEvent.click(screen.getByRole('button', { name: 'Woanders' }))
-        expect(screen.getByRole('button', { name: 'Art ändern' })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /^Art ändern/ })).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Woanders' })).toHaveFocus()
     })
 
     it('focuses the first control when the editor gives no ref', async () => {
         render(<InlineEdit<string> label="Art" value="neu" display={(v) => v} editor={() => <input aria-label="Feld" />} onSave={vi.fn()} />)
-        await userEvent.click(screen.getByRole('button', { name: 'Art ändern' }))
+        await userEvent.click(screen.getByRole('button', { name: /^Art ändern/ }))
         expect(screen.getByRole('textbox', { name: 'Feld' })).toHaveFocus()
+    })
+})
+
+describe('InlineEdit review fixes', () => {
+    it('focuses the chosen option when the editor gives no ref', async () => {
+        render(<InlineEdit<string> label="Art" value="b" display={(v) => v} editor={() => <div><button>a</button><button aria-checked="true" role="radio">b</button></div>} onSave={vi.fn()} />)
+        await userEvent.click(screen.getByRole('button', { name: /Art ändern/ }))
+        expect(screen.getByRole('radio', { name: 'b' })).toHaveFocus()
+    })
+
+    it('after a failure, leaving does not retry silently; Enter does', async () => {
+        const onSave = vi.fn().mockRejectedValue(new Error('Keine Verbindung.'))
+        render(<><Note onSave={onSave} /><button>Woanders</button></>)
+        await userEvent.click(screen.getByRole('button', { name: /Notiz ändern/ }))
+        await userEvent.clear(screen.getByRole('textbox', { name: 'Notiz' }))
+        await userEvent.type(screen.getByRole('textbox', { name: 'Notiz' }), 'Neu{Enter}')
+        await screen.findByRole('alert')
+        await userEvent.click(screen.getByRole('button', { name: 'Woanders' }))
+        expect(onSave).toHaveBeenCalledTimes(1)
+        expect(screen.getByRole('button', { name: 'Woanders' })).toHaveFocus()
+    })
+
+    it('an editor that reports unreadable input stays open when left', async () => {
+        render(
+            <>
+                <InlineEdit<string> label="Datum" value="x" display={(v) => v} onSave={vi.fn()} editor={({ setInvalid }) => <input aria-label="Datum" onChange={() => setInvalid('Kein Datum')} />} />
+                <button>Woanders</button>
+            </>
+        )
+        await userEvent.click(screen.getByRole('button', { name: /Datum ändern/ }))
+        await userEvent.type(screen.getByRole('textbox', { name: 'Datum' }), '31.02.')
+        await userEvent.click(screen.getByRole('button', { name: 'Woanders' }))
+        expect(screen.getByRole('textbox', { name: 'Datum' })).toHaveValue('31.02.')
+    })
+
+    it('the value is part of the button’s name', () => {
+        render(<Note onSave={vi.fn()} />)
+        expect(screen.getByRole('button', { name: 'Notiz ändern: Steine nicht mitgiessen' })).toBeInTheDocument()
     })
 })

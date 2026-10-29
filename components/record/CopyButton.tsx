@@ -5,13 +5,19 @@ import { Check, Copy } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const SHOWN_MS = 2000
+const MANUAL_MS = 8000
+
+const copyKey = () => (typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform) ? "Cmd+C" : "Ctrl+C")
 
 /** Copies an identifier with one click and says so at the same place (D-05). */
 export function CopyButton({ value, label, className }: { value: string; label: string; className?: string }) {
     const [state, setState] = React.useState<"idle" | "copied" | "manual">("idle")
+    const manualRef = React.useRef<HTMLInputElement>(null)
     React.useEffect(() => {
-        if (state !== "copied") return
-        const timer = setTimeout(() => setState("idle"), SHOWN_MS)
+        if (state === "idle") return
+        // Without the clipboard: the value is selected, so the key copies it
+        if (state === "manual") { manualRef.current?.focus(); manualRef.current?.select() }
+        const timer = setTimeout(() => setState("idle"), state === "copied" ? SHOWN_MS : MANUAL_MS)
         return () => clearTimeout(timer)
     }, [state])
 
@@ -36,8 +42,19 @@ export function CopyButton({ value, label, className }: { value: string; label: 
             >
                 {state === "copied" ? <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
             </button>
+            {state === "manual" && (
+                <input
+                    ref={manualRef}
+                    readOnly
+                    value={value}
+                    aria-label={label}
+                    size={value.length}
+                    onBlur={() => setState("idle")}
+                    className="rounded-control border border-border-strong bg-surface px-1 font-mono text-xs text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                />
+            )}
             <span role="status" className="text-xs text-fg-muted">
-                {state === "copied" ? "Kopiert" : state === "manual" ? "Mit Ctrl+C kopieren" : ""}
+                {state === "copied" ? "Kopiert" : state === "manual" ? `Mit ${copyKey()} kopieren` : ""}
             </span>
         </span>
     )

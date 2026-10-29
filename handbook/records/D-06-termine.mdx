@@ -30,5 +30,5 @@ Bei einem Termin fragt man: Wie viel Zeit bleibt? Das Datum allein zwingt zum Re
 
 ## Übertragen
 
-- Nova: `Date::make()->displayUsing(fn ($d) => $d->diffForHumans() . ' · ' . $d->isoFormat('dd, DD.MM.YYYY'))` mit `Carbon::setLocale('de')`.
+- Nova: `Date::make()->displayUsing(...)` mit den Tagen aus `today()->diffInDays($d->copy()->startOfDay(), false)` und den Wörtern dieser Regel (heute, morgen, in N Tagen, seit N Tagen überfällig) plus `$d->isoFormat('dd, DD.MM.YYYY')`. Nicht `diffForHumans()`: das rundet auf Wochen („in 2 Wochen“) und kennt „überfällig“ nicht.
 - Überfällig als `Badge` mit Warnfarbe, nicht nur rote Schrift.

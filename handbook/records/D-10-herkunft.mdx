@@ -31,4 +31,4 @@ Wer und wann ist oft die erste Rückfrage („Wer hat das geändert?“), aber s
 ## Übertragen
 
 - Nova: `created_at`/`updated_at` mit `->onlyOnDetail()` ans Ende von `fields()`; für „von wem“ ein Audit-Paket (z. B. owen-it/laravel-auditing) oder eigene Spalten `created_by`/`updated_by`.
-- `ID::make()->onlyOnDetail()->copyable()` am Ende statt am Anfang.
+- Die ID am Ende statt am Anfang: `Text::make('Interne ID', 'id')->onlyOnDetail()->copyable()` (`copyable()` gibt es bei Text-Feldern).

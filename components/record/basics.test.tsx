@@ -49,6 +49,12 @@ describe('CopyButton', () => {
         render(<CopyButton value="26100013" label="Auftragsnummer" />)
         await userEvent.click(screen.getByRole('button', { name: 'Auftragsnummer kopieren' }))
         expect(screen.getByRole('status')).toHaveTextContent('Mit Ctrl+C kopieren')
+        // The value is selected, so the key really copies it
+        expect(screen.getByRole('textbox', { name: 'Auftragsnummer' })).toHaveValue('26100013')
+        const box = screen.getByRole('textbox', { name: 'Auftragsnummer' }) as HTMLInputElement
+        expect(box.selectionStart).toBe(0)
+        expect(box.selectionEnd).toBe(8)
+        expect(box).toHaveFocus()
     })
 
     it('when the browser refuses it says so as well', async () => {
